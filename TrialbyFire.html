@@ -11,7 +11,7 @@
       box-sizing: border-box;
     }
     body {
-    background: url('/dragon.jpg') no-repeat center center fixed;
+    background: url('dragon.jpg') no-repeat center center fixed;
     background-size: cover;
     color: #f5f5f5; /* Texte clair pour contraster avec le fond */
     font-family: 'Courier New', monospace; /* Style hacking/terminal */
@@ -61,46 +61,46 @@
       With eyes like embers and scales hardened by centuries of heat, the Fire Drake does not attack blindly. Instead, it weaves illusions of fear, manifesting your deepest doubts and past failures.
       To reach the Emberstone, the legendary artifact hidden beyond its lair, you must prove your resilience, defying both the drake’s scorching onslaught and the mental trials it conjures. Stand firm, outwit its trickery, and strike with precision—only those with unyielding courage and strategic mastery will endure the Trial by Fire and claim their place among the legends of Eldoria.
     </p>
-    <div class="image"><img src="/favicon.png" alt="screenshot" style="max-width:10%;"></div>
+    <div class="image"><img src="favicon.png" alt="screenshot" style="max-width:10%;"></div>
     <p>Start Burp Suite. Open the browser and paste the URL.</p>
 
-    <div class="image-placeholder"><img src="/1.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="1.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
 
     <p>
       As you can see, it shows “49” along with the message “Perhaps 49 is the key.” This hints at a possible SSTI vulnerability.
       We attempt input in the “Enter your name” field and realize nothing is working, so we try another approach.
     </p>
 
-    <div class="image-placeholder"><img src="/2.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="2.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
 
     <p>We discover it's impossible to defeat the dragon directly. Instead, we intercept the HTTP request using Burp Proxy to modify the following parameter:</p>
-    <div class="image-placeholder"><img src="/3.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="3.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
 
     <p><code>outcome=defeat</code> → <code>outcome=victory</code></p>
 
-    <div class="image-placeholder"><img src="/4.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="4.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
 
     <p>and that match : now after trying to exploit this variable we realise that doesn’t work’s to see the flag we will try another variable but in the repeater to perform several payload and be more faster
       for start wy try {{7*7}}</p>
     
-    <div class="image-placeholder"><img src="/5.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="5.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
 
     <p><code>{{7*7}}</code> — and it works! Now we try more advanced payloads such as <code>{{config}}</code>, and successfully retrieve internal app configuration.</p>
 
-    <div class="image-placeholder"><img src="/6.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="6.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
 
     <p>And it works to, we realise that display all the config, now we will try to cat the flag. 
       Then we try more advanced payloads, such as <code>{{config.__class__.__init__.__globals__['os'].popen('cat flag.txt').read()}}
       </code>, and successfully retrieve the flag .</p>
     
-    <div class="image-placeholder"><img src="/7.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="7.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
 
     <p>From there, we inject code to read the flag file—success! We can also use intruder to send all payload at the same time </p>
-    <div class="image-placeholder"><img src="/8.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
-    <div class="image-placeholder"><img src="/9.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="8.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="9.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
 
     <p>And as u can see we got 49 with 4 variable so we can use it to seeking the flag .</p>
-    <div class="image-placeholder"><img src="/10.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
+    <div class="image-placeholder"><img src="10.png" alt="screenshot" style="max-width:100%; border-radius:8px;"></div>
 
     <p>Finally, we learn that the number 49 was the key and corresponds to 4 variables used, guiding us to the flag.</p>
 
