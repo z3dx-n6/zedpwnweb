@@ -7,7 +7,7 @@
         body {
             margin: 0;
             font-family: "Fira Code", monospace;
-            background-image: url('/tavern.jpeg');
+            background-image: url('tavern.jpeg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -65,33 +65,33 @@
         <strong>command injection</strong> vulnerability.
     </p>
 
-    <img src="/1A.png" alt="start interface" class="screenshot">
+    <img src="1A.png" alt="start interface" class="screenshot">
 
     <p>
         We begin interacting with the terminal. It welcomes us with a hint:
         <code>; for command injection</code>. We immediately test classic payloads like <code>; whoami</code>, <code>; id</code> and <code>; ls</code>.
     </p>
 
-    <img src="/2A.png" alt="terminal test" class="screenshot">
+    <img src="2A.png" alt="terminal test" class="screenshot">
 
     <p>
         These do not return output by default, so we prefix them with existing commands like <code>examine ; whoami</code>.
         The result is printed: <strong>root</strong> ✅. This confirms command execution.
     </p>
-    <img src="/3A.png" alt="flag located" class="screenshot">
+    <img src="3A.png" alt="flag located" class="screenshot">
     <p>
         From there, we enumerate the file system:
         <code>examine ; ls -la /</code>, <code>examine ; ls -la /etc</code>, <code>examine ; ls -la /home</code>... until we find something interesting.
     </p>
 
-    <img src="/4A.png" alt="flag located" class="screenshot">
+    <img src="4A.png" alt="flag located" class="screenshot">
 
     <p>
         Finally, we strike:
         <code>examine ; cat /app/flag.txt</code> and the flag is revealed! Mission accomplished in the shadows of the tavern.
     </p>
 
-    <img src="/5A.png" alt="flag output" class="screenshot">
+    <img src="5A.png" alt="flag output" class="screenshot">
 
     <p>
         The atmosphere, the medieval theme, and the technical twist made this a truly enjoyable challenge. 🏆
