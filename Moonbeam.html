@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTB - Moonbeam Tavern</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Fira Code", monospace;
+            background-image: url('/tavern.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            color: #ffa500;
+            margin-bottom: 40px;
+        }
+
+        p {
+            background-color: rgba(20, 20, 20, 0.9);
+            padding: 15px;
+            margin: 30px 0;
+            border-left: 4px solid orange;
+            border-radius: 5px;
+            line-height: 1.6;
+        }
+
+        code {
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #00ff88;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .screenshot {
+            display: block;
+            margin: 20px auto;
+            border: 2px dashed orange;
+            padding: 8px;
+            max-width: 90%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏰 HTB - Moonbeam Tavern - Write-Up 🍺</h1>
+
+    <p>
+        As we step into the Moonbeam Tavern, we are greeted with an eerie interface whispering a challenge: uncover the hidden
+        <strong>command injection</strong> vulnerability.
+    </p>
+
+    <img src="/1A.png" alt="start interface" class="screenshot">
+
+    <p>
+        We begin interacting with the terminal. It welcomes us with a hint:
+        <code>; for command injection</code>. We immediately test classic payloads like <code>; whoami</code>, <code>; id</code> and <code>; ls</code>.
+    </p>
+
+    <img src="/2A.png" alt="terminal test" class="screenshot">
+
+    <p>
+        These do not return output by default, so we prefix them with existing commands like <code>examine ; whoami</code>.
+        The result is printed: <strong>root</strong> ✅. This confirms command execution.
+    </p>
+    <img src="/3A.png" alt="flag located" class="screenshot">
+    <p>
+        From there, we enumerate the file system:
+        <code>examine ; ls -la /</code>, <code>examine ; ls -la /etc</code>, <code>examine ; ls -la /home</code>... until we find something interesting.
+    </p>
+
+    <img src="/4A.png" alt="flag located" class="screenshot">
+
+    <p>
+        Finally, we strike:
+        <code>examine ; cat /app/flag.txt</code> and the flag is revealed! Mission accomplished in the shadows of the tavern.
+    </p>
+
+    <img src="/5A.png" alt="flag output" class="screenshot">
+
+    <p>
+        The atmosphere, the medieval theme, and the technical twist made this a truly enjoyable challenge. 🏆
+    </p>
+</div>
+
+</body>
+</html>
