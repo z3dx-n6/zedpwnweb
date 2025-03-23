@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wrap-Up - Code Challenges</title>
+  <style>
+    /* 🔥 Dragon’s Fury Simulation - Style flamme fantasy */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel:wght@700&display=swap');
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #000;
+      color: white;
+      background-image: url('flame_peaks_bg.jpg'); /* si besoin d’un fond global */
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+    }
+  
+    h1 {
+      text-align: center;
+      font-size: 42px;
+      margin: 30px 0;
+      color: #9400D3; /* Violet */
+      text-shadow: 0px 0px 10px #9400D3;
+      animation: glitch 1s infinite;
+    }
+  
+    section {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 25px;
+      border-radius: 16px;
+      background-color: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      border-left: 8px solid;
+      color: inherit;
+      position: relative;
+    }
+  
+    h2 {
+      font-size: 30px;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 3px #000;
+    }
+  
+    .details {
+      background-color: rgba(0, 0, 0, 0.65);
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      line-height: 1.6;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  
+    .screenshot {
+      margin: 15px 0;
+      max-width: 100%;
+      border-radius: 10px;
+      border: 2px solid white;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+    }
+  
+    /* THEME STYLES */
+  
+    /* 🔥 Dragon Fury */
+    #challenge1 {
+      background: url('/writeup/png/81uHk1cXGHL._AC_UF894\,1000_QL80_.jpg') no-repeat center/cover;
+      border-color: #b3860c ;
+      color: #e63946;
+      font-family: 'Cinzel', serif;
+    }
+  
+    /* 🐉 Dragon Flight Path */
+    #challenge2 {
+      background: url('/writeup/png/world-of-warcraft-dragonflight_a85y.jpg') no-repeat center/cover;
+      border-color: #4a3423;
+      color: #e8d5c4;
+      font-family: 'Cinzel', serif;
+    }
+  
+    /* ⚙️ Clockwork Guardian */
+    #challenge3 {
+      background: url('/writeup/png/Clockwork_Guardian.webp') no-repeat center/cover;
+      border-color: #ffd700;
+      color: #fff4b3;
+    font-family: 'Cinzel', serif;
+    }
+  
+    /* 🧙 Summoner's Incantation */
+    #challenge4 {
+      background: url('/writeup/png/71OFc9-xVSL.jpg') no-repeat center/cover;
+      border-color: #a855f7;
+      color: #e0d3ff;
+      font-family: 'Cinzel', serif;
+    }
+  .terminal {
+  background-color: rgba(30, 41, 59, 0.85);
+  color: #cbd5e1;
+  padding: 15px 20px;
+  border-radius: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  margin-top: 20px;
+  line-height: 1.6;
+  box-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
+  border: 1px solid rgba(147, 51, 234, 0.6);
+}
+
+.terminal .prompt {
+  display: block;
+  color: #93c5fd; /* bleu clair magique */
+}
+
+  </style>  
+</head>
+<body>
+  <h1>Write-Up: Code Challenges</h1>
+
+  <section id="challenge1">
+    <h2>🔥 Dragon’s Fury Simulation</h2>
+    <div class="details">
+      <p><strong>🧠 Goal:</strong> In this challenge, we must help the dragons defeat Malakar by simulating attacks. Each attack is represented by a list of potential damage values, and the objective is to select one value per round (sub-list) such that the total damage equals a given target. A unique solution is always guaranteed.</p>
+
+      <p><strong>🔍 Input Analysis:</strong><br>
+      The input consists of two elements:</p>
+      <ul>
+        <li>A list of sublists of integers (each sublist = one attack round).</li>
+        <li>A target value T = the exact required total damage.</li>
+      </ul>
+  
+      <p><strong>🧪 Example:</strong></p>
+      <pre class="terminal">
+  [[13, 15, 27, 17],
+   [24, 15, 28, 6, 15, 16],
+   [7, 25, 10, 14, 11],
+   [23, 30, 14, 10]]
+  77
+      </pre>
+      <p>👉 We are looking for one value from each sublist that adds up to 77.</p>
+  
+      <p><strong>🧩 Strategy:</strong> Classic recursive backtracking:</p>
+      <ul>
+        <li>Recursively explore all possible combinations.</li>
+        <li>At each round, pick one value from the current sublist.</li>
+        <li>Check if the cumulative sum matches the target; otherwise, backtrack.</li>
+      </ul>
+  
+      <p><strong>🧠 Python Code:</strong></p>
+      <pre class="terminal">
+  import ast
+  
+  rounds = ast.literal_eval(input().strip())
+  target = int(input().strip())
+  
+  def find_combo(rounds, index, current_sum, path):
+      if index == len(rounds):
+          if current_sum == target:
+              return path
+          return None
+      for dmg in rounds[index]:
+          result = find_combo(rounds, index + 1, current_sum + dmg, path + [dmg])
+          if result:
+              return result
+      return None
+  
+  result = find_combo(rounds, 0, 0, [])
+  if result:
+      print(result)
+      </pre>
+  
+      <p><strong>✅ Test Example:</strong><br>
+      <code>Input: [[12, 14, 6, 5, 24], [16, 29], [6, 17]]<br>
+      Target: 70 → Result: [24, 29, 17]</code></p>
+  
+      <p><strong>🏁 Flag:</strong><br>
+      <code>HTB{DR4GONS_FURY_SIM_COMBO_d58c80a8e04bddf6251c269ba74ca116}</code></p>
+      <img src="dragon_result.png" alt="Dragon Fury Result" class="screenshot" />
+    </div>
+  </section>
+
+  <section id="challenge2">
+    <h2>🌀 Dragon Flight Path</h2>
+    <div class="details">
+      <p><strong>🔎 Challenge Description:</strong><br>
+        In the mystical realm of the Floating Isles, dragons must fly from one sanctuary to another. However, shifting winds can either help or hinder them.
+        Your task is to calculate the maximum distance a dragon can travel across a flight segment, taking into account:
+      </p>
+      <ul>
+        <li>Positive (boost) or negative (headwind) wind effects,</li>
+        <li>Live updates (U) that modify wind segments,</li>
+        <li>Queries (Q) to find the optimal travel distance within a range.</li>
+      </ul>
+  
+      <p><strong>🎯 Objective:</strong> Handle two types of operations:</p>
+      <ul>
+        <li><code>Q l r</code>: Returns the maximum subarray sum between indices <code>l</code> and <code>r</code> (inclusive).</li>
+        <li><code>U i x</code>: Updates the wind value at position <code>i</code> to <code>x</code>.</li>
+      </ul>
+  
+      <p><strong>📥 Sample Input:</strong></p>
+      <pre class="terminal">
+  6 6
+  -10 -7 -1 -4 0 -5
+  Q 3 3
+  U 2 9
+  Q 6 6
+  U 1 -1
+  Q 6 6
+  U 5 -9
+      </pre>
+  
+      <p><strong>📤 Expected Output:</strong><br><code>-1<br>-5<br>-5</code></p>
+  
+      <p><strong>🧠 Strategy:</strong> We use Kadane’s algorithm to find the maximum subarray sum on demand, and directly apply updates with simple assignment for the <code>U</code> operations.</p>
+  
+      <p><strong>🧪 Code Used:</strong></p>
+      <pre class="terminal">
+  n, q = map(int, input().split())
+  wind = list(map(int, input().split()))
+  ops = [input() for _ in range(q)]
+  
+  def max_sub_sum(arr):
+      max_sum = curr = arr[0]
+      for x in arr[1:]:
+          curr = max(x, curr + x)
+          max_sum = max(max_sum, curr)
+      return max_sum
+  
+  for op in ops:
+      if op[0] == 'Q':
+          _, l, r = op.split()
+          l, r = int(l) - 1, int(r)
+          print(max_sub_sum(wind[l:r]))
+      else:
+          _, i, x = op.split()
+          wind[int(i) - 1] = int(x)
+      </pre>
+  
+      <p><strong>🏁 Flag:</strong> <code>HTB{DR4G0N_FL1GHT_STR33_a5bf2a2a21e23ffd412a5fb76f2a37ce}</code></p>
+      <img src="flight_flag.png" alt="Flight Path Result" class="screenshot" />
+    </div>
+  </section>
+
+  <section id="challenge3">
+    <h2>⚙️ Clockwork Guardian</h2>
+    <div class="details">
+      <p><strong>🧾 WorkUp — Clockwork Guardian</strong></p>
+
+    <p><strong>🧠 Goal:</strong> Write an algorithm to find the shortest safe path in a grid representing a tower guarded by sentinels. The journey begins at cell (0, 0), and the goal is to reach the exit marked 'E', avoiding any cells marked as 1 (hostile sentinels).</p>
+
+    <p><strong>🔍 Problem Analysis:</strong></p>
+    <ul>
+      <li><code>0</code> → Empty cell, walkable.</li>
+      <li><code>1</code> → Sentinel (blocked cell).</li>
+      <li><code>'E'</code> → Exit.</li>
+    </ul>
+    <p>Movement is 4-directional: up, down, left, right. The goal is to minimize the number of steps required to reach the exit, without stepping on a sentinel.</p>
+
+    <p><strong>🛠️ Chosen Approach:</strong> Breadth-First Search (BFS)</p>
+    <ul>
+      <li>BFS is ideal for shortest path search in unweighted grids (every step costs 1).</li>
+      <li>A queue is used to explore unvisited neighbors.</li>
+      <li>We mark each visited cell to avoid redundant processing.</li>
+      <li>As soon as the exit 'E' is found, we return the current path length.</li>
+    </ul>
+
+    <p><strong>🧪 Example Grid:</strong></p>
+    <pre class="terminal">[
+  [0, 0, 1, 0, 0, 1],
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 1, 0, 'E']
+]</pre>
+
+    <p><strong>✅ Expected Output:</strong> <code>8</code><br>
+    Optimal path: from (0,0) to 'E' in 8 steps.</p>
+
+    <p><strong>🧠 Python Code:</strong></p>
+    <pre class="terminal">
+import ast
+from collections import deque
+
+grid = ast.literal_eval(input())
+
+rows = len(grid)
+cols = len(grid[0])
+
+directions = [(-1,0), (1,0), (0,-1), (0,1)]
+
+start = (0, 0)
+for i in range(rows):
+    for j in range(cols):
+        if grid[i][j] == 'E':
+            end = (i, j)
+
+visited = [[False]*cols for _ in range(rows)]
+queue = deque([(start[0], start[1], 0)])
+visited[start[0]][start[1]] = True
+
+while queue:
+    x, y, dist = queue.popleft()
+    
+    if (x, y) == end:
+        print(dist)
+        break
+
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < rows and 0 <= ny < cols:
+            if not visited[nx][ny] and grid[nx][ny] != 1:
+                visited[nx][ny] = True
+                queue.append((nx, ny, dist + 1))
+    </pre>
+
+    <p><strong>🏁 Flag:</strong> <code>HTB{CL0CKW0RK_BFS_M4ST3RY}</code> ✅</p>
+    <img src="clockwork_path.png" alt="Clockwork Grid Result" class="screenshot" />
+    </div>
+  </section>
+
+  <section id="challenge4">
+    <h2>🔮 Enchanted Cipher</h2>
+    <div class="details">
+      <p><strong>Intro :</strong> As the mists part, we find ourselves at the gates of the Dragon’s Heart, facing an ancient interface veiled in mystery and magic. The quest before us is clear: combine magical tokens to unlock the hidden energy within… but beware — combining two adjacent tokens causes them to lose their power.</p>
+
+      <p><strong>🪄 Step 1: Understanding the Ritual</strong><br>
+      We are given a list of integers representing token energies, and must find the maximum sum of non-adjacent tokens.<br>
+      This is a classic Dynamic Programming problem, disguised in a fantasy setting.</p>
+
+      <p><strong>⚙️ Step 2: The Incantation (Code Logic)</strong><br>
+      We evaluate the input list:<br>
+      - If it's empty → return 0<br>
+      - One token → return that<br>
+      - Otherwise → use two accumulators:<br>
+      <code>prev1 = max sum including previous<br>
+      prev2 = max sum excluding previous</code><br>
+      Then we iterate through the list:<br>
+      <code>curr = max(prev1, prev2 + token)</code></p>
+
+      <p><strong>🧪 Step 3: Testing the Magic</strong><br>
+      Input: <code>[20, 9, 15, 3, 3, 10, 12]</code><br>
+      Optimal: <code>20 + 15 + 10 + 5 = 50</code><br>
+      ✅ <strong>Maximum non-adjacent sum:</strong> 50</p>
+
+      <p><strong>🏆 Final Flag :</strong><br>
+      <code>HTB{SUMMON3RS_INC4NT4TION_R35OLV3D_f64c9ae90d81f7240ddaa7b1d0245808}</code></p>
+
+      <p>The spell is complete. The path is clear. The Dragon’s Heart stirs once more. 🔥</p>
+      <pre class="terminal">
+        <span class="prompt"> nums = eval(input())  # Example: [3, 2, 5, 10, 7]</span>
+        <span class="prompt"> if not nums:</span>
+        <span class="prompt">     print(0)</span>
+        <span class="prompt"> elif len(nums) == 1:</span>
+        <span class="prompt">     print(nums[0])</span>
+        <span class="prompt"> else:</span>
+        <span class="prompt">     prev1, prev2 = nums[0], 0</span>
+        <span class="prompt">     for i in range(1, len(nums)):</span>
+        <span class="prompt">         curr = max(prev1, prev2 + nums[i])</span>
+        <span class="prompt">         prev2 = prev1</span>
+        <span class="prompt">         prev1 = curr</span>
+        <span class="prompt">     print(prev1)</span>
+        </pre>        
+    </div>
+  </section>
+</body>
+</html>
