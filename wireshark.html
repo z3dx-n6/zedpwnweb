@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireshark : contains vs matches</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script defer src="./script.js"></script>
+  <style>
+    :root {
+      --blue: #007bff;
+      --dark: #121e2b;
+      --text: #e0e0e0;
+      --highlight: #1e2d3d;
+      --accent: #0094ff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--dark);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    h1, h2, h3 {
+      color: white;
+    }
+
+    code {
+      background-color: var(--highlight);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    ul, table {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #1a2a3c;
+      color: #e0e0e0;
+    }
+
+    table th, table td {
+      border: 1px solid #32445a;
+      padding: 10px;
+      text-align: left;
+    }
+
+    table th {
+      background-color: #26394e;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+  </style>
+  <button id="lang-toggle" style="
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 9999;
+">
+  <img id="flag-icon" src="royaume-uni.png" alt="Langue" style="width: 40px; height: 40px;">
+</button> 
+</head>
+<body>
+    <a href="index.html" style="display: inline-block; ">
+      <img src="wire_vers_gauche-removebg-preview.png" alt="Retour" style="width: 80px; height: 50px;">
+    </a>
+  <h1 
+      data-lang-en="Wireshark – Usage"
+      data-lang-fr="Wireshark – Utilisation">
+      Wireshark – Utilisation
+  </h1>
+  <div class="section">
+    <h2 
+        data-lang-en="1. How does Wireshark work?"
+        data-lang-fr="1. Comment fonctionne Wireshark ?">
+        1. Comment fonctionne Wireshark ?
+    </h2>
+    <p 
+        data-lang-en="When you start a capture, Wireshark uses a special network mechanism:"
+        data-lang-fr="Lorsqu’on lance une capture, Wireshark utilise un mécanisme réseau spécial :">
+        Lorsqu’on lance une capture, Wireshark utilise un mécanisme réseau spécial :
+    </p>
+    <h3 
+        data-lang-en="📡 Promiscuous Mode"
+        data-lang-fr="📡 Mode Promiscuous">
+        📡 Mode Promiscuous
+    </h3>
+    <p 
+        data-lang-en="Wireshark asks the network card to switch to promiscuous mode."
+        data-lang-fr="Wireshark demande à la carte réseau de passer en mode promiscuous.">
+        Wireshark demande à la carte réseau de passer en mode promiscuous.
+    </p>
+    <ul>
+      <li 
+          data-lang-en="In this mode, the network card listens to all traffic on the network."
+          data-lang-fr="Dans ce mode, la carte réseau écoute tout le trafic qui passe sur le réseau.">
+          Dans ce mode, la carte réseau écoute tout le trafic qui passe sur le réseau.
+      </li>
+      <li 
+          data-lang-en="It even receives frames not destined for its own MAC address."
+          data-lang-fr="Elle reçoit même les trames non destinées à sa propre adresse MAC.">
+          Elle reçoit même les trames non destinées à sa propre adresse MAC.
+      </li>
+      <li 
+          data-lang-en="It also captures packets that are not broadcast or multicast."
+          data-lang-fr="Elle capte aussi les paquets non broadcast et non multicast.">
+          Elle capte aussi les paquets non broadcast et non multicast.
+      </li>
+    </ul>
+    <p 
+        data-lang-en="⚠️ This behavior depends on the hardware and network architecture: on a modern switch, you won't see unicast frames between two other machines without special techniques (e.g., ARP spoofing)."
+        data-lang-fr="⚠️ Ce fonctionnement dépend du matériel et de l’architecture réseau : sur un switch moderne, tu ne verras pas les trames unicast entre deux autres machines sans techniques spéciales (ex: ARP spoofing).">
+        ⚠️ Ce fonctionnement dépend du matériel et de l’architecture réseau : sur un switch moderne, tu ne verras pas les trames unicast entre deux autres machines sans techniques spéciales (ex: ARP spoofing).
+    </p>
+  </div>
+
+  <div class="section">
+    <h2 
+        data-lang-en="2. Managing Wireshark Profiles"
+        data-lang-fr="2. Gérer les profils Wireshark">
+        2. Gérer les profils Wireshark
+    </h2>
+    <p 
+        data-lang-en="Wireshark allows you to create and manage multiple user profiles tailored to different contexts (pentest, enterprise network, etc.)."
+        data-lang-fr="Wireshark permet de créer et gérer plusieurs profils utilisateur adaptés à différents contextes (pentest, réseau entreprise, etc).">
+        Wireshark permet de créer et gérer plusieurs profils utilisateur adaptés à différents contextes (pentest, réseau entreprise, etc).
+    </p>
+    <ul>
+      <li 
+          data-lang-en="Add a user: via Manage Profiles in the menu."
+          data-lang-fr="Ajouter un utilisateur : via Manage Profiles dans le menu.">
+          Ajouter un utilisateur : via <code>Manage Profiles</code> dans le menu.
+      </li>
+      <li 
+          data-lang-en="Go to help: to retrieve or configure a predefined profile."
+          data-lang-fr="Aller dans l’aide : pour récupérer ou configurer un profil prédéfini.">
+          Aller dans l’aide : pour récupérer ou configurer un profil prédéfini.
+      </li>
+      <li 
+          data-lang-en="A profile contains: custom filters, colors, columns, analysis options, etc."
+          data-lang-fr="Un profil contient : filtres personnalisés, couleurs, colonnes, options d’analyse, etc.">
+          Un profil contient : filtres personnalisés, couleurs, colonnes, options d’analyse, etc.
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2 
+        data-lang-en="3. Capturing with Precision"
+        data-lang-fr="3. Capturer avec précision">
+        3. Capturer avec précision
+    </h2>
+    <p 
+        data-lang-en="You can define a limited capture in:"
+        data-lang-fr="Il est possible de définir une capture limitée dans :">
+        Il est possible de définir une capture limitée dans :
+    </p>
+    <ul>
+      <li 
+          data-lang-en="Time: e.g., stop after 60 seconds."
+          data-lang-fr="Le temps : ex. arrêter après 60 secondes.">
+          Le temps : ex. arrêter après 60 secondes.
+      </li>
+      <li 
+          data-lang-en="Size: e.g., stop after capturing 100 MB."
+          data-lang-fr="La taille : ex. arrêter après 100 Mo capturés.">
+          La taille : ex. arrêter après 100 Mo capturés.
+      </li>
+    </ul>
+    <p 
+        data-lang-en="🔧 These options are available via Capture Options (or press Ctrl + K)."
+        data-lang-fr="🔧 Ces options sont disponibles via Capture Options (ou touche Ctrl + K).">
+        🔧 Ces options sont disponibles via Capture Options (ou touche Ctrl + K).
+    </p>
+  </div>
+
+  <div class="section">
+    <h2 
+        data-lang-en="4. Zui / BrimData for Large Volumes"
+        data-lang-fr="4. Zui / BrimData pour les gros volumes">
+        4. Zui / BrimData pour les gros volumes
+    </h2>
+    <p 
+        data-lang-en="When dealing with very large PCAP files, Wireshark can slow down. This is where Zui (formerly Brim) comes in handy."
+        data-lang-fr="Lorsque tu traites de très grands fichiers PCAP, Wireshark peut ralentir. C’est là que Zui (anciennement Brim) est utile.">
+        Lorsque tu traites de très grands fichiers PCAP, Wireshark peut ralentir. C’est là que Zui (anciennement Brim) est utile.
+    </p>
+    <ul>
+      <li 
+          data-lang-en="Modern and smooth interface."
+          data-lang-fr="Interface moderne et fluide.">
+          Interface moderne et fluide.
+      </li>
+      <li 
+          data-lang-en="Fast analysis of large dumps."
+          data-lang-fr="Analyse rapide de gros dumps.">
+          Analyse rapide de gros dumps.
+      </li>
+      <li 
+          data-lang-en="Connection indexing with Zeek + Zed."
+          data-lang-fr="Indexation des connexions avec Zeek + Zed.">
+          Indexation des connexions avec Zeek + Zed.
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2 
+        data-lang-en="5. Missed Frames or Saturated Network"
+        data-lang-fr="5. Trames manquées ou réseau saturé">
+        5. Trames manquées ou réseau saturé
+    </h2>
+    <p 
+        data-lang-en="On a very active network, you may see messages in Wireshark like:"
+        data-lang-fr="Sur un réseau très actif, tu peux voir des messages dans Wireshark comme :">
+        Sur un réseau très actif, tu peux voir des messages dans Wireshark comme :
+    </p>
+    <ul>
+      <li 
+          data-lang-en="Dropped packets — Too many packets to capture → losses."
+          data-lang-fr="Dropped packets — Trop de paquets à capturer → pertes.">
+          <code>Dropped packets</code> — Trop de paquets à capturer → pertes.
+      </li>
+      <li 
+          data-lang-en="ACKed Lost Segment — The segment was not seen (packet missing)."
+          data-lang-fr="ACKed Lost Segment — Le segment n’a pas été vu (packet missing).">
+          <code>ACKed Lost Segment</code> — Le segment n’a pas été vu (packet missing).
+      </li>
+      <li 
+          data-lang-en="Previous Segment Not Captured — A packet was lost in the sequence."
+          data-lang-fr="Previous Segment Not Captured — Un paquet a été perdu dans la séquence.">
+          <code>Previous Segment Not Captured</code> — Un paquet a été perdu dans la séquence.
+      </li>
+    </ul>
+    <p 
+        data-lang-en="⚠️ This means your network card or PC can't keep up with the load!"
+        data-lang-fr="⚠️ Cela signifie que ta carte réseau ou ton PC n’arrive pas à suivre la charge !">
+        ⚠️ Cela signifie que ta carte réseau ou ton PC n’arrive pas à suivre la charge !
+    </p>
+  </div>
+
+  <div class="section">
+    <h2 
+        data-lang-en="6. Berkeley Packet Filters (BPF)"
+        data-lang-fr="6. Les filtres Berkeley (BPF)">
+        6. Les filtres Berkeley (BPF)
+    </h2>
+    <p 
+        data-lang-en="Berkeley Packet Filters (BPF), also known as Capture Filters, are used to filter packets before recording them."
+        data-lang-fr="Les Berkeley Packet Filters (BPF), aussi appelés Capture Filters, sont utilisés pour filtrer les paquets avant leur enregistrement.">
+        Les <strong>Berkeley Packet Filters (BPF)</strong>, aussi appelés <strong>Capture Filters</strong>, sont utilisés pour <strong>filtrer les paquets avant leur enregistrement</strong>.
+    </p>
+    <p 
+        data-lang-en="📌 Simpler syntax (like in tcpdump), used in the Capture Filter field before starting the capture."
+        data-lang-fr="📌 Syntaxe plus simple (comme dans tcpdump), utilisée dans le champ Capture Filter avant démarrage de la capture.">
+        📌 Syntaxe plus simple (comme dans <code>tcpdump</code>), utilisée dans le champ <strong>Capture Filter</strong> avant démarrage de la capture.
+    </p>
+
+    <table>
+      <tr><th>Objectif</th><th>Filtre BPF</th></tr>
+      <tr><td>Trafic TCP uniquement</td><td><code>tcp</code></td></tr>
+      <tr><td>Trafic sur le port 80</td><td><code>port 80</code></td></tr>
+      <tr><td>IP source 192.168.1.10</td><td><code>src host 192.168.1.10</code></td></tr>
+      <tr><td>Trafic ICMP</td><td><code>icmp</code></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2 
+        data-lang-en="7. contains – Simple Search"
+        data-lang-fr="7. contains – Recherche simple">
+        7. <code>contains</code> – Recherche simple
+    </h2>
+    <p 
+        data-lang-en="Purpose: Search for an exact text string in a field (case-sensitive)."
+        data-lang-fr="Utilité : Chercher une chaîne de texte exacte dans un champ (sensible à la casse).">
+        <strong>Utilité :</strong> Chercher une chaîne de texte exacte dans un champ (sensible à la casse).
+    </p>
+    <ul>
+      <li><code>http.request.uri contains "login"</code></li>
+      <li><code>ftp.request.command contains "USER"</code></li>
+      <li><code>frame contains "GET"</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2 
+        data-lang-en="8. matches – Advanced Search with Regex"
+        data-lang-fr="8. matches – Recherche avancée avec regex">
+        8. <code>matches</code> – Recherche avancée avec regex
+    </h2>
+    <p 
+        data-lang-en="Purpose: Use regular expressions (regex) for complex searches."
+        data-lang-fr="Utilité : Utiliser des expressions régulières (regex) pour faire des recherches complexes.">
+        <strong>Utilité :</strong> Utiliser des expressions régulières (regex) pour faire des recherches complexes.
+    </p>
+    <ul>
+      <li><code>http.request.uri matches "(?i)login"</code> — ignore la casse</li>
+      <li><code>ftp.request.arg matches "me.{1,3}r"</code> — "me" suivi de 1 à 3 caractères, puis "r"</li>
+      <li><code>frame matches "(?i)(chat|chient)"</code> — "chat" ou "chient" sans sensibilité à la casse</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2 
+        data-lang-en="9. Comparison between contains and matches"
+        data-lang-fr="9. Comparaison entre contains et matches">
+        9. Comparaison entre <code>contains</code> et <code>matches</code>
+    </h2>
+    <table>
+      <tr><th>Critère</th><th><code>contains</code></th><th><code>matches</code></th></tr>
+      <tr><td>Sensible à la casse</td><td>✅ Oui</td><td>❌ Non (avec <code>(?i)</code>)</td></tr>
+      <tr><td>Supporte regex</td><td>❌ Non</td><td>✅ Oui</td></tr>
+      <tr><td>Facilité</td><td>✅ Très simple</td><td>🔸 Besoin de regex</td></tr>
+      <tr><td>Flexibilité</td><td>❌ Limitée</td><td>✅ Très puissante</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2 
+        data-lang-en="10. Useful Filters to Remember"
+        data-lang-fr="10. Filtres utiles à mémoriser">
+        10. Filtres utiles à mémoriser
+    </h2>
+    <table>
+      <tr><th>But</th><th>Filtre</th></tr>
+      <tr><td>URI contenant "login"</td><td><code>http.request.uri contains "login"</code></td></tr>
+      <tr><td>Mot "admin" (insensible à la casse)</td><td><code>ftp.request.arg matches "(?i)admin"</code></td></tr>
+      <tr><td>Mot commençant par "me" + 1-3 lettres + "r"</td><td><code>ftp.request.arg matches "me.{1,3}r"</code></td></tr>
+      <tr><td>Contenu "chat" ou "chient"</td><td><code>frame matches "(?i)(chat|chient)"</code></td></tr>
+      <tr><td>Méthode POST HTTP (non sensible à la casse)</td><td><code>http.request.method matches "(?i)POST"</code></td></tr>
+    </table>
+  </div>
+  
+  <div class="section">
+    <h2 
+        data-lang-en="11. Advanced Features to Know"
+        data-lang-fr="11. Fonctions avancées à connaître">
+        11. Fonctions avancées à connaître
+    </h2>
+    <h3 
+        data-lang-en="🎨 Packet Coloring"
+        data-lang-fr="🎨 Coloration des paquets">
+        🎨 Coloration des paquets
+    </h3>
+    <ul>
+      <li 
+          data-lang-en="Menu: View > Coloring Rules"
+          data-lang-fr="Menu : View > Coloring Rules">
+          Menu : <code>View > Coloring Rules</code>
+      </li>
+      <li 
+          data-lang-en="Customize the visual display (e.g., RST in red)."
+          data-lang-fr="Personnaliser l'affichage visuel (ex. RST en rouge).">
+          Personnaliser l'affichage visuel (ex. RST en rouge)
+      </li>
+    </ul>
+
+    <h3 
+        data-lang-en="📊 Useful Statistics"
+        data-lang-fr="📊 Statistiques utiles">
+        📊 Statistiques utiles
+    </h3>
+    <ul>
+      <li 
+          data-lang-en="Protocol Hierarchy: percentage by protocol."
+          data-lang-fr="Protocol Hierarchy : pourcentage par protocole.">
+          <strong>Protocol Hierarchy</strong> : pourcentage par protocole
+      </li>
+      <li 
+          data-lang-en="Conversations: IP/port connections."
+          data-lang-fr="Conversations : connexions IP/port.">
+          <strong>Conversations</strong> : connexions IP/port
+      </li>
+      <li 
+          data-lang-en="IO Graph: traffic over time."
+          data-lang-fr="IO Graph : trafic sur le temps.">
+          <strong>IO Graph</strong> : trafic sur le temps
+      </li>
+    </ul>
+
+    <h3 
+        data-lang-en="🔐 Decrypting TLS"
+        data-lang-fr="🔐 Déchiffrer TLS">
+        🔐 Déchiffrer TLS
+    </h3>
+    <ul>
+      <li 
+          data-lang-en="Use SSLKEYLOGFILE for Firefox/Chrome."
+          data-lang-fr="Utiliser SSLKEYLOGFILE pour Firefox/Chrome.">
+          Utiliser <code>SSLKEYLOGFILE</code> pour Firefox/Chrome
+      </li>
+      <li 
+          data-lang-en="Import into Preferences > TLS."
+          data-lang-fr="Importer dans Preferences > TLS.">
+          Importer dans <code>Preferences > TLS</code>
+      </li>
+    </ul>
+
+    <h3 
+        data-lang-en="🧠 Expert Infos"
+        data-lang-fr="🧠 Expert Infos">
+        🧠 Expert Infos
+    </h3>
+    <ul>
+      <li 
+          data-lang-en="Menu: Analyze > Expert Information"
+          data-lang-fr="Menu : Analyze > Expert Information">
+          Menu : <code>Analyze > Expert Information</code>
+      </li>
+      <li 
+          data-lang-en="View anomalies, errors, slowdowns."
+          data-lang-fr="Voir les anomalies, erreurs, lenteurs.">
+          Voir les anomalies, erreurs, lenteurs
+      </li>
+    </ul>
+
+    <h3 
+        data-lang-en="🔁 Follow Streams"
+        data-lang-fr="🔁 Suivre les flux">
+        🔁 Suivre les flux
+    </h3>
+    <ul>
+      <li 
+          data-lang-en="Follow TCP/UDP/HTTP stream."
+          data-lang-fr="Follow TCP/UDP/HTTP stream.">
+          <code>Follow TCP/UDP/HTTP stream</code>
+      </li>
+      <li 
+          data-lang-en="Allows replaying a complete session."
+          data-lang-fr="Permet de relire une session complète.">
+          Permet de relire une session complète
+      </li>
+    </ul>
+
+    <h3 
+        data-lang-en="🕵️‍♂️ Beaconing Detection"
+        data-lang-fr="🕵️‍♂️ Détection de beaconing">
+        🕵️‍♂️ Détection de beaconing
+    </h3>
+    <ul>
+      <li 
+          data-lang-en="Conversations or IO Graph."
+          data-lang-fr="Conversations ou IO Graph.">
+          <code>Conversations</code> ou <code>IO Graph</code>
+      </li>
+      <li 
+          data-lang-en="Detection of regular activities (e.g., C2)."
+          data-lang-fr="Détection d’activités régulières (ex. C2).">
+          Détection d’activités régulières (ex. C2)
+      </li>
+    </ul>
+  </div>
+  <a href="#" style="display: inline-block; margin-left: 900px;">
+    <img src="/wire_vers_haut_fleche.png" alt="Haut de page" style="width: 85px; height: 100px;">
+  </a>
+</body>
+</html>

