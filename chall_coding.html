@@ -1,23 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Wrap-Up - Code Challenges</title>
   <style>
-    /* 🔥 Dragon’s Fury Simulation - Style flamme fantasy */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel:wght@700&display=swap');
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
       background-color: #000;
       color: white;
-      background-image: url('flame_peaks_bg.jpg'); /* si besoin d’un fond global */
       background-size: cover;
       background-attachment: fixed;
       background-position: center;
+      transition: background-image 0.5s ease-in-out; /* Smooth transition for background changes */
     }
-  
+
     h1 {
       text-align: center;
       font-size: 42px;
@@ -26,25 +24,25 @@
       text-shadow: 0px 0px 10px #9400D3;
       animation: glitch 1s infinite;
     }
-  
+
     section {
       max-width: 1200px;
       margin: 40px auto;
       padding: 25px;
       border-radius: 16px;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(0, 0, 0, 0.85); /* Semi-transparent black */
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
       border-left: 8px solid;
       color: inherit;
       position: relative;
     }
-  
+
     h2 {
       font-size: 30px;
       margin-bottom: 15px;
       text-shadow: 1px 1px 3px #000;
     }
-  
+
     .details {
       background-color: rgba(0, 0, 0, 0.65);
       padding: 15px 20px;
@@ -53,7 +51,7 @@
       line-height: 1.6;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
-  
+
     .screenshot {
       margin: 15px 0;
       max-width: 100%;
@@ -61,64 +59,10 @@
       border: 2px solid white;
       box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
     }
-  
-    /* THEME STYLES */
-  
-    /* 🔥 Dragon Fury */
-    #challenge1 {
-      background: url('81uHk1cXGHL._AC_UF894\,1000_QL80_.jpg') no-repeat center/cover;
-      border-color: #b3860c ;
-      color: #e63946;
-      font-family: 'Cinzel', serif;
-    }
-  
-    /* 🐉 Dragon Flight Path */
-    #challenge2 {
-      background: url('world-of-warcraft-dragonflight_a85y.jpg') no-repeat center/cover;
-      border-color: #4a3423;
-      color: #e8d5c4;
-      font-family: 'Cinzel', serif;
-    }
-  
-    /* ⚙️ Clockwork Guardian */
-    #challenge3 {
-      background: url('Clockwork_Guardian.webp') no-repeat center/cover;
-      border-color: #ffd700;
-      color: #fff4b3;
-    font-family: 'Cinzel', serif;
-    }
-  
-    /* 🧙 Summoner's Incantation */
-    #challenge4 {
-      background: url('71OFc9-xVSL.jpg') no-repeat center/cover;
-      border-color: #a855f7;
-      color: #e0d3ff;
-      font-family: 'Cinzel', serif;
-    }
-  .terminal {
-  background-color: rgba(30, 41, 59, 0.85);
-  color: #cbd5e1;
-  padding: 15px 20px;
-  border-radius: 10px;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 14px;
-  margin-top: 20px;
-  line-height: 1.6;
-  box-shadow: 0 0 10px rgba(147, 51, 234, 0.3);
-  border: 1px solid rgba(147, 51, 234, 0.6);
-}
-
-.terminal .prompt {
-  display: block;
-  color: #93c5fd; /* bleu clair magique */
-}
-
-  </style>  
+  </style>
 </head>
 <body>
-  <h1>Write-Up: Code Challenges</h1>
-
-  <section id="challenge1">
+  <section id="challenge1" data-bg="/81uHk1cXGHL._AC_UF894,1000_QL80_.jpg">
     <h2>🔥 Dragon’s Fury Simulation</h2>
     <div class="details">
       <p><strong>🧠 Goal:</strong> In this challenge, we must help the dragons defeat Malakar by simulating attacks. Each attack is represented by a list of potential damage values, and the objective is to select one value per round (sub-list) such that the total damage equals a given target. A unique solution is always guaranteed.</p>
@@ -180,7 +124,7 @@
     </div>
   </section>
 
-  <section id="challenge2">
+  <section id="challenge2" data-bg="/world-of-warcraft-dragonflight_a85y.jpg">
     <h2>🌀 Dragon Flight Path</h2>
     <div class="details">
       <p><strong>🔎 Challenge Description:</strong><br>
@@ -243,7 +187,7 @@
     </div>
   </section>
 
-  <section id="challenge3">
+  <section id="challenge3" data-bg="/clockworkguardian.jpg">
     <h2>⚙️ Clockwork Guardian</h2>
     <div class="details">
       <p><strong>🧾 WorkUp — Clockwork Guardian</strong></p>
@@ -315,11 +259,10 @@ while queue:
     </pre>
 
     <p><strong>🏁 Flag:</strong> <code>HTB{CL0CKW0RK_BFS_M4ST3RY}</code> ✅</p>
-    <img src="clockwork_path.png" alt="Clockwork Grid Result" class="screenshot" />
     </div>
   </section>
 
-  <section id="challenge4">
+  <section id="challenge4" data-bg="/71OFc9-xVSL.jpg">
     <h2>🔮 Enchanted Cipher</h2>
     <div class="details">
       <p><strong>Intro :</strong> As the mists part, we find ourselves at the gates of the Dragon’s Heart, facing an ancient interface veiled in mystery and magic. The quest before us is clear: combine magical tokens to unlock the hidden energy within… but beware — combining two adjacent tokens causes them to lose their power.</p>
@@ -363,5 +306,32 @@ while queue:
         </pre>        
     </div>
   </section>
+
+  <script>
+    // JavaScript to dynamically change the background image based on the visible section
+    const sections = document.querySelectorAll('section');
+    const body = document.body;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const bgImage = entry.target.getAttribute('data-bg');
+          if (bgImage) { // Ensure the data-bg attribute is not null or undefined
+            const img = new Image();
+            img.src = bgImage;
+            img.onload = () => {
+              body.style.backgroundImage = `url('${bgImage}')`;
+            };
+            img.onerror = () => {
+              console.error(`Failed to load background image: ${bgImage}`);
+            };
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+
+    sections.forEach(section => observer.observe(section));
+  </script>
 </body>
 </html>
+``` 
