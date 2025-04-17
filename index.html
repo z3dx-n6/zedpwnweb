@@ -6,19 +6,33 @@
     <title>Cyberpunk Pentester</title>
     <link rel="stylesheet" href="./style.css">
     <script defer src="./script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 </head>
 <body>
+  <div id="particle-bg"></div>
     <header>
         <h1 class="glitch">[zзdpwnwзb]</h1>
         <img src="88077762.png" alt="Photo de profil" class="profile-img" />
-        <p class="subtitle">Jr Pentester | Cybersecurity engineer | CTF Player</p>
+        <p class="subtitle">Pentester | Cybersecurity engineer | CTF Player</p>
+        <button id="lang-toggle" style="
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 9999;
+">
+  <img id="flag-icon" src="fr.png" alt="Langue" style="width: 40px; height: 40px;">
+</button>        
     </header>
-
+    <div id="animated-bg" style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: -1;"></div>
     <nav>
         <ul>
+          <li><a href="#wu">Write-Ups</a></li>
             <li><a href="#whoami">Whoami</a></li>
-            <li><a href="#wu">Write-Ups</a></li>
-            <li><a href="#tools">Favorite tools</a></li>
+            <li><a href="#tools">Tools & techniques</a></li>
+            <li><a href="#book-reviews">Book Reviews</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
     </nav>
@@ -28,15 +42,43 @@
         <p id="typing-text"></p>
     </section>
 
+    <section class="section">
+        <h2>HTB Pro Labs</h2>
+        <p id="typing-text"></p>
+        <a href="zephyr_tools.html" class="card-link">
+            <div class="card">
+              <div class="card-content">
+                <h3>HTB - Pro Lab - Zephyr</h3>
+                <p data-lang-en="Zephyr is an intermediate-level red team simulation environment, designed to be attacked as a means of learning and honing your engagement skills and improving your active directory enumeration and exploitation skills. 
+                Zephyr includes a wide range of essential Active Directory flaws and misconfigurations to allow players to get a foothold in corporate environments." data-lang-fr="Zephyr est un environnement de simulation d'équipe rouge de niveau intermédiaire, conçu pour être attaqué comme un moyen d'apprendre et d'affiner vos compétences d'engagement et d'améliorer vos compétences d'énumération et d'exploitation de l'Active Directory. 
+                Zephyr comprend un large éventail de failles et de mauvaises configurations essentielles de l'Active Directory pour permettre aux joueurs de prendre pied dans les environnements d'entreprise.">
+                    Zephyr is an intermediate-level red team simulation environment, designed to be attacked as a means of learning and honing your engagement skills and improving your active directory enumeration and exploitation skills. 
+                    Zephyr includes a wide range of essential Active Directory flaws and misconfigurations to allow players to get a foothold in corporate environments.
+                </p>
+                <div class="card-meta">
+                  <span>📅 Mar 28, 2025</span>
+                  <span>📁 HTB - Pro Labs</span>
+                </div>
+              </div>
+              <div class="card-image">
+                <img src="/4pKBikrxrg0SuJSGGQTykn7DLHzMdcYh.webp" alt="Mindmap image" />
+              </div>
+            </div>
+          </a> 
+        <a href="Moonbeam.html" class="card-link">
+    </section>
+
     <section id="wu" class="section">
         <h2>Write-Ups</h2>
         <a href="chall_coding.html" class="card-link">
             <div class="card">
               <div class="card-content">
                 <h3>HTB - Chall code - Apocalypse 2k25</h3>
-                <p>
-                    In the heart of Valeria’s bustling capital, the Moonbeam Tavern stands as a lively hub of whispers, wagers, and illicit dealings...
-                </p>
+                <p
+                data-lang-fr="Lors du CTF Hack The Box Apocalypse 2025, j’ai complété les 4 challenges code. De la combinaison algorithmique à la cryptanalyse, en passant par la recherche de chemin et le décodage spatial, chaque défi sollicitait rigueur, logique et créativité."
+                data-lang-en="During the Hack The Box Apocalypse 2025 CTF, I completed all 4 code challenges. From algorithmic combinations to cryptanalysis, pathfinding, and spatial decoding, each task required logic, precision, and creativity.">
+                Lors du CTF Hack The Box Apocalypse 2025, j’ai complété les 4 challenges code. De la combinaison algorithmique à la cryptanalyse, en passant par la recherche de chemin et le décodage spatial, chaque défi sollicitait rigueur, logique et créativité.
+              </p>                          
                 <div class="card-meta">
                   <span>📅 Mar 22, 2025</span>
                   <span>📁 Write-Ups</span>
@@ -51,9 +93,11 @@
             <div class="card">
               <div class="card-content">
                 <h3>HTB - Moonbeam Tavern - Apocalypse 2k25</h3>
-                <p>
-                    In the heart of Valeria’s bustling capital, the Moonbeam Tavern stands as a lively hub of whispers, wagers, and illicit dealings...
-                </p>
+                <p 
+                data-lang-en="In the heart of Valeria’s bustling capital, the Moonbeam Tavern stands as a lively hub of whispers, wagers, and illicit dealings..."
+                data-lang-fr="Au cœur de la capitale animée de Valeria, la Taverne Moonbeam est un lieu vibrant de chuchotements, de paris et de transactions illicites...">
+                In the heart of Valeria’s bustling capital, the Moonbeam Tavern stands as a lively hub of whispers, wagers, and illicit dealings...
+              </p>              
                 <div class="card-meta">
                   <span>📅 Mar 22, 2025</span>
                   <span>📁 Write-Ups</span>
@@ -68,9 +112,11 @@
             <div class="card">
               <div class="card-content">
                 <h3>HTB Trial by Fire - Apocalypse 2k25</h3>
-                <p>
-                    As you ascend the treacherous slopes of the Flame Peaks, the scorching heat and shifting volcanic terrain test your endurance with every step...
-                </p>
+                <p 
+                data-lang-en="As you ascend the treacherous slopes of the Flame Peaks, the scorching heat and shifting volcanic terrain test your endurance with every step..."
+                data-lang-fr="Alors que vous gravissez les pentes traîtresses des Flammescrêtes, la chaleur brûlante et le terrain volcanique instable mettent votre endurance à rude épreuve à chaque pas...">
+                As you ascend the treacherous slopes of the Flame Peaks, the scorching heat and shifting volcanic terrain test your endurance with every step...
+              </p>              
                 <div class="card-meta">
                   <span>📅 Mar 22, 2025</span>
                   <span>📁 Write-Ups</span>
@@ -84,28 +130,136 @@
     </section>
     <section id="whoami" class="section">
         <h2>❯_ Whoami</h2>
-        <p>
-            Hello, I'm zзd, I'm a 23-year-old IT/OT cybersecurity engineer apprentice in ENGIE's IT department and a student on a Master's degree in network and systems engineering with a cybersecurity option at Paris Saclay. Alongside my professional training, I'm a self-taught cybersecurity enthusiast, actively improving my offensive skills through platforms such as TryHackMe, Hack The Box, INE Security, Vulnhub, RootMe, GOAD. 
-        </p>
-        <p>What I'm passionate about is understanding and exploiting vulnerabilities, whether in code, networks or systems. I focus on Web pentesting, AD, network infra and industrial systems (ICS), always putting my hand to the grindstone to go beyond theory.
-        </p>
-        <p>
-            I regularly take part in Capture The Flag (CTF) competitions, which enable me to hone my pentest skills while tackling a variety of challenges (Pwn, RE, OSINT, Web, Forensic, Stego, Crypto) . A list of the events I've taken part in is available in the “Projects” section of my profile, and I'm part of a top 10 FR team (freep0nx).
-        </p>
-        <p>
-            I'm currently working on my OSCP certification and I'm also learning about Forensic and Crypto.    
-
-        </p>
-        <p>I'm available to answer questions related to cybersecurity and help, to the best of my ability, whether for the curious, students or those considering a career change in the field.
-        </p>
+        <p 
+        data-lang-fr="Je suis un apprenti ingénieur en cybersécurité IT/OT de 23 ans au sein du département IT d'ENGIE et étudiant en Master ingénierie réseau et système option cybersécurité à Paris Saclay. Parallèlement à ma formation professionnelle, je suis un autodidacte passionné de cybersécurité, améliorant activement mes compétences offensive grâce à des plateformes telles que TryHackMe, Hack The Box, INE Security, GOAD, RootMe." 
+        data-lang-en="I’m a 23-year-old IT/OT cybersecurity engineering apprentice at ENGIE’s IT department, and a Master's student in network and systems engineering with a cybersecurity focus at Paris Saclay. Alongside my professional training, I’m a self-taught cybersecurity enthusiast, actively improving my offensive skills through platforms like TryHackMe, Hack The Box, INE Security, GOAD, RootMe.">
+        Je suis un apprenti ingénieur en cybersécurité IT/OT de 23 ans au sein du département IT d'ENGIE et étudiant en Master ingénierie réseau et système option cybersécurité à Paris Saclay. Parallèlement à ma formation professionnelle, je suis un autodidacte passionné de cybersécurité, améliorant activement mes compétences offensive grâce à des plateformes telles que TryHackMe, Hack The Box, INE Security, RootMe, GOAD.
+      </p>
+      
+      <p 
+        data-lang-fr="Ce qui me passionne, c’est comprendre et exploiter les failles, qu’elles soient dans le code, les réseaux ou les systèmes. Je me concentre sur le pentest Web, l’AD, l’infra réseau et les systèmes industriels (ICS), en mettant toujours la main à la pâte pour aller au-delà de la théorie."
+        data-lang-en="What drives me is understanding and exploiting vulnerabilities—whether in code, networks, or systems. I focus on web pentesting, Active Directory, network infrastructure, and industrial control systems (ICS), always getting hands-on to push beyond theory.">
+        Ce qui me passionne, c’est comprendre et exploiter les failles, qu’elles soient dans le code, les réseaux ou les systèmes. Je me concentre sur le pentest Web, l’AD, l’infra réseau et les systèmes industriels (ICS), en mettant toujours la main à la pâte pour aller au-delà de la théorie.
+      </p>
+      
+      <p 
+        data-lang-fr="Je participe régulièrement à des compétitions Capture The Flag (CTF), qui me permettent d’affiner mes compétences en pentest tout en relevant des défis variés (Pwn, RE, OSINT, Web, Forensic, Stego, Crypto) . Une liste des événements auxquels j’ai pris part est disponible dans la section &quot;Projets&quot; de mon profil et je fais partie d'une team (freep0nx) top 10 FR"
+        data-lang-en="I regularly take part in Capture The Flag (CTF) competitions, which help sharpen my pentesting skills while tackling varied challenges (Pwn, RE, OSINT, Web, Forensics, Stego, Crypto). A list of the events I’ve participated in is available in the 'Projects' section of my profile, and I’m part of a top 10 French team (freep0nx).">
+        Je participe régulièrement à des compétitions Capture The Flag (CTF), qui me permettent d’affiner mes compétences en pentest tout en relevant des défis variés (Pwn, RE, OSINT, Web, Forensic, Stego, Crypto) . Une liste des événements auxquels j’ai pris part est disponible dans la section "Projets" de mon profil et je fais partie d'une team (freep0nx) top 10 FR
+      </p>
+      
+      <p 
+        data-lang-fr="Je suis disponible pour répondre aux questions liées à la cybersécurité et aider, dans la mesure de mes capacités, que ce soit pour les curieux, les étudiants ou ceux qui envisagent une reconversion dans le domaine."
+        data-lang-en="I’m available to answer questions related to cybersecurity and to help however I can—whether you’re just curious, a student, or considering a career shift into the field.">
+        Je suis disponible pour répondre aux questions liées à la cybersécurité et aider, dans la mesure de mes capacités, que ce soit pour les curieux, les étudiants ou ceux qui envisagent une reconversion dans le domaine.
+      </p>
+      <p 
+        data-lang-fr="N’hésitez pas à me contacter via les réseaux sociaux ou par e-mail. Je suis toujours ravi d’échanger sur la cybersécurité et de partager des connaissances."
+        data-lang-en="Feel free to reach out to me on social media or via email. I’m always happy to chat about cybersecurity and share knowledge.">
+        N’hésitez pas à me contacter via les réseaux sociaux ou par e-mail. Je suis toujours ravi d’échanger sur la cybersécurité et de partager des connaissances.            
     </section>
     <section id="tools" class="section">
-        <h2>Favorite tools</h2>
+        <h2>Tools & techniques</h2>
         <div class="terminal">
             <pre id="terminal-content"></pre>
         </div>
+        <a href="wireshark.html" class="card-link">
+          <div class="card">
+            <div class="card-content">
+              <h3>Wireshark🦈</h3>
+              <p
+              data-lang-en="Often underestimated, Wireshark remains one of the most powerful tools for network analysis."
+              data-lang-fr="Souvent sous-estimé, Wireshark reste pourtant l’un des outils les plus puissants pour l’analyse réseau">
+              In the heart of Valeria’s bustling capital, the Moonbeam Tavern stands as a lively hub of whispers, wagers, and illicit dealings...
+            </p>            
+              <div class="card-meta">
+                <span>📅 Apr 08, 2025</span>
+                <span>📁 Favorite tools</span>
+              </div>
+            </div>
+            <div class="card-image">
+              <img src="/wireshark_pres.png" alt="Mindmap image" style="width: 190px; height: 190px;"/>
+            </div>
+          </div>
+        </a>
+        <a href="Rubeus.html" class="card-link">
+          <div class="card">
+            <div class="card-content">
+              <h3>Rubeus🦉</h3>
+              <p
+              data-lang-en="A Kerberos-oriented post-exploitation tool, Rubeus facilitates ticket extraction, identity theft and the exploitation of authentication flaws in Active Directory environments."
+              data-lang-fr="Outil post-exploitation orienté Kerberos, Rubeus facilite l'extraction de tickets, l'usurpation d'identité et l'exploitation des failles d'authentification dans les environnements Active Directory.">
+              Outil post-exploitation orienté Kerberos, Rubeus facilite l'extraction de tickets, l'usurpation d'identité et l'exploitation des failles d'authentification dans les environnements Active Directory.
+            </p>            
+              <div class="card-meta">
+                <span>📅 Apr 17, 2025</span>
+                <span>📁 Favorite tools</span>
+              </div>
+            </div>
+            <div class="card-image">
+              <img src="/rubeusbanner.png" alt="Mindmap image" style="width: 190px; height: 190px;"/>
+            </div>
+          </div>
+        </a> 
     </section>
-
+    <section id="book-reviews" class="section">
+        <h2>Book Reviews</h2>
+        <p>Here are some books I've read and highly recommend:</p>
+        <div style="display: flex; gap: 20px;">
+            <div class="book" style="flex: 1;">
+                <h3>"Hacking, sécurité et tests d'intrusion avec Metasploit" by Mati Aharoni, Devon Kearns, Jim O'Gorman, David Kennedy</h3>
+                <img src="metasploit_book.jpg" alt="The Art of Exploitation" style="width: 45%; height: auto; margin-bottom: 10px;">
+                <p data-lang-en="Focused on one of the most powerful frameworks in offensive security, this book teaches how to use Metasploit for real-world penetration testing."
+                   data-lang-fr="Centré sur l’un des frameworks les plus puissants en sécurité offensive, ce livre vous apprend à utiliser Metasploit pour des tests d’intrusion en conditions réelles.">
+                   Focused on one of the most powerful frameworks in offensive security, this book teaches how to use Metasploit for real-world penetration testing.
+            </div>
+            <div class="book" style="flex: 1;">
+                <h3>"Sécurité informatique – Ethical Hacking : Apprendre l'attaque pour mieux se défendre (6e édition)"</h3>
+                <img src="securite-informatique-ethical-hacking-apprendre-l-attaque-pour-mieux-se-defendre-6e-edition-9782409033667_XL.jpg" alt="Hacking: The Art of Exploitation" style="width: 60%; height: auto; margin-bottom: 10px;">
+                <p data-lang-en="This comprehensive French guide introduces the fundamentals of ethical hacking through practical, real-world scenarios. Aimed at both students and professionals, it provides the methodologies, tools, and mindset needed to understand how attackers operate—and how to build better defenses."
+                   data-lang-fr="Ce guide français complet initie aux bases du hacking éthique à travers des scénarios pratiques et concrets. Destiné aux étudiants comme aux professionnels, il fournit les méthodologies, outils et réflexes nécessaires pour comprendre comment pensent les attaquants — et comment mieux se défendre.">
+                   This comprehensive French guide introduces the fundamentals of ethical hacking through practical, real-world scenarios. Aimed at both students and professionals, it provides the methodologies, tools, and mindset needed to understand how attackers operate—and how to build better defenses.
+                </p>
+            </div>
+            <div class="book" style="flex: 1;">
+                <h3>"Red Team Field Manuel" by Ben Clark, Nick Downer</h3>
+                <img src="411yiT7UMvL._AC_UF1000,1000_QL80_.jpg" alt="Red Team Field Manuel" style="width: 50%; height: auto; margin-bottom: 10px;">
+                <p data-lang-en="The 'Red Team Field Manual' is not a book you read—it's one you carry. Designed as a tactical reference for offensive security professionals, this compact handbook compiles hundreds of quick commands, tips, and tools used during real-world red team operations."
+                   data-lang-fr="Le 'Red Team Field Manual' n’est pas un livre que l’on lit, c’est un livre que l’on emporte avec soi. Conçu comme un aide-mémoire tactique pour les professionnels de la sécurité offensive, ce manuel compact regroupe des centaines de commandes rapides, astuces et outils utilisés lors de véritables opérations Red Team.">
+                   The 'Red Team Field Manual' is not a book you read—it's one you carry. Designed as a tactical reference for offensive security professionals, this compact handbook compiles hundreds of quick commands, tips, and tools used during real-world red team operations.
+                </p>
+            </div>
+        </div>
+        <!-- 🔥 Trait violet entre les deux lignes -->
+        <hr style="border: none; height: 4px; background-color: violet; margin: 40px 0; width: 100%;">
+        <!-- Tu peux ajuster la couleur, l'épaisseur, ou les marges à ton goût -->
+      <div style="display: flex; gap: 20px;">
+          <div class="book" style="flex: 1;">
+              <h3>"Deep Dive: Exploring the Real-World Value of OSINT" by Rae Baker</h3>
+              <img src="Dee-Dive.jpg" alt="The Art of Exploitation" style="width: 50%; height: auto; margin-bottom: 10px;">
+              <p data-lang-en="‘Deep Dive’ is an essential read for anyone curious about the power and real-world applications of Open Source Intelligence (OSINT). Rae Baker combines hands-on techniques with case studies to show how publicly available information can be transformed into actionable intelligence."
+                 data-lang-fr="‘Deep Dive’ est une lecture incontournable pour quiconque s’intéresse à la puissance et aux applications concrètes de l’OSINT (renseignement en sources ouvertes). Rae Baker y mêle techniques pratiques et études de cas pour montrer comment transformer des informations accessibles au public en un véritable levier stratégique.">
+                 ‘Deep Dive’ is an essential read for anyone curious about the power and real-world applications of Open Source Intelligence (OSINT). Rae Baker combines hands-on techniques with case studies to show how publicly available information can be transformed into actionable intelligence.
+              </p>
+          </div>
+          <div class="book" style="flex: 1;">
+              <h3>"Hacking: The Art of Exploitation" by Jon Erickson</h3>
+              <img src="The_Art_Of_Deception.png" alt="Hacking: The Art of Exploitation" style="width: 45%; height: auto; margin-bottom: 10px;">
+              <p data-lang-en="More than just a hacking manual, 'The Art of Exploitation' is a deep dive into the inner workings of computers, memory, and code."
+                 data-lang-fr="Bien plus qu’un simple manuel de hacking, 'The Art of Exploitation' propose une plongée profonde dans le fonctionnement interne des ordinateurs, de la mémoire et du code.">
+                 More than just a hacking manual, 'The Art of Exploitation' is a deep dive into the inner workings of computers, memory, and code. .
+              </p>
+          </div>
+          <div class="book" style="flex: 1;">
+              <h3>"The Web Application Hacker's Handbook" by Dafydd Stuttard and Marcus Pinto</h3>
+              <img src="Pratical_Forensic_imaging.png" alt="The Web Application Hacker's Handbook" style="width: 45%; height: auto; margin-bottom: 10px;">
+              <p data-lang-en="‘Practical Forensic Imaging’ is a technical yet accessible guide dedicated to securing and acquiring digital evidence using open-source tools in Linux environments. Bruce Nikkel details reliable methods for imaging storage devices while preserving data integrity—making it an invaluable resource for digital forensic analysts, incident responders, and cybersecurity professionals working on real investigations."
+                 data-lang-fr="‘Practical Forensic Imaging’ est un guide technique mais accessible, entièrement dédié à l’acquisition et à la sécurisation de preuves numériques à l’aide d’outils open-source sous Linux. Bruce Nikkel y présente des méthodes fiables pour l’imagerie de supports tout en garantissant l’intégrité des données — un ouvrage précieux pour les analystes forensic, les équipes de réponse à incident, et les professionnels de la cybersécurité confrontés à de véritables enquêtes.">
+                ‘Practical Forensic Imaging’ is a technical yet accessible guide dedicated to securing and acquiring digital evidence using open-source tools in Linux environments. Bruce Nikkel details reliable methods for imaging storage devices while preserving data integrity—making it an invaluable resource for digital forensic analysts, incident responders, and cybersecurity professionals working on real investigations.
+              </p>
+          </div>
+      </div>
+  </section>
     <section id="contact" class="section">
         <h2>❯_ Contact</h2>
         <p>[root@contact]$ connect --socials</p>
