@@ -77,8 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Définir les chemins des drapeaux
   const flagPaths = {
-    en: "/france.png", // Chemin pour le drapeau français
-    fr: "/royaume-uni.png" // Chemin pour le drapeau anglais
+    en: "france.png", // Chemin pour le drapeau français
+    fr: "royaume-uni.png" // Chemin pour le drapeau anglais
   };
 
   // Appliquer directement la langue française au chargement
