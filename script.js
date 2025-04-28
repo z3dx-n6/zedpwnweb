@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Effet de texte tapé
     const typingText = document.getElementById("typing-text");
-    const text = "Pentest IT/OT | DevSecOps / CI/CD Security | SIEM/SOAR (Splunk, Cortex) | Framework for Vulnerability Analysis ";
+    const text = "Pentest IT/OT | DevSecOps CI/CD Security | SIEM/SOAR (Splunk, Cortex) | Framework for Vulnerability Analysis ";
     let index = 0;
 
     function typeEffect() {
