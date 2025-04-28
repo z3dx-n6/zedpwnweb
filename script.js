@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "root@z3d:~# RustScan : 🤖 The Modern Port Scanner written in Rust.",
         "root@z3d:~# chisel : A fast TCP/UDP tunnel over HTTP.",
         "root@z3d:~# proxychains-ng : Preloader that hooks socket calls to redirect traffic via proxies (SOCKS/HTTP).",
+        "root@z3d:~# pypykatz : Mimikatz implementation in pure Python. At least a part of it :),
         "root@z3d:~# ",
     ];
     
