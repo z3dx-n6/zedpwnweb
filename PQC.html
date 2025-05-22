@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>PQC Hybrid: RSA & Kyber - Documentation</title>
+    <style>
+        body {
+            background: #14222b;
+            color: #e6e0d1;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background:  url("pqcimage.png") center/cover no-repeat;
+            background-size: 100% 1000px;
+            color: #f7f3e7;
+            padding: 2rem 1rem 1rem 1rem;
+            text-align: center;
+            border-bottom: 4px solid #2e4b4b;
+            min-height: 220px; /* Ajout : augmente la hauteur minimale */
+            position: relative;
+        }
+        .banner-img {
+            max-width: 320px;
+            max-height: 120px;
+            margin-bottom: 0.5em;
+            margin-top: 0.5em;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.2em;
+        }
+        h2, h3 {
+            color: #e6e0d1;
+            border-left: 4px solid #e05a47;
+            padding-left: 0.5em;
+            margin-top: 0;
+            margin-bottom: 1em;
+        }
+        .section,
+        .latex-section {
+            max-width: 1200px;
+            min-width: 400px;
+            width: 90vw;
+            margin: 1em auto 3em auto; /* modifié: réduit le margin-top à 2em */
+            background: rgba(20,34,43,0.97);
+            border-radius: 12px;
+            box-shadow: 0 0 24px #0e1a22;
+            padding: 2.5em 3em 2em 3em;
+            box-sizing: border-box;
+        }
+        .section > h2,
+        .latex-section > h2,
+        .latex-section > h1 {
+            margin-top: 0;
+            padding-top: 0;
+        }
+        code, pre {
+            background: #22343c;
+            color: #e6e0d1;
+            border-radius: 6px;
+            padding: 0.3em 0.7em;
+            font-size: 1em;
+        }
+        pre {
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+        .example {
+            background: #1b2d36;
+            border-left: 4px solid #e05a47;
+            margin: 1em 0;
+            padding: 1em;
+            border-radius: 8px;
+        }
+        .example pre,
+        .example code {
+            white-space: pre-line;
+            line-height: 1.7;
+            font-size: 1.08em;
+            margin-bottom: 0.7em;
+        }
+        .latex-section {
+            background: #22343c;
+            color: #e6e0d1;
+            border: 1px dashed #e05a47;
+        }
+        .wave {
+            width: 100%;
+            height: 120px;
+            background: url('wave_pqc_style.svg') repeat-x bottom;
+            background-size: contain;
+            margin-bottom: -4px;
+        }
+        a {
+            color: #e05a47;
+        }
+        .placeholder {
+            color: #e05a47;
+            font-style: italic;
+        }
+        .math-block {
+            margin: 1em 0;
+        }
+    </style>
+    <!-- Ajout de MathJax pour le rendu LaTeX -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer src="./script.js"></script>
+</head>
+<body>
+    <header>
+        <!-- Ajout du bouton de langue -->
+        <button id="lang-toggle" style="position: fixed; top: 20px; right: 20px; background: none; border: none; cursor: pointer; z-index: 9999;">
+            <img id="flag-icon" src="france.png" alt="Langue" style="width:40px; height:40px;">
+        </button>
+        <a href="index.html" style="display: inline-block; ">
+      <img src="backpqc.png" alt="Retour" style="width: 120px; height: 100px; position: absolute; top: 20px; left: 20px;">
+        </a>
+        <h1>PQC Hybrid: RSA & Kyber</h1>
+        <p>Documentation & Explications du projet de cryptographie post-quantique hybride</p>
+    </header>
+    <div class="wave"></div>
+
+    <div class="section">
+        <h2 data-lang-en="Project Overview" data-lang-fr="Présentation du projet">Présentation du projet</h2>
+        <p data-lang-en="This project implements a hybrid key exchange protocol combining <b>RSA</b> (classical cryptography) and <b>Kyber</b> (post-quantum cryptography) to secure communications between two parties, Alice and Bob."
+           data-lang-fr="Ce projet met en œuvre un protocole d'échange de clés hybride combinant <b>RSA</b> (cryptographie classique) et <b>Kyber</b> (cryptographie post-quantique) pour sécuriser les communications entre deux parties, Alice et Bob.">
+            Ce projet met en œuvre un protocole d'échange de clés hybride combinant <b>RSA</b> (cryptographie classique) et <b>Kyber</b> (cryptographie post-quantique) pour sécuriser les communications entre deux parties, Alice et Bob.
+        </p>
+        <ul>
+            <li data-lang-en="Protection against classical and quantum attacks" data-lang-fr="Protection contre les attaques classiques et quantiques">Protection contre les attaques classiques et quantiques</li>
+            <li data-lang-en="Use of <b>HKDF</b> to derive a final key from multiple secrets" data-lang-fr="Utilisation de <b>HKDF</b> pour dériver une clé finale à partir de plusieurs secrets">Utilisation de <b>HKDF</b> pour dériver une clé finale à partir de plusieurs secrets</li>
+            <li data-lang-en="Symmetric encryption with <b>AES-GCM</b> for message confidentiality" data-lang-fr="Chiffrement symétrique avec <b>AES-GCM</b> pour la confidentialité des messages">Chiffrement symétrique avec <b>AES-GCM</b> pour la confidentialité des messages</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2 data-lang-en="Post-Quantum Cryptography Challenges" data-lang-fr="Enjeux de la cryptographie post-quantique">Enjeux de la cryptographie post-quantique</h2>
+           <li style="margin-bottom:1em;"
+        data-lang-en="<b>Quantum computers 'breaking' RSA/ECC: a distant horizon (≥ 2040–2050)</b><br>
+        Experts estimate that a universal quantum computer capable of breaking RSA/ECC will not be feasible for decades. A 2019 US National Academy of Sciences report (<a href='https://nap.nationalacademies.org/catalog/25311/quantum-computing-progress-and-prospects' target='_blank' style='color:#e05a47;'>NASEM, 2019</a>) states that even if the cryptographic transition starts now, the first quantum computer able to break RSA-2048 would not appear before ~2040. Other analyses push the date to 2040–2050 due to engineering challenges (qubit stability, error correction) (<a href='https://ciaonet.org/record/62741' target='_blank' style='color:#e05a47;'>ciaonet.org</a>). In practice, thousands of error-corrected logical qubits would be needed to run Shor's algorithm at scale (e.g., ≈2500 logical qubits for RSA-2048, <a href='https://nap.nationalacademies.org/catalog/25311/quantum-computing-progress-and-prospects' target='_blank' style='color:#e05a47;'>NASEM</a>), far beyond current machines (which have only a few hundred noisy physical qubits). These hardware constraints make a quantum break unlikely for several decades."
+        data-lang-fr="<b>Ordinateurs quantiques « casseurs » de RSA/ECC : un horizon lointain (≥ 2040–2050)</b><br>
+        Les experts estiment qu’un ordinateur quantique universel capable de briser RSA/ECC ne sera pas réalisable avant des décennies. Un rapport de l’Académie nationale des sciences américaine (<a href='https://nap.nationalacademies.org/catalog/25311/quantum-computing-progress-and-prospects' target='_blank' style='color:#e05a47;'>NASEM, 2019</a>) indique que même en accélérant la transition cryptographique dès maintenant, le premier ordinateur quantique capable de casser RSA-2048 n’apparaîtrait pas avant ~2040. D’autres analyses repoussent l’échéance vers 2040–2050 du fait des défis d’ingénierie des qubits (stabilité, correction d’erreurs) (<a href='https://ciaonet.org/record/62741' target='_blank' style='color:#e05a47;'>ciaonet.org</a>). En pratique, il faudrait des milliers de qubits logiques corrigés d’erreurs pour exécuter Shor à grande échelle (par ex. ≈2500 qubits logiques pour RSA-2048, <a href='https://nap.nationalacademies.org/catalog/25311/quantum-computing-progress-and-prospects' target='_blank' style='color:#e05a47;'>NASEM</a>), très au-delà des capacités des machines actuelles (qui n’ont que quelques centaines de qubits physiques bruités). Ces contraintes matérielles rendent improbable une rupture quantique avant plusieurs décennies.">
+      <b>Ordinateurs quantiques « casseurs » de RSA/ECC : un horizon lointain (≥ 2040–2050)</b><br>
+      Les experts estiment qu’un ordinateur quantique universel capable de briser RSA/ECC ne sera pas réalisable avant des décennies. Un rapport de l’Académie nationale des sciences américaine (<a href="https://nap.nationalacademies.org/catalog/25311/quantum-computing-progress-and-prospects" target="_blank" style="color:#e05a47;">NASEM, 2019</a>) indique que même en accélérant la transition cryptographique dès maintenant, le premier ordinateur quantique capable de casser RSA-2048 n’apparaîtrait pas avant ~2040. D’autres analyses repoussent l’échéance vers 2040–2050 du fait des défis d’ingénierie des qubits (stabilité, correction d’erreurs) (<a href="https://ciaonet.org/record/62741" target="_blank" style="color:#e05a47;">ciaonet.org</a>). En pratique, il faudrait des milliers de qubits logiques corrigés d’erreurs pour exécuter Shor à grande échelle (par ex. ≈2500 qubits logiques pour RSA-2048, <a href="https://nap.nationalacademies.org/catalog/25311/quantum-computing-progress-and-prospects" target="_blank" style="color:#e05a47;">NASEM</a>), très au-delà des capacités des machines actuelles (qui n’ont que quelques centaines de qubits physiques bruités). Ces contraintes matérielles rendent improbable une rupture quantique avant plusieurs décennies.
+    </li>
+    <li style="margin-bottom:1em;"
+        data-lang-en="<b>Shor's algorithm: a theoretical threat, conditional on a large quantum computer</b><br>
+        Shor's algorithm can theoretically factor RSA or solve discrete log (ECC) in polynomial time, but only if it runs on a large-scale universal quantum computer. In other words, Shor is only dangerous for RSA/ECC if a sufficiently powerful fault-tolerant quantum computer exists. As cybersecurity agencies note, 'this threat to cryptography comes from the development of a large, fault-tolerant quantum computer capable of breaking traditional public-key schemes (RSA, ECC) using Shor’s algorithm' (<a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>). To date, no 'cryptographically relevant' quantum computer exists (<a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>) – current quantum devices are too limited – so RSA/ECC remain safe for now. Shor's algorithm is thus a potential medium/long-term threat, dependent on advances in quantum computing."
+        data-lang-fr="<b>L’algorithme de Shor, une menace théorique conditionnée à un grand ordinateur quantique</b><br>
+        L’algorithme de Shor permet en théorie de factoriser RSA ou de résoudre le log discret (ECC) en temps polynomial, mais seulement s’il tourne sur un ordinateur quantique universel à grande échelle. En d’autres termes, Shor n’est dangereux pour RSA/ECC que si l’on dispose d’un calculateur quantique tolérant aux fautes suffisamment puissant. Comme le soulignent les agences de cybersécurité, « cette menace pour la cryptographie provient du développement d’un ordinateur quantique tolérant aux pannes de grande taille, capable de casser les schémas à clé publique traditionnels (RSA, ECC) grâce à l’algorithme de Shor » (<a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>). À ce jour, aucun ordinateur quantique « cryptographiquement pertinent » n’existe (<a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>) – les dispositifs quantiques actuels sont trop limités – de sorte que RSA/ECC demeurent pour l’instant sûrs. L’algorithme de Shor constitue donc une menace potentielle à moyen/long terme, tributaire des progrès en informatique quantique.">
+      <b>L’algorithme de Shor, une menace théorique conditionnée à un grand ordinateur quantique</b><br>
+      L’algorithme de Shor permet en théorie de factoriser RSA ou de résoudre le log discret (ECC) en temps polynomial, mais seulement s’il tourne sur un ordinateur quantique universel à grande échelle. En d’autres termes, Shor n’est dangereux pour RSA/ECC que si l’on dispose d’un calculateur quantique tolérant aux fautes suffisamment puissant. Comme le soulignent les agences de cybersécurité, « cette menace pour la cryptographie provient du développement d’un ordinateur quantique tolérant aux pannes de grande taille, capable de casser les schémas à clé publique traditionnels (RSA, ECC) grâce à l’algorithme de Shor » (<a href="https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html" target="_blank" style="color:#e05a47;">bsi.bund.de</a>). À ce jour, aucun ordinateur quantique « cryptographiquement pertinent » n’existe (<a href="https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html" target="_blank" style="color:#e05a47;">bsi.bund.de</a>) – les dispositifs quantiques actuels sont trop limités – de sorte que RSA/ECC demeurent pour l’instant sûrs. L’algorithme de Shor constitue donc une menace potentielle à moyen/long terme, tributaire des progrès en informatique quantique.
+    </li>
+    <li style="margin-bottom:1em;"
+        data-lang-en="<b>The 'store now, decrypt later' risk justifies a proactive transition</b><br>
+        Despite the current absence of quantum computers able to break our encryptions, sensitive data exchanged today is threatened by the 'store now, decrypt later' strategy. This scenario, recognized by authorities, involves an adversary capturing and storing encrypted communications now, waiting for a future quantum computer to decrypt them (<a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>). This is considered credible for information that must remain confidential for a long time (personal data, industrial secrets, government communications, etc.). A 2024 joint document from BSI (Germany) and other agencies classifies 'store-now/decrypt-later' as one of the two major quantum threats, concluding that migration to post-quantum systems should be anticipated now (<a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>). In short, to protect today's data from future decryption, it is wise to adopt quantum-resistant algorithms without delay."
+        data-lang-fr="<b>Le risque du « store now, decrypt later » justifie une transition proactive</b><br>
+        Malgré l’absence actuelle de calculateur quantique capable de casser nos chiffrements, les données sensibles échangées aujourd’hui sont menacées par la stratégie dite « store now, decrypt later ». Ce scénario, reconnu par les autorités, consiste pour un adversaire à capturer et stocker dès maintenant des communications chiffrées, dans l’attente de disposer un jour d’un ordinateur quantique pour les déchiffrer ultérieurement (<a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>). Cette perspective est jugée crédible pour les informations devant rester confidentielles longtemps (données personnelles sensibles, secrets industriels, communications gouvernementales, etc.). Un document conjoint du BSI (Allemagne) et d’autres agences (2024) classe « store-now/decrypt-later » parmi les deux menaces quantiques majeures, et en déduit qu’il faut anticiper dès à présent la migration vers des systèmes post-quantiques (<a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlements/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>). En clair, pour protéger les données d’aujourd’hui contre une décryption future, il est prudent d’adopter sans tarder des algorithmes résistants aux attaques quantiques.">
+      <b>Le risque du « store now, decrypt later » justifie une transition proactive</b><br>
+      Malgré l’absence actuelle de calculateur quantique capable de casser nos chiffrements, les données sensibles échangées aujourd’hui sont menacées par la stratégie dite « store now, decrypt later ». Ce scénario, reconnu par les autorités, consiste pour un adversaire à capturer et stocker dès maintenant des communications chiffrées, dans l’attente de disposer un jour d’un ordinateur quantique pour les déchiffrer ultérieurement (<a href="https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html" target="_blank" style="color:#e05a47;">bsi.bund.de</a>). Cette perspective est jugée crédible pour les informations devant rester confidentielles longtemps (données personnelles sensibles, secrets industriels, communications gouvernementales, etc.). Un document conjoint du BSI (Allemagne) et d’autres agences (2024) classe « store-now/decrypt-later » parmi les deux menaces quantiques majeures, et en déduit qu’il faut anticiper dès à présent la migration vers des systèmes post-quantiques (<a href="https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-et-Empfehlements/Quantencomputing/quantumcomputing_node.html" target="_blank" style="color:#e05a47;">bsi.bund.de</a>). En clair, pour protéger les données d’aujourd’hui contre une décryption future, il est prudent d’adopter sans tarder des algorithmes résistants aux attaques quantiques.
+    </li>
+    <li style="margin-bottom:1em;"
+        data-lang-en="<b>Different mathematical foundations for post-quantum cryptography, classically implementable</b><br>
+        Post-quantum cryptography (PQC) includes cryptographic algorithms (typically new public-key methods) based on mathematical problems believed to be resistant to quantum computers. These are not the same as RSA/discrete log: they belong to other mathematical families (e.g., lattice problems, error-correcting codes, hash functions, multivariate systems, isogenies, etc.) (<a href='https://www.enisa.europa.eu/publications/post-quantum-cryptography-current-state-and-quantum-mitigation' target='_blank' style='color:#e05a47;'>enisa.europa.eu</a>). The key point is that, unlike 'quantum cryptography' (e.g., QKD) which requires quantum devices, post-quantum algorithms run on classical hardware. They are conventional software/circuits – integrable into our current computers and networks – but designed to resist future quantum computers. As NIST explains, 'we are developing new encryption standards that will work on our current classical computers while resisting future quantum machines' (<a href='https://www.nist.gov/news-events/news/2022/07/nist-announces-first-four-quantum-resistant-cryptographic-algorithms' target='_blank' style='color:#e05a47;'>nist.gov</a>). In other words, post-quantum algorithms can be deployed on today's computers and processors, making their adoption easier. Several major PQC families (lattice-based, code-based, hash-based, etc.) have already been implemented and thoroughly cryptanalyzed as part of the international standardization process."
+        data-lang-fr="<b>Des bases mathématiques différentes pour la cryptographie post-quantique, implémentable classiquement</b><br>
+        La cryptographie post-quantique (PQC) regroupe des algorithmes cryptographiques (typiquement de nouvelles méthodes à clé publique) fondés sur des problèmes mathématiques réputés résistants aux ordinateurs quantiques. Ces problèmes ne sont pas ceux du RSA/Log discret : ils appartiennent à d’autres familles mathématiques (par ex. problèmes de réseaux euclidiens – lattices, codes correcteurs d’erreurs, fonctions de hachage, systèmes multivariés, isogénies de courbes, etc.) (<a href='https://www.enisa.europa.eu/publications/post-quantum-cryptography-current-state-and-quantum-mitigation' target='_blank' style='color:#e05a47;'>enisa.europa.eu</a>). Le point crucial est que, contrairement à la « quantum cryptographie » (ex : QKD) nécessitant des dispositifs quantiques, les algorithmes post-quantiques s’exécutent sur du matériel classique. Ce sont des logiciels/ circuits conventionnels – intégrables dans nos ordinateurs et réseaux actuels – mais conçus pour résister aux futurs calculateurs quantiques. Comme l’explique le NIST, on développe « de nouveaux standards de chiffrement qui fonctionneront sur nos ordinateurs classiques actuels tout en résistant aux machines quantiques du futur » (<a href='https://www.nist.gov/news-events/news/2022/07/nist-announces-first-four-quantum-resistant-cryptographic-algorithms' target='_blank' style='color:#e05a47;'>nist.gov</a>). Autrement dit, les algorithmes post-quantiques sont déployables sur les ordinateurs et processeurs d’aujourd’hui, ce qui facilite leur adoption progressive. Plusieurs grandes familles de solutions PQC (basées sur réseaux, codes, hachage, etc.) ont d’ores et déjà fait l’objet d’implémentations et d’une évaluation cryptanalytique approfondie dans le cadre du processus de standardisation internationale.">
+      <b>Des bases mathématiques différentes pour la cryptographie post-quantique, implémentable classiquement</b><br>
+      La cryptographie post-quantique (PQC) regroupe des algorithmes cryptographiques (typiquement de nouvelles méthodes à clé publique) fondés sur des problèmes mathématiques réputés résistants aux ordinateurs quantiques. Ces problèmes ne sont pas ceux du RSA/Log discret : ils appartiennent à d’autres familles mathématiques (par ex. problèmes de réseaux euclidiens – lattices, codes correcteurs d’erreurs, fonctions de hachage, systèmes multivariés, isogénies de courbes, etc.) (<a href="https://www.enisa.europa.eu/publications/post-quantum-cryptography-current-state-and-quantum-mitigation" target="_blank" style="color:#e05a47;">enisa.europa.eu</a>). Le point crucial est que, contrairement à la « quantum cryptographie » (ex : QKD) nécessitant des dispositifs quantiques, les algorithmes post-quantiques s’exécutent sur du matériel classique. Ce sont des logiciels/ circuits conventionnels – intégrables dans nos ordinateurs et réseaux actuels – mais conçus pour résister aux futurs calculateurs quantiques. Comme l’explique le NIST, on développe « de nouveaux standards de chiffrement qui fonctionneront sur nos ordinateurs classiques actuels tout en résistant aux machines quantiques du futur » (<a href="https://www.nist.gov/news-events/news/2022/07/nist-announces-first-four-quantum-resistant-cryptographic-algorithms" target="_blank" style="color:#e05a47;">nist.gov</a>). Autrement dit, les algorithmes post-quantiques sont déployables sur les ordinateurs et processeurs d’aujourd’hui, ce qui facilite leur adoption progressive. Plusieurs grandes familles de solutions PQC (basées sur réseaux, codes, hachage, etc.) ont d’ores et déjà fait l’objet d’implémentations et d’une évaluation cryptanalytique approfondie dans le cadre du processus de standardisation internationale.
+    </li>
+    <li style="margin-bottom:1em;"
+        data-lang-en="<b>Standardization by NIST: Kyber, Dilithium and other robust post-quantum algorithms</b><br>
+        Aware of these challenges, the NIST agency (USA) launched a post-quantum cryptography standardization process in 2016. After several rounds of open evaluation, NIST announced in 2022 the selection of an initial set of four robust PQ algorithms to serve as new standards (<a href='https://www.cyber.gouv.fr/actualites/cryptographie-post-quantique-le-nist-annonce-les-premiers-algorithmes-selectionnes' target='_blank' style='color:#e05a47;'>cyber.gouv.fr</a>). Among them are CRYSTALS-Kyber (lattice-based key establishment) and CRYSTALS-Dilithium (lattice-based digital signature) – both combining conjectured quantum security and good performance. The other two initial winners are FALCON (lattice-based signature) and SPHINCS+ (hash-based signature) (<a href='https://www.cyber.gouv.fr/actualites/cryptographie-post-quantique-le-nist-annonce-les-premiers-algorithmes-selectionnes' target='_blank' style='color:#e05a47;'>cyber.gouv.fr</a>). In 2023–2024, NIST published the first draft standards (FIPS 203, 204, 205) for these algorithms and plans to standardize others soon (<a href='https://www.nist.gov/news-events/news/2023/08/nist-releases-draft-standards-quantum-resistant-cryptography' target='_blank' style='color:#e05a47;'>nist.gov</a>, <a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>). International organizations and governments support this transition – for example, ANSSI in France encourages hybridization and experimentation with post-quantum solutions now, especially for products that must protect data beyond 2030 (<a href='https://www.cyber.gouv.fr/actualites/cryptographie-post-quantique-le-nist-annonce-les-premiers-algorithmes-selectionnes' target='_blank' style='color:#e05a47;'>cyber.gouv.fr</a>). In summary, migration to post-quantum algorithms is underway: it is based on new mathematically sound foundations, implementable on current infrastructures, and being standardized by institutions like NIST."
+        data-lang-fr="<b>Standardisation NIST : Kyber, Dilithium et autres algorithmes post-quantiques robustes</b><br>
+        Consciente de ces enjeux, l’agence NIST (États-Unis) a lancé dès 2016 un processus de standardisation de la cryptographie post-quantique. Après plusieurs tours d’évaluation ouverts à la communauté scientifique, le NIST a annoncé en 2022 la sélection d’un premier ensemble de quatre algorithmes PQ robustes qui serviront de nouveaux standards (<a href='https://www.cyber.gouv.fr/actualites/cryptographie-post-quantique-le-nist-annonce-les-premiers-algorithmes-selectionnes' target='_blank' style='color:#e05a47;'>cyber.gouv.fr</a>). Parmi eux figurent CRYSTALS-Kyber (schéma d’établissement de clé à base de réseaux euclidiens) et CRYSTALS-Dilithium (schéma de signature numérique à base de réseaux) – deux propositions conjuguant sécurité conjecturale quantique et bonnes performances. Les deux autres lauréats initiaux sont FALCON (signature sur réseaux) et SPHINCS+ (signature basée sur les fonctions de hachage) (<a href='https://www.cyber.gouv.fr/actualites/cryptographie-post-quantique-le-nist-annonce-les-premiers-algorithmes-selectionnes' target='_blank' style='color:#e05a47;'>cyber.gouv.fr</a>). En 2023–2024, le NIST a publié les premiers projets de normes (FIPS 203, 204, 205) consacrés à ces algorithmes et prévoit d’en standardiser d’autres d’ici peu (<a href='https://www.nist.gov/news-events/news/2023/08/nist-releases-draft-standards-quantum-resistant-cryptography' target='_blank' style='color:#e05a47;'>nist.gov</a>, <a href='https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html' target='_blank' style='color:#e05a47;'>bsi.bund.de</a>). Des organismes internationaux et gouvernements appuient cette transition – par ex. l’ANSSI en France encourage dès maintenant l’hybridation et l’expérimentation de solutions post-quantiques, surtout pour les produits devant protéger des données au-delà de 2030 (<a href='https://www.cyber.gouv.fr/actualites/cryptographie-post-quantique-le-nist-annonce-les-premiers-algorithmes-selectionnes' target='_blank' style='color:#e05a47;'>cyber.gouv.fr</a>). En résumé, la migration vers des algorithmes post-quantiques est en cours : elle s’appuie sur de nouveaux fondements mathématiques éprouvés académiquement, implémentables sur nos infrastructures actuelles, et en voie de normalisation par des institutions comme le NIST.">
+      <b>Standardisation NIST : Kyber, Dilithium et autres algorithmes post-quantiques robustes</b><br>
+      Consciente de ces enjeux, l’agence NIST (États-Unis) a lancé dès 2016 un processus de standardisation de la cryptographie post-quantique. Après plusieurs tours d’évaluation ouverts à la communauté scientifique, le NIST a annoncé en 2022 la sélection d’un premier ensemble de quatre algorithmes PQ robustes qui serviront de nouveaux standards (<a href="https://www.cyber.gouv.fr/actualites/cryptographie-post-quantique-le-nist-annonce-les-premiers-algorithmes-selectionnes" target="_blank" style="color:#e05a47;">cyber.gouv.fr</a>). Parmi eux figurent CRYSTALS-Kyber (schéma d’établissement de clé à base de réseaux euclidiens) et CRYSTALS-Dilithium (schéma de signature numérique à base de réseaux) – deux propositions conjuguant sécurité conjecturale quantique et bonnes performances. Les deux autres lauréats initiaux sont FALCON (signature sur réseaux) et SPHINCS+ (signature basée sur les fonctions de hachage) (<a href="https://www.cyber.gouv.fr/actualites/cryptographie-post-quantique-le-nist-annonce-les-premiers-algorithmes-selectionnes" target="_blank" style="color:#e05a47;">cyber.gouv.fr</a>). En 2023–2024, le NIST a publié les premiers projets de normes (FIPS 203, 204, 205) consacrés à ces algorithmes et prévoit d’en standardiser d’autres d’ici peu (<a href="https://www.nist.gov/news-events/news/2023/08/nist-releases-draft-standards-quantum-resistant-cryptography" target="_blank" style="color:#e05a47;">nist.gov</a>, <a href="https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Quantencomputing/quantumcomputing_node.html" target="_blank" style="color:#e05a47;">bsi.bund.de</a>). Des organismes internationaux et gouvernements appuient cette transition – par ex. l’ANSSI en France encourage dès maintenant l’hybridation et l’expérimentation de solutions post-quantiques, surtout pour les produits devant protéger des données au-delà de 2030 (<a href="https://www.cyber.gouv.fr/actualites/cryptographie-post-quantique-le-nist-annonce-les-premiers-algorithmes-selectionnes" target="_blank" style="color:#e05a47;">cyber.gouv.fr</a>). En résumé, la migration vers des algorithmes post-quantiques est en cours : elle s’appuie sur de nouveaux fondements mathématiques éprouvés académiquement, implémentables sur nos infrastructures actuelles, et en voie de normalisation par des institutions comme le NIST.
+    </li>
+    </div>
+
+    <div class="section">
+        <h2 data-lang-en="General Protocol Operation" data-lang-fr="Fonctionnement général du protocole">Fonctionnement général du protocole</h2>
+        <ol>
+            <li data-lang-en="Generation of RSA and Kyber key pairs for Alice and Bob" data-lang-fr="Génération des paires de clés RSA et Kyber pour Alice et Bob">Génération des paires de clés RSA et Kyber pour Alice et Bob</li>
+            <li data-lang-en="Exchange of public keys" data-lang-fr="Échange des clés publiques">Échange des clés publiques</li>
+            <li data-lang-en="Encapsulation of secrets with RSA and Kyber (both directions)" data-lang-fr="Encapsulation de secrets avec RSA et Kyber (dans les deux sens)">Encapsulation de secrets avec RSA et Kyber (dans les deux sens)</li>
+            <li data-lang-en="Derivation of a common final key with HKDF" data-lang-fr="Dérivation d'une clé finale commune avec HKDF">Dérivation d'une clé finale commune avec HKDF</li>
+            <li data-lang-en="Symmetric encryption/decryption of messages with AES-GCM" data-lang-fr="Chiffrement/déchiffrement des messages avec AES-GCM">Chiffrement/déchiffrement des messages avec AES-GCM</li>
+        </ol>
+        <div class="placeholder">
+            <p data-lang-en="[To be completed: Describe each step, exchanged files, synchronization, etc.]"
+               data-lang-fr="[À compléter : Décrivez chaque étape, les fichiers échangés, la synchronisation, etc.]">
+                [À compléter : Décrivez chaque étape, les fichiers échangés, la synchronisation, etc.]
+            </p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2 data-lang-en="Main Functions Details" data-lang-fr="Détail des fonctions principales">Détail des fonctions principales</h2>
+        <h3 data-lang-en="Key Generation and Export" data-lang-fr="Génération et export des clés">Génération et export des clés</h3>
+        <p data-lang-en="The security of the protocol relies on the generation of robust key pairs for each participant (Alice and Bob), both for the classical RSA algorithm and the post-quantum Kyber algorithm."
+           data-lang-fr="La sécurité du protocole repose sur la génération de paires de clés robustes pour chaque participant (Alice et Bob), à la fois pour l'algorithme classique RSA et pour l'algorithme post-quantique Kyber.">
+            La sécurité du protocole repose sur la génération de paires de clés robustes pour chaque participant (Alice et Bob), à la fois pour l'algorithme classique RSA et pour l'algorithme post-quantique Kyber.
+        </p>
+        <h4>RSA</h4>
+        <ul>
+            <li data-lang-en="<b>Key pair generation:</b> each user generates an RSA private key and derives the public key." data-lang-fr="<b>Génération de la paire de clés :</b> chaque utilisateur génère une clé privée RSA et en déduit la clé publique."><b>Génération de la paire de clés :</b> chaque utilisateur génère une clé privée RSA et en déduit la clé publique.</li>
+            <li data-lang-en="<b>Export:</b> the public key is exported to the other participant's folder for secure exchange." data-lang-fr="<b>Export :</b> la clé publique est exportée dans le dossier de l'autre participant pour permettre l'échange sécurisé."><b>Export :</b> la clé publique est exportée dans le dossier de l'autre participant pour permettre l'échange sécurisé.</li>
+        </ul>
+        <div class="example">
+            <pre><code class="language-python">
+# Génération d'une paire de clés RSA pour Bob
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+
+rsa_private = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+# Sauvegarde de la clé privée
+with open("bob_rsa_private.pem", "wb") as f:
+    f.write(rsa_private.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    ))
+# Export de la clé publique dans le dossier d'Alice
+with open(r"C:\Users\zoran\Documents\Projet_Crypto\Alice\bob_rsa_public.pem", "wb") as f:
+    f.write(rsa_private.public_key().public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    ))
+            </code></pre>
+        </div>
+        <h4>Kyber (version pédagogique simplifiée)</h4>
+        <ul>
+            <li data-lang-en="<b>Key pair generation:</b> each user generates a Kyber public and secret key." data-lang-fr="<b>Génération de la paire de clés :</b> chaque utilisateur génère une clé publique et une clé secrète Kyber."><b>Génération de la paire de clés :</b> chaque utilisateur génère une clé publique et une clé secrète Kyber.</li>
+            <li data-lang-en="<b>Export:</b> the Kyber public key is also exported to the other participant's folder." data-lang-fr="<b>Export :</b> la clé publique Kyber est également exportée dans le dossier de l'autre participant."><b>Export :</b> la clé publique Kyber est également exportée dans le dossier de l'autre participant.</li>
+        </ul>
+        <div class="example">
+            <pre><code class="language-python">
+# Génération d'une paire de clés Kyber pour Bob
+import simple_kyber512
+
+pk, sk = simple_kyber512.keygen()
+# Sauvegarde des clés
+with open("bob_kyber_pk.bin", "wb") as f:
+    f.write(pk)
+with open("bob_kyber_sk.bin", "wb") as f:
+    f.write(sk)
+# Export de la clé publique dans le dossier d'Alice
+import os
+alice_dir = r"C:\Users\zoran\Documents\Projet_Crypto\Alice"
+os.makedirs(alice_dir, exist_ok=True)
+with open(os.path.join(alice_dir, "bob_kyber_pk.bin"), "wb") as f:
+    f.write(pk)
+            </code></pre>
+        </div>
+        <p data-lang-en="Summary: Each participant thus has their own private keys (RSA and Kyber) and exports their public keys to the other's folder, allowing each to encrypt secrets for the other."
+           data-lang-fr="<b>Résumé :</b> Chaque participant dispose ainsi de ses propres clés privées (RSA et Kyber) et exporte ses clés publiques dans le dossier de l'autre, permettant à chacun de chiffrer des secrets à destination de l'autre.">
+            <b>Résumé :</b> Chaque participant dispose ainsi de ses propres clés privées (RSA et Kyber) et exporte ses clés publiques dans le dossier de l'autre, permettant à chacun de chiffrer des secrets à destination de l'autre.
+        </p>
+        <ul>
+            <li data-lang-en="keygen() (Kyber): generates a public/private key pair for Kyber" data-lang-fr="<b>keygen()</b> (Kyber) : génère une paire de clés publique/privée pour Kyber"><b>keygen()</b> (Kyber) : génère une paire de clés publique/privée pour Kyber</li>
+            <li data-lang-en="export_keys_if_needed(): exports the public key to the other party's folder" data-lang-fr="<b>export_keys_if_needed()</b> : exporte la clé publique dans le dossier de l'autre partie"><b>export_keys_if_needed()</b> : exporte la clé publique dans le dossier de l'autre partie</li>
+        </ul>
+
+        <h3 data-lang-en="Encapsulation and Decapsulation" data-lang-fr="Encapsulation et décapsulation">Encapsulation et décapsulation</h3>
+        <p data-lang-en="Encapsulation allows one party (e.g. Bob) to generate a shared secret, encrypt it with the other's public key (e.g. Alice), and send the encrypted secret. Decapsulation allows Alice to recover this secret using her private key. This mechanism is performed for both RSA (classical) and Kyber (post-quantum)."
+           data-lang-fr="L'<b>encapsulation</b> permet à une partie (ex : Bob) de générer un secret partagé, de le chiffrer avec la clé publique de l'autre (ex : Alice), puis de lui transmettre ce secret chiffré. La <b>décapsulation</b> permet à Alice de retrouver ce secret à l'aide de sa clé privée. Ce mécanisme est réalisé à la fois pour RSA (classique) et Kyber (post-quantique).">
+            L'<b>encapsulation</b> permet à une partie (ex : Bob) de générer un secret partagé, de le chiffrer avec la clé publique de l'autre (ex : Alice), puis de lui transmettre ce secret chiffré. La <b>décapsulation</b> permet à Alice de retrouver ce secret à l'aide de sa clé privée. Ce mécanisme est réalisé à la fois pour RSA (classique) et Kyber (post-quantique).
+        </p>
+        <h4>RSA</h4>
+        <ul>
+            <li data-lang-en="<b>Encapsulation:</b> Bob generates a random symmetric key (e.g. 32 bytes), then encrypts it with Alice's RSA public key using OAEP." data-lang-fr="<b>Encapsulation :</b> Bob génère une clé symétrique aléatoire (par exemple 32 octets), puis la chiffre avec la clé publique RSA d'Alice à l'aide du schéma OAEP."><b>Encapsulation :</b> Bob génère une clé symétrique aléatoire (par exemple 32 octets), puis la chiffre avec la clé publique RSA d'Alice à l'aide du schéma OAEP.</li>
+            <li data-lang-en="<b>Decapsulation:</b> Alice uses her RSA private key to decrypt the received secret and recover the same symmetric key." data-lang-fr="<b>Décapsulation :</b> Alice utilise sa clé privée RSA pour déchiffrer le secret reçu et retrouver la même clé symétrique."><b>Décapsulation :</b> Alice utilise sa clé privée RSA pour déchiffrer le secret reçu et retrouver la même clé symétrique.</li>
+        </ul>
+        <div class="example">
+            <pre><code class="language-python">
+# Encapsulation RSA (Bob)
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
+import os
+
+K_RSA_to_alice = os.urandom(32)  # Génère un secret aléatoire
+C_RSA_to_alice = alice_rsa_public.encrypt(
+    K_RSA_to_alice,
+    padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+)
+# Bob envoie C_RSA_to_alice à Alice
+
+# Décapsulation RSA (Alice)
+K_RSA_from_bob = alice_rsa_private.decrypt(
+    C_RSA_to_alice,
+    padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+)
+# Alice retrouve le même secret K_RSA_to_alice
+            </code></pre>
+        </div>
+        <p data-lang-en="Advantage: RSA is well-known and robust against classical attacks, but vulnerable to a quantum attacker. Hence the interest in combining it with Kyber."
+           data-lang-fr="<b>Avantage :</b> RSA est bien connu et robuste contre les attaques classiques, mais vulnérable à un attaquant quantique. D'où l'intérêt de l'associer à Kyber.">
+            <b>Avantage :</b> RSA est bien connu et robuste contre les attaques classiques, mais vulnérable à un attaquant quantique. D'où l'intérêt de l'associer à Kyber.
+        </p>
+        <h4>Kyber (version pédagogique simplifiée)</h4>
+        <ul>
+            <li data-lang-en="<b>Encapsulation:</b> Bob uses Alice's Kyber public key to encapsulate a shared secret, producing a ciphertext (u_comp) and a shared key K_Kyber_to_alice." data-lang-fr="<b>Encapsulation :</b> Bob utilise la clé publique Kyber d'Alice pour encapsuler un secret partagé, produisant un chiffré (u_comp) et une clé partagée K_Kyber_to_alice."><b>Encapsulation :</b> Bob utilise la clé publique Kyber d'Alice pour encapsuler un secret partagé, produisant un chiffré (u_comp) et une clé partagée K_Kyber_to_alice.</li>
+            <li data-lang-en="<b>Decapsulation:</b> Alice uses her Kyber private key to decapsulate the received ciphertext and recover the same shared key." data-lang-fr="<b>Décapsulation :</b> Alice utilise sa clé privée Kyber pour décapsuler le chiffré reçu et retrouver la même clé partagée."><b>Décapsulation :</b> Alice utilise sa clé privée Kyber pour décapsuler le chiffré reçu et retrouver la même clé partagée.</li>
+        </ul>
+        <div class="example">
+            <pre><code class="language-python">
+# Encapsulation Kyber (Bob)
+import simple_kyber512
+
+C_Kyber_to_alice, K_Kyber_to_alice = simple_kyber512.encapsulate(alice_kyber_pk)
+# Bob envoie C_Kyber_to_alice à Alice
+
+# Décapsulation Kyber (Alice)
+K_Kyber_from_bob = simple_kyber512.decapsulate(C_Kyber_to_alice, alice_kyber_sk)
+# Alice retrouve le même secret K_Kyber_to_alice
+            </code></pre>
+        </div>
+        <p data-lang-en="Advantage: Kyber is based on problems that are hard even for a quantum computer (lattices), ensuring the post-quantum security of the protocol."
+           data-lang-fr="<b>Avantage :</b> Kyber repose sur des problèmes difficiles même pour un ordinateur quantique (lattices), ce qui garantit la sécurité post-quantique du protocole.">
+            <b>Avantage :</b> Kyber repose sur des problèmes difficiles même pour un ordinateur quantique (lattices), ce qui garantit la sécurité post-quantique du protocole.
+        </p>
+        <p data-lang-en="Summary: Both encapsulations are performed in both directions (Alice→Bob and Bob→Alice), then the obtained secrets are combined via HKDF to obtain a common final key."
+           data-lang-fr="<b>Résumé :</b> Les deux encapsulations sont réalisées dans les deux sens (Alice→Bob et Bob→Alice), puis les secrets obtenus sont combinés via HKDF pour obtenir une clé finale commune.">
+            <b>Résumé :</b> Les deux encapsulations sont réalisées dans les deux sens (Alice→Bob et Bob→Alice), puis les secrets obtenus sont combinés via HKDF pour obtenir une clé finale commune.
+        </p>
+        <ul>
+            <li data-lang-en="<b>encapsulate(pk_bytes):</b> encapsulates a shared key with the Kyber public key" data-lang-fr="<b>encapsulate(pk_bytes)</b> : encapsule une clé partagée avec la clé publique Kyber"><b>encapsulate(pk_bytes)</b> : encapsule une clé partagée avec la clé publique Kyber</li>
+            <li data-lang-en="<b>decapsulate(u_comp_bytes, sk_bytes):</b> recovers the shared key from the ciphertext and secret key" data-lang-fr="<b>decapsulate(u_comp_bytes, sk_bytes)</b> : récupère la clé partagée à partir du chiffré et de la clé secrète"><b>decapsulate(u_comp_bytes, sk_bytes)</b> : récupère la clé partagée à partir du chiffré et de la clé secrète</li>
+        </ul>
+
+        <h3 data-lang-en="Final Key Derivation" data-lang-fr="Dérivation de la clé finale">Dérivation de la clé finale</h3>
+        <p data-lang-en="After encapsulation and decapsulation of RSA and Kyber secrets in both directions (Alice→Bob and Bob→Alice), each party has four secrets:"
+           data-lang-fr="Après l'encapsulation et la décapsulation des secrets RSA et Kyber dans les deux sens (Alice→Bob et Bob→Alice), chaque partie possède quatre secrets :">
+            Après l'encapsulation et la décapsulation des secrets RSA et Kyber dans les deux sens (Alice→Bob et Bob→Alice), chaque partie possède quatre secrets :
+        </p>
+        <ul>
+            <li data-lang-en="<b>K_RSA_to_alice</b>: secret generated by Bob, encrypted for Alice (RSA)" data-lang-fr="<b>K_RSA_to_alice</b> : secret généré par Bob, chiffré pour Alice (RSA)"><b>K_RSA_to_alice</b> : secret généré par Bob, chiffré pour Alice (RSA)</li>
+            <li data-lang-en="<b>K_Kyber_to_alice</b>: secret generated by Bob, encapsulated for Alice (Kyber)" data-lang-fr="<b>K_Kyber_to_alice</b> : secret généré par Bob, encapsulé pour Alice (Kyber)"><b>K_Kyber_to_alice</b> : secret généré par Bob, encapsulé pour Alice (Kyber)</li>
+            <li data-lang-en="<b>K_RSA_to_bob</b>: secret generated by Alice, encrypted for Bob (RSA)" data-lang-fr="<b>K_RSA_to_bob</b> : secret généré par Alice, chiffré pour Bob (RSA)"><b>K_RSA_to_bob</b> : secret généré par Alice, chiffré pour Bob (RSA)</li>
+            <li data-lang-en="<b>K_Kyber_to_bob</b>: secret generated by Alice, encapsulated for Bob (Kyber)" data-lang-fr="<b>K_Kyber_to_bob</b> : secret généré par Alice, encapsulé pour Bob (Kyber)"><b>K_Kyber_to_bob</b> : secret généré par Alice, encapsulé pour Bob (Kyber)</li>
+        </ul>
+        <p data-lang-en="To obtain a common session key, these four secrets are concatenated in the same order by Alice and Bob, then passed to a key derivation function (HKDF with SHA-256). This ensures that the final key (K_final) is identical for both parties, while being robust against classical and quantum attacks."
+           data-lang-fr="Pour obtenir une clé de session commune, ces quatre secrets sont concaténés dans le même ordre par Alice et Bob, puis passés à une fonction de dérivation de clé (<b>HKDF</b> avec SHA-256). Cela garantit que la clé finale (<b>K_final</b>) est identique pour les deux parties, tout en étant robuste contre les attaques classiques et quantiques.">
+            Pour obtenir une clé de session commune, ces quatre secrets sont concaténés dans le même ordre par Alice et Bob, puis passés à une fonction de dérivation de clé (<b>HKDF</b> avec SHA-256). Cela garantit que la clé finale (<b>K_final</b>) est identique pour les deux parties, tout en étant robuste contre les attaques classiques et quantiques.
+        </p>
+        <div class="example">
+            <pre><code class="language-python">
+# Dérivation de la clé finale commune avec HKDF (extrait des scripts Alice/Bob)
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives import hashes
+
+KDF = HKDF(
+    algorithm=hashes.SHA256(),
+    length=32,
+    salt=None,
+    info=b"KEM_RSA+Kyber",
+)
+K_final = KDF.derive(
+    K_RSA_to_alice + K_Kyber_to_alice + K_RSA_to_bob + K_Kyber_to_bob
+)
+# K_final est la clé symétrique commune utilisée pour AES-GCM
+            </code></pre>
+        </div>
+        <p data-lang-en="Important points:"
+           data-lang-fr="<b>Points importants :</b>">
+            <b>Points importants :</b>
+        </p>
+        <ul>
+            <li data-lang-en="The order of concatenation of secrets must be strictly identical for Alice and Bob, otherwise the final key will be different." data-lang-fr="L'ordre de concaténation des secrets doit être strictement identique pour Alice et Bob, sinon la clé finale sera différente.">L'ordre de concaténation des secrets doit être strictement identique pour Alice et Bob, sinon la clé finale sera différente.</li>
+            <li data-lang-en="HKDF (HMAC-based Key Derivation Function) allows mixing several secrets to produce a unique key, even if one of the secrets is compromised." data-lang-fr="HKDF (HMAC-based Key Derivation Function) permet de 'mélanger' plusieurs secrets pour produire une clé unique, même si l'un des secrets est compromis.">HKDF (HMAC-based Key Derivation Function) permet de "mélanger" plusieurs secrets pour produire une clé unique, même si l'un des secrets est compromis.</li>
+            <li data-lang-en="The final key <b>K_final</b> is never transmitted: it is derived locally by each party from the exchanged secrets." data-lang-fr="La clé finale <b>K_final</b> n'est jamais transmise : elle est dérivée localement par chaque partie à partir des secrets échangés.">La clé finale <b>K_final</b> n'est jamais transmise : elle est dérivée localement par chaque partie à partir des secrets échangés.</li>
+        </ul>
+        <p data-lang-en="Usage: This key K_final is then used to encrypt/decrypt messages exchanged between Alice and Bob via AES-GCM, ensuring the confidentiality and integrity of communications."
+           data-lang-fr="<b>Utilisation :</b> Cette clé <b>K_final</b> sert ensuite à chiffrer/déchiffrer les messages échangés entre Alice et Bob via AES-GCM, assurant la confidentialité et l'intégrité des communications.">
+            <b>Utilisation :</b> Cette clé <b>K_final</b> sert ensuite à chiffrer/déchiffrer les messages échangés entre Alice et Bob via AES-GCM, assurant la confidentialité et l'intégrité des communications.
+        </p>
+
+        <h3>Chiffrement symétrique</h3>
+        <p>
+            Une fois la clé finale <b>K_final</b> dérivée, Alice et Bob peuvent échanger des messages chiffrés en toute sécurité. Le chiffrement symétrique utilisé ici est <b>AES-GCM</b> (Galois/Counter Mode), qui offre à la fois la confidentialité et l'intégrité des messages.
+        </p>
+        <ul>
+            <li data-lang-en="<b>Encryption:</b> The message is encrypted with <b>AESGCM</b> using <b>K_final</b> as the key and a random 12-byte <b>nonce</b>. The result (nonce + ciphertext) is sent to the other party." data-lang-fr="<b>Chiffrement :</b> Le message est chiffré avec <b>AESGCM</b> en utilisant <b>K_final</b> comme clé et un <b>nonce</b> aléatoire de 12 octets. Le résultat (nonce + ciphertext) est envoyé à l'autre partie."><b>Chiffrement :</b> Le message est chiffré avec <b>AESGCM</b> en utilisant <b>K_final</b> comme clé et un <b>nonce</b> aléatoire de 12 octets. Le résultat (nonce + ciphertext) est envoyé à l'autre partie.</li>
+            <li data-lang-en="<b>Decryption:</b> The recipient reads the nonce and ciphertext, then uses <b>AESGCM</b> with the same <b>K_final</b> key to recover the original message." data-lang-fr="<b>Déchiffrement :</b> Le destinataire lit le nonce et le ciphertext, puis utilise <b>AESGCM</b> avec la même clé <b>K_final</b> pour retrouver le message original."><b>Déchiffrement :</b> Le destinataire lit le nonce et le ciphertext, puis utilise <b>AESGCM</b> avec la même clé <b>K_final</b> pour retrouver le message original.</li>
+        </ul>
+        <div class="example">
+            <pre><code class="language-python">
+# Chiffrement d'un message (extrait des interfaces Alice/Bob)
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import os
+
+aesgcm = AESGCM(K_final)
+nonce = os.urandom(12)
+ciphertext = aesgcm.encrypt(nonce, b"Message secret", None)
+# Envoi : écrire nonce + ciphertext dans un fichier partagé
+
+# Déchiffrement d'un message reçu
+aesgcm = AESGCM(K_final)
+# Lire nonce (12 octets) et ciphertext depuis le fichier
+plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+# plaintext contient le message original
+            </code></pre>
+        </div>
+        <p>
+            <b>Avantages d'AES-GCM :</b>
+            <ul>
+                <li>Le mode GCM assure la confidentialité <i>et</i> l'intégrité du message (authentification intégrée).</li>
+                <li>Le nonce doit être unique pour chaque message chiffré avec la même clé.</li>
+                <li>Le schéma est simple à utiliser et très performant.</li>
+            </ul>
+        </p>
+        <p>
+            <b>Dans le projet :</b> Les messages sont échangés via des fichiers (ex : <code>message_aesgcm_from_alice.bin</code>), chaque fichier contenant d'abord le nonce puis le ciphertext. Les interfaces graphiques Alice/Bob automatisent ce processus pour l'utilisateur.
+        </p>
+    </div>
+
+    <div class="section latex-section">
+    <h1>Rapport d'étude : Échange de Clé Hybride RSA + Kyber (KEM)</h1>
+    <h2>Introduction</h2>
+    <p>
+        Ce rapport détaille mathématiquement et numériquement le protocole d'échange de clé hybride RSA + Kyber, avec exemples chiffrés, calculs étape par étape, et explications pédagogiques. Les deux parties (Alice et Bob) peuvent initier la procédure, qui est totalement symétrique.
+    </p>
+
+    <h2>Remarque sur l'encapsulation</h2>
+    <p>
+        Dans ce protocole hybride, <b>l'encapsulation KEM est réalisée à la fois avec Kyber et avec RSA</b>.
+        Cela signifie que, tout comme pour Kyber, une clé symétrique aléatoire est générée puis encapsulée (chiffrée) à l'aide de la clé publique RSA du destinataire.
+        Cette encapsulation RSA consiste à chiffrer la clé symétrique \( K_{RSA} \) avec la clé publique \((e, n)\) :
+    </p>
+    <div class="math-block">
+        $$ C_{RSA} = K_{RSA}^e \mod n $$
+    </div>
+    <p>
+        Le destinataire décapsule (décrypte) la clé symétrique à l'aide de sa clé privée \( d \) :
+    </p>
+    <div class="math-block">
+        $$ K_{RSA} = C_{RSA}^d \mod n $$
+    </div>
+    <p>
+        <b>Ainsi, le protocole utilise deux KEM indépendants :</b>
+    </p>
+    <ul>
+        <li>Un KEM classique basé sur RSA (encapsulation/décapsulation de \( K_{RSA} \))</li>
+        <li>Un KEM post-quantique basé sur Kyber (encapsulation/décapsulation de \( K_{Kyber} \))</li>
+    </ul>
+    <p>
+        Les deux clés symétriques issues de ces encapsulations sont ensuite fusionnées via la KDF pour obtenir la clé finale \( K_{\text{final}} \).
+    </p>
+
+    <h2>Étape 1 — Génération des clés RSA (par Alice ou par Bob)</h2>
+    <p><b>Génération de clés RSA :</b></p>
+    <ul>
+        <li>Choix des deux nombres premiers :
+            <div class="math-block">$$ p = 5,\quad q = 11 $$</div>
+        </li>
+        <li>Calcul du module :
+            <div class="math-block">$$ n = p \times q = 5 \times 11 = 55 $$</div>
+        </li>
+        <li>Calcul de la fonction d’Euler :
+            <div class="math-block">$$ \varphi(n) = (p - 1)(q - 1) = 4 \times 10 = 40 $$</div>
+        </li>
+        <li>Choix de l’exposant public \( e = 3 \), avec \( \gcd(3, 40) = 1 \)</li>
+        <li>Calcul de la clé privée \( d \), tel que :
+            <div class="math-block">$$ e \cdot d \equiv 1 \mod \varphi(n) \Rightarrow 3 \cdot d \equiv 1 \mod 40 $$</div>
+        </li>
+        <li>Par test ou algorithme d’Euclide étendu :
+            <div class="math-block">$$ d = 27,\quad \text{car } 3 \cdot 27 = 81 \equiv 1 \mod 40 $$</div>
+        </li>
+    </ul>
+    <p><b>Clés générées :</b></p>
+    <ul>
+        <li>Clé publique : \( (e = 3,\ n = 55) \)</li>
+        <li>Clé privée : \( (d = 27,\ n = 55) \)</li>
+    </ul>
+
+    <h2>Étape 2 — Encapsulation RSA (par Bob)</h2>
+    <p>
+        Dans le protocole hybride, <b>l'encapsulation KEM sur RSA</b> consiste à générer une clé symétrique aléatoire \( K_{RSA} \) (par exemple, un entier ou une suite d'octets), puis à la chiffrer avec la clé publique RSA du destinataire.
+    </p>
+    <ul>
+        <li>Bob génère une clé symétrique aléatoire :
+            <div class="math-block">$$ K_{RSA} = 13 $$</div>
+        </li>
+        <li>Il encapsule cette clé en la chiffrant avec la clé publique d’Alice \((e, n)\) :
+            <div class="math-block">$$ C_{RSA} = K_{RSA}^e \mod n = 13^3 \mod 55 $$</div>
+        </li>
+        <li>Calcul détaillé :
+            <div class="math-block">$$ 13^3 = 2197,\quad 2197 \mod 55 = 2197 - 55 \times 39 = 52 $$</div>
+        </li>
+        <li>Résultat de l'encapsulation :
+            <div class="math-block">$$ C_{RSA} = 52 $$</div>
+        </li>
+        <li>Bob envoie \( C_{RSA} \) à Alice. Cette valeur est l'<b>encapsulation RSA</b> de la clé symétrique \( K_{RSA} \).</li>
+    </ul>
+
+    <h2>Étape 3 — Décapsulation RSA (par Alice)</h2>
+    <ul>
+        <li>Alice reçoit l'encapsulation \( C_{RSA} = 52 \).</li>
+        <li>Elle utilise sa clé privée \((d, n)\) pour décapsuler (décrypter) la clé symétrique :
+            <div class="math-block">$$ K_{RSA} = C_{RSA}^d \mod n = 52^{27} \mod 55 $$</div>
+        </li>
+        <li>Calcul détaillé par exponentiation modulaire rapide :
+            <div class="math-block">
+                $$ 52^2 = 2704 \mod 55 = 9 $$
+                $$ 52^4 = 9^2 = 81 \mod 55 = 26 $$
+                $$ 52^8 = 26^2 = 676 \mod 55 = 16 $$
+                $$ 52^{16} = 16^2 = 256 \mod 55 = 36 $$
+            </div>
+        </li>
+        <li>Décomposition de 27 :
+            <div class="math-block">$$ 27 = 16 + 8 + 2 + 1 \Rightarrow 52^{27} = 52^{16} \cdot 52^8 \cdot 52^2 \cdot 52 \mod 55 $$</div>
+        </li>
+        <li>Calcul :
+            <div class="math-block">
+                $$ 36 \cdot 16 = 576 \mod 55 = 26 $$
+                $$ 26 \cdot 9 = 234 \mod 55 = 14 $$
+                $$ 14 \cdot 52 = 728 \mod 55 = 13 $$
+            </div>
+        </li>
+        <li>Résultat de la décapsulation :
+            <div class="math-block">$$ K_{RSA} = 13 $$</div>
+        </li>
+        <li>Alice retrouve ainsi la clé symétrique générée par Bob.</li>
+    </ul>
+
+    <h2>Étape 4 — Génération et encapsulation Kyber (exemple simplifié)</h2>
+    <p><b>Paramètres simplifiés :</b></p>
+    <ul>
+        <li>Modulo : \( q = 17 \)</li>
+        <li>Vecteurs et matrices : dimension \( 2 \)</li>
+    </ul>
+    <p><b>Génération de la clé publique d'Alice :</b></p>
+    <ul>
+        <li>Clé privée : \( \mathbf{s} = \begin{bmatrix} 3 \\ 4 \end{bmatrix} \)</li>
+        <li>Bruit : \( \mathbf{e} = \begin{bmatrix} 1 \\ 2 \end{bmatrix} \)</li>
+        <li>Matrice publique :
+            <div class="math-block">
+                $$
+                \mathbf{A} =
+                \begin{bmatrix}
+                6 & 7 \\
+                5 & 9
+                \end{bmatrix}
+                $$
+            </div>
+        </li>
+        <li>Calcul de la clé publique :
+            <div class="math-block">
+                $$
+                \mathbf{t} = \mathbf{A} \cdot \mathbf{s} + \mathbf{e} \mod q
+                $$
+                $$
+                \mathbf{t} =
+                \begin{bmatrix}
+                6 & 7 \\
+                5 & 9
+                \end{bmatrix}
+                \cdot
+                \begin{bmatrix}
+                3 \\
+                4
+                \end{bmatrix}
+                +
+                \begin{bmatrix}
+                1 \\
+                2
+                \end{bmatrix}
+                =
+                \begin{bmatrix}
+                18 + 28 + 1 \\
+                15 + 36 + 2
+                \end{bmatrix}
+                =
+                \begin{bmatrix}
+                47 \\
+                53
+                \end{bmatrix}
+                \mod 17 =
+                \begin{bmatrix}
+                13 \\
+                2
+                \end{bmatrix}
+                $$
+            </div>
+        </li>
+    </ul>
+    <p><b>Encapsulation par Bob :</b></p>
+    <ul>
+        <li>Vecteur aléatoire : \( \mathbf{r} = \begin{bmatrix} 2 \\ 1 \end{bmatrix} \)</li>
+        <li>Bruit \( \mathbf{e}_1 = \begin{bmatrix} 1 \\ 1 \end{bmatrix} \), \( e_2 = 2 \)</li>
+        <li>Clé à encapsuler : \( K = 3 \)</li>
+        <li>Calcul de :
+            <div class="math-block">
+                $$
+                \mathbf{u} = \mathbf{A} \cdot \mathbf{r} + \mathbf{e}_1 \mod q
+                $$
+                $$
+                \mathbf{u} =
+                \begin{bmatrix}
+                6 &  7 \\
+                5 & 9
+                \end{bmatrix}
+                \cdot
+                \begin{bmatrix}
+                2 \\
+                1
+                \end{bmatrix}
+                +
+                \begin{bmatrix}
+                1 \\
+                1
+                \end{bmatrix}
+                =
+                \begin{bmatrix}
+                12 + 7 + 1 \\
+                10 + 9 + 1
+                \end{bmatrix}
+                =
+                \begin{bmatrix}
+                20 \\
+                20
+                \end{bmatrix}
+                \mod 17 =
+                \begin{bmatrix}
+                3 \\
+                3
+                \end{bmatrix}
+                $$
+            </div>
+        </li>
+        <li>Calcul de :
+            <div class="math-block">
+                $$
+                v = \mathbf{t}^T \cdot \mathbf{r} + e_2 + K \mod q
+                $$
+                $$
+                v = [13\quad 2] \cdot
+                \begin{bmatrix}
+                2 \\
+                1
+                \end{bmatrix}
+                + 2 + 3 =
+                13 \times 2 + 2 \times 1 + 5 = 26 + 2 + 5 = 33 \mod 17 = 16
+                $$
+            </div>
+        </li>
+    </ul>
+    <p><b>Décapsulation par Alice :</b></p>
+    <ul>
+        <li>Reçoit : \( \mathbf{u}, v \)</li>
+        <li>Calcule :
+            <div class="math-block">
+                $$
+                \mathbf{u}^T \cdot \mathbf{s} =
+                [3\quad 3] \cdot
+                \begin{bmatrix}
+                3 \\
+                4
+                \end{bmatrix}
+                = 3 \times 3 + 3 \times 4 = 9 + 12 = 21 \mod 17 = 4
+                $$
+            </div>
+        </li>
+        <li>Retrouve :
+            <div class="math-block">
+                $$
+                v - \mathbf{u}^T \cdot \mathbf{s} = 16 - 4 = 12 \mod 17
+                $$
+            </div>
+        </li>
+        <li>Soustraction du bruit :
+            <div class="math-block">
+                $$
+                K = (v - \mathbf{u}^T \cdot \mathbf{s} - e_2) \mod 17 = (12 - 2) \mod 17 = 10 \mod 17 = 10
+                $$
+            </div>
+            (Remarque : en vrai, \( K \) est recodé avec <code>decode()</code>, ici c’est illustratif.)
+        </li>
+    </ul>
+
+    <h2>Étape 5 — Fusion via KDF (HKDF-SHA256)</h2>
+    <p><b>Concaténation des clés pour la KDF :</b></p>
+    <ul>
+        <li>\( K_{RSA \rightarrow Alice} \) : <code>73a14453b96e54a32fbc4a8d67870e62ba43a935a79bf269861179b2fc695028</code></li>
+        <li>\( K_{Kyber \rightarrow Alice} \) : <code>2f0fd1e89b8de1d57292742ec380ea47066e307ad645f5bc3adad8a06ff58608</code></li>
+        <li>\( K_{RSA \rightarrow Bob} \) : <code>82de42be5d948f40870bc81fadf1959a8c28e140d88d00f7a2442c133b2cca34</code></li>
+        <li>\( K_{Kyber \rightarrow Bob} \) : <code>fcb5f40df9be6bae66c1d77a6c15968866a9e6cbd7314ca432b019d17392f6f4</code></li>
+    </ul>
+    <p>On concatène les clés dans l'ordre suivant (en notation hexadécimale) :</p>
+    <div class="math-block">
+        $$ \text{Concat} = K_{RSA \rightarrow Alice} \| K_{Kyber \rightarrow Alice} \| K_{RSA \rightarrow Bob} \| K_{Kyber \rightarrow Bob} $$
+    </div>
+    <pre>
+concat = (
+    bytes.fromhex("73a14453b96e54a32fbc4a8d67870e62ba43a935a79bf269861179b2fc695028") +
+    bytes.fromhex("2f0fd1e89b8de1d57292742ec380ea47066e307ad645f5bc3adad8a06ff58608") +
+    bytes.fromhex("82de42be5d948f40870bc81fadf1959a8c28e140d88d00f7a2442c133b2cca34") +
+    bytes.fromhex("fcb5f40df9be6bae66c1d77a6c15968866a9e6cbd7314ca432b019d17392f6f4")
+)
+    </pre>
+    <p><b>Calcul de la KDF (HKDF-SHA256) :</b></p>
+    <div class="math-block">
+        $$ K_{\text{final}} = \text{HKDF}_{\text{SHA256}}(\text{Concat}, \text{length}=32) $$
+    </div>
+    <p><b>Valeur obtenue dans la démo :</b></p>
+    <pre>
+K_final : b759b7c6a96735788d9c1426448cedf653063ca530dcce6f9f3eae04aa1392ea
+    </pre>
+
+    <h2>Étape 6 — Utilisation de la clé finale pour AES-GCM</h2>
+    <p>
+        Supposons que l'on souhaite chiffrer le message <code>"Bonjour Bob"</code> avec un nonce d'exemple :
+    </p>
+    <ul>
+        <li>Nonce : <code>00112233445566778899aabb</code> (12 octets)</li>
+        <li>Message : <code>"Bonjour Bob"</code></li>
+    </ul>
+    <pre>
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+key = bytes.fromhex("b759b7c6a96735788d9c1426448cedf653063ca530dcce6f9f3eae04aa1392ea")
+nonce = bytes.fromhex("00112233445566778899aabb")
+message = b"Bonjour Bob"
+
+aesgcm = AESGCM(key)
+ciphertext = aesgcm.encrypt(nonce, message, None)
+print(ciphertext.hex())
+    </pre>
+    <p><b>Remarque :</b> Le résultat du chiffrement dépendra du message, du nonce et de la clé.</p>
+
+    <h2>Résumé des étapes numériques</h2>
+    <ol>
+        <li>Générer ou lire les clés \( K_{RSA \rightarrow Alice} \), \( K_{Kyber \rightarrow Alice} \), \( K_{RSA \rightarrow Bob} \), \( K_{Kyber \rightarrow Bob} \).</li>
+        <li>Concaténer les clés dans l'ordre indiqué.</li>
+        <li>Appliquer HKDF-SHA256 pour obtenir \( K_{\text{final}} \).</li>
+        <li>Utiliser \( K_{\text{final}} \) comme clé AES-GCM pour chiffrer/déchiffrer les messages.</li>
+    </ol>
+
+    <h2>Conclusion</h2>
+    <p>
+        Ce protocole hybride RSA + Kyber permet un échange de clé sécurisé, résistant aux attaques classiques et quantiques. Il est totalement symétrique : Alice ou Bob peut initier l’échange. Tous les calculs sont reproductibles et vérifiables étape par étape.
+    </p>
+
+    <h2>Annexe : Explication des fonctions du code</h2>
+    <h3>Fonctions principales de <code>KEM_RSA_Alice.py</code></h3>
+    <ul>
+        <li><code>file_exists_anywhere(filename, dir1, dir2)</code> : Vérifie si un fichier nommé <code>filename</code> existe dans l'un des deux dossiers <code>dir1</code> ou <code>dir2</code>. Retourne un booléen.</li>
+        <li><code>read_anywhere(filename, prefer_dir, other_dir)</code> : Ouvre et lit le fichier <code>filename</code> en cherchant d'abord dans <code>prefer_dir</code>, puis dans <code>other_dir</code>. Retourne le contenu binaire du fichier.</li>
+        <li><code>export_keys_if_needed()</code> : Exporte la clé publique RSA et la clé publique Kyber d'Alice dans le dossier de Bob, pour permettre à Bob de les utiliser pour l'encapsulation.</li>
+        <li>Génération/chargement des clés RSA et Kyber : Génère une paire de clés RSA et une paire de clés Kyber si elles n'existent pas déjà, sinon les charge depuis les fichiers.</li>
+        <li>Récupération des clés publiques de Bob : Charge les clés publiques RSA et Kyber de Bob depuis le dossier de Bob.</li>
+        <li>Encapsulation vers Bob : Génère deux clés symétriques aléatoires, encapsule l'une avec RSA (clé publique de Bob), l'autre avec Kyber (clé publique de Bob), et sauvegarde les encapsulations et les clés.</li>
+        <li>Recherche et lecture des fichiers d'échange : Vérifie la présence de tous les fichiers nécessaires à la dérivation de la clé finale (KDF).</li>
+        <li>Décapsulation des clés reçues de Bob : Déchiffre la clé RSA reçue avec la clé privée d'Alice, décapsule la clé Kyber reçue avec la clé privée Kyber d'Alice.</li>
+        <li>KDF (HKDF) : Concatène les 4 clés (2 envoyées, 2 reçues) et applique HKDF-SHA256 pour obtenir la clé finale utilisée pour AES-GCM.</li>
+        <li>Chiffrement/déchiffrement de messages : Utilise la clé finale pour chiffrer/déchiffrer des messages avec AES-GCM.</li>
+    </ul>
+
+    <h3>Fonctions principales de <code>simple_kyber512.py</code> (version pédagogique)</h3>
+    <ul>
+        <li><code>keygen()</code> : Génère une paire de clés Kyber (publique et privée). En version simplifiée, cela peut être des vecteurs/matrices aléatoires et du bruit.</li>
+        <li><code>encapsulate(pk)</code> : Prend une clé publique Kyber, génère un vecteur aléatoire, encapsule une clé symétrique, et retourne l'encapsulation (ciphertext) et la clé partagée.</li>
+        <li><code>decapsulate(ciphertext, sk)</code> : Prend l'encapsulation et la clé privée, effectue les opérations inverses pour retrouver la clé partagée.</li>
+        <li>(Dans la vraie version, il y a compression, décompression, extraction de bits, etc. Ici, la logique est illustrée avec des opérations sur de petits entiers ou vecteurs.)</li>
+    </ul>
+
+    <h2>Annexe : Explication détaillée du fonctionnement du code (scénario Alice ↔ Bob)</h2>
+    <h3>Déroulement d'un échange complet</h3>
+    <ol>
+        <li><b>Initialisation des clés :</b>
+            <ul>
+                <li>Alice et Bob génèrent chacun une paire de clés RSA et une paire de clés Kyber (si elles n'existent pas déjà).</li>
+                <li>Les clés publiques sont exportées dans le dossier de l'autre partie pour permettre l'encapsulation.</li>
+            </ul>
+        </li>
+        <li><b>Encapsulation et échange de clés :</b>
+            <ul>
+                <li>Chacun encapsule une clé symétrique pour l'autre avec RSA (clé publique de l'autre) et Kyber (clé publique de l'autre).</li>
+                <li>Les encapsulations (ciphertexts) et les clés symétriques générées sont sauvegardées dans des fichiers d'échange.</li>
+            </ul>
+        </li>
+        <li><b>Décapsulation et dérivation de la clé finale :</b>
+            <ul>
+                <li>Chaque partie récupère les encapsulations reçues et utilise ses clés privées pour décapsuler les clés symétriques envoyées par l'autre.</li>
+                <li>Les 4 clés symétriques (2 envoyées, 2 reçues) sont concaténées et passées dans la KDF (HKDF-SHA256) pour obtenir la clé finale \( K_{\text{final}} \).</li>
+            </ul>
+        </li>
+        <li><b>Échange de messages chiffrés :</b>
+            <ul>
+                <li>Alice et Bob peuvent maintenant s'envoyer des messages chiffrés avec AES-GCM en utilisant \( K_{\text{final}} \).</li>
+                <li>Les messages sont écrits dans des fichiers spécifiques (<code>message_aesgcm_from_alice.bin</code>, <code>message_aesgcm_from_bob.bin</code>).</li>
+                <li>À la réception, chaque partie lit le fichier, déchiffre le message, puis peut supprimer le fichier pour éviter les doublons ou pour des raisons de sécurité.</li>
+            </ul>
+        </li>
+        <li><b>Gestion des fichiers d'échange :</b>
+            <ul>
+                <li>Avant chaque nouvel échange, le script vérifie la présence des fichiers d'échange existants.</li>
+                <li>Si des fichiers sont présents, l'utilisateur peut choisir de les supprimer pour repartir sur un échange propre (option proposée dans le script).</li>
+                <li>Cela évite les collisions ou l'utilisation de vieilles clés/messages.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>Résumé du flux de fichiers</h3>
+    <ul>
+        <li data-lang-en="Public keys:" data-lang-fr="<b>Clés publiques :</b>"> <b>Clés publiques :</b> échangées via fichiers (<code>alice_rsa_public.pem</code>, <code>bob_kyber_pk.bin</code>, etc.)</li>
+        <li data-lang-en="Encapsulations and symmetric keys:" data-lang-fr="<b>Encapsulations et clés symétriques :</b>"> <b>Encapsulations et clés symétriques :</b> échangées via fichiers (<code>C_RSA_to_bob.bin</code>, <code>K_Kyber_to_alice.bin</code>, etc.)</li>
+        <li data-lang-en="Final key:" data-lang-fr="<b>Clé finale :</b>"> <b>Clé finale :</b> stockée dans <code>K_final.bin</code></li>
+        <li data-lang-en="Encrypted messages:" data-lang-fr="<b>Messages chiffrés :</b>"> <b>Messages chiffrés :</b> échangés via fichiers (<code>message_aesgcm_from_alice.bin</code>, <code>message_aesgcm_from_bob.bin</code>)</li>
+        <li data-lang-en="Deletion:" data-lang-fr="<b>Suppression :</b>"> <b>Suppression :</b> possible à tout moment pour réinitialiser l'état de l'échange.</li>
+    </ul>
+
+    <h3>Sécurité et bonnes pratiques</h3>
+    <ul>
+        <li data-lang-en="Deleting exchange files after use limits the risk of reuse or leakage of keys/messages." data-lang-fr="La suppression des fichiers d'échange après utilisation limite les risques de réutilisation ou de fuite de clés/messages.">La suppression des fichiers d'échange après utilisation limite les risques de réutilisation ou de fuite de clés/messages.</li>
+        <li data-lang-en="The user is always warned of the presence of existing files and can choose to delete them." data-lang-fr="L'utilisateur est toujours averti de la présence de fichiers existants et peut choisir de les supprimer.">L'utilisateur est toujours averti de la présence de fichiers existants et peut choisir de les supprimer.</li>
+        <li data-lang-en="The protocol is symmetric: Alice and Bob can initiate or restart the exchange at any time." data-lang-fr="Le protocole est symétrique : Alice et Bob peuvent initier ou relancer l'échange à tout moment.">Le protocole est symétrique : Alice et Bob peuvent initier ou relancer l'échange à tout moment.</li>
+    </ul>
+
+    <h2>Résumé</h2>
+    <p>
+        Le code permet un échange de clé hybride sécurisé, automatisé et reproductible, avec gestion complète des fichiers d'échange et possibilité de suppression pour garantir la fraîcheur et la sécurité des échanges.
+    </p>
+    </div>
+
+    <div class="section">
+        <h2>Pour aller plus loin</h2>
+        <ul>
+            <li data-lang-en="NIST PQC Project" data-lang-fr="NIST PQC Project"><a href="https://csrc.nist.gov/Projects/post-quantum-cryptography" target="_blank">NIST PQC Project</a></li>
+            <li data-lang-en="Kyber (PQClean)" data-lang-fr="Kyber (PQClean)"><a href="https://github.com/pq-crystals/kyber" target="_blank">Kyber (PQClean)</a></li>
+            <li data-lang-en="cryptography.io (Python)" data-lang-fr="cryptography.io (Python)"><a href="https://cryptography.io/en/latest/" target="_blank">cryptography.io (Python)</a></li>
+        </ul>
+    </div>
+    <a href="#" style="display: inline-block; margin-left: 900px;">
+    <img src="flech_pqc.png" alt="Haut de page" style="width: 120px; height: 100px;">
+  </a>
+</body>
+</html>
