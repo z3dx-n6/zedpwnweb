@@ -98,8 +98,11 @@ button.addEventListener("click", () => {
 
 function toggleLanguage(lang) {
   document.querySelectorAll("[data-lang-fr], [data-lang-en]").forEach(el => {
-    const newText = el.getAttribute(`data-lang-${lang}`);
-    if (newText) el.textContent = newText;
+    const html = el.getAttribute(`data-lang-${lang}`);
+    if (html) {
+      // Remplace le contenu HTML (et non textContent) pour garder la mise en forme
+      el.innerHTML = html;
+    }
   });
 }
 });
