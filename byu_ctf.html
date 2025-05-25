@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Write-Up – JWTF | BYUCTF 2025</title>
+  <style>
+    body {
+  background-color: #01010a;
+  color: #d0d0ff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.4rem;
+  padding: 20px;
+  line-height: 1.6;
+  margin: 0;
+
+  background-image: url('byuctf2025.png');
+  background-size: 80%; /* plein écran */
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed; /* fixe au scroll */
+  position: relative;
+  
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* voile noir semi-transparent */
+  z-index: -1;
+}
+
+
+    main {
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    h1, h2, h3 {
+      color: #00aaff;
+      text-shadow: 0 0 5px #00aaff;
+    }
+
+    code {
+      background-color: #2c2c2c;
+      color: #ffecb3;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+
+    pre {
+      background-color: #2b2b2b;
+      color: #c0faff;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+.container {
+  max-width: 1000px;
+  margin: 100px auto;
+  padding: 20px;
+  background-color: rgba(30, 30, 30, 0.85);
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 170, 255, 0.5);
+}
+
+.img-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.img-container img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 1.8em;
+  }
+
+  h2 {
+    font-size: 1.4em;
+  }
+
+  p {
+    font-size: 1em;
+  }
+}
+
+
+
+    .flag {
+      background-color: #111;
+      border-left: 4px solid #00ffcc;
+      padding: 10px;
+      margin: 20px 0;
+      font-family: monospace;
+      word-break: break-word;
+    }
+
+    section.titre {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+        font-size: 16px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+      h2 {
+        font-size: 1.4em;
+      }
+    }
+  </style>
+  <a href="index.html" style="display: inline-block; ">
+      <img src="b.png" alt="Retour" style="width: 120px; height: 100px; position: absolute; top: 20px; left: 20px;">
+        </a>
+</head>
+<body>
+<main>
+    <div class="container">
+    <section class="titre">
+<h1>BYUCTF 2025 – JWTF</h1>
+  <p>A CTF hosted by BYU Cyberia, the official CTF team of Brigham Young University.</p>
+
+
+  </section>
+  <div class="img-container">
+  <h2>JWTF | catégorie | Web </h2>
+  <p>
+    Ce challenge portait sur la manipulation de <strong>JWT</strong> (JSON Web Tokens) dans une application Flask.
+    Le serveur utilisait une <strong>JWT Revocation List (JRL)</strong> pour bloquer les tokens admin compromis.
+    Le but était clair : obtenir un token admin <strong>valide mais pas révoqué</strong>.
+  </p>
+
+  <h2>Étape 1 – Analyse du code source</h2>
+  <p>
+    Une fois les sources examinées, on découvre la présence d’une JRL avec vérification simple :
+  </p>
+  <pre>if session in jrl: return redirect('/')</pre>
+  <p>
+    C’est ici que réside la faille. Le serveur compare les JWT **en tant que chaînes**, sans les décoder !
+  </p>
+
+  <h2>Étape 2 – Récupération du JWT bloqué</h2>
+  <pre>curl https://jwtf.chal.cyberjousting.com/jrl</pre>
+  <p>
+    On obtient un JWT complet : header, payload et signature. Le payload contient bien :
+    <code>{"admin": true, "uid": "1337"}</code>
+  </p>
+
+  <h2>Étape 3 – Bypass par encodage modifié</h2>
+  <p>
+    En modifiant légèrement le <code>payload</code> (ex : ajout d’un <code>\</code>), le JWT reste valide côté déchiffrement,
+    mais diffère au niveau chaîne, donc <strong>il contourne la JRL</strong> :
+  </p>
+  <pre>
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJhZG1pbiI6dHJ1ZSwidWlkIjoiMTMzNyJ9\.
+BnBYDobZVspWbxu4jL3cTfri_lxN0i33q-TRLbHV-ew
+  </pre>
+
+  
+  <img src="screenkali.png" alt="Plus qu'à bypass JWT dans Burp Suite">
+  
+
+  <h2>Étape 4 – Récupération du Flag</h2>
+  <p>
+    Le cookie JWT forgé est injecté via Burp dans une requête <code>GET /flag</code>. Résultat :
+  </p>
+  <div class="flag">
+    byuctf{did_if_this_means_anything_but_maybe_its_useful_somewhere_97ba5a70d94d}
+  </div>
+
+    <img src="jwtburp.png" alt="Réponse du flag dans Burp">
+
+  <h2>Conclusion</h2>
+  <p>
+    Cette faille repose sur une <strong>mauvaise vérification de la révocation JWT</strong> par comparaison de chaînes.
+    Il aurait fallu comparer les **claims déchiffrés** ou utiliser un identifiant unique (JTI) pour chaque token.
+  </p>
+</div>
+</div>
+<div class="container">
+  <div class="img-container">
+    <h2>Cooking Flash | catégorie | Web </h2>
+
+    <h2>Objectif</h2>
+    <p>Exploiter une injection SQL dans un champ GET du site <code>cooking.chal.cyberjousting.com</code> afin d'exfiltrer le flag en base de données. Le site ressemble à ça :</p>
+    <img src="site.png" alt="step"/>
+
+    <h2>🔍 Analyse initiale</h2>
+    <p>
+    On commence par explorer les paramètres en observant les requêtes envoyées via Burp Suite à l'aide de
+    <a href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/SQL%20Injection">PayloadsAllTheThings</a> 
+    </a>. On repère que le champ <code>tags</code> dans la requête GET est injectable :
+    </p>
+    <img src="payloadsql.png" alt="Analyse de la requête Burp" />
+    
+
+    <h2>Test de l'injection</h2>
+    <p>On injecte un <code>'</code> dans le paramètre <code>tags</code> ce qui déclenche une erreur de type <code>OperationalError</code> SQLite, preuve d’une mauvaise gestion des entrées utilisateurs :</p>
+    <img src="errorsql.png" alt="step"/>
+
+    <h2>Extraction des données</h2>
+    <p>On injecte ensuite une requête <code>UNION SELECT</code> avec des valeurs explicites, puis des colonnes comme <code>username</code> et <code>password</code> provenant de la table <code>user</code>.</p>
+    <img src="tukoné.png" alt="step" class="screenshot"/>
+    <p>Cela nous retourne <code>400 Bad Request</code> car il faut qu'on encode à présent notre url !</p>
+    <img src="encode.png" alt="step" class="screenshot"/>
+
+    <h2>Conclusion</h2>
+    <p>Challenge réussi ! La vulnérabilité SQLi était présente sur un paramètre GET sans filtrage, permettant d’extraire le flag après validation du nombre de colonnes et de la table cible. Un bon cas pratique pour tester l'automatisation (Burp) et l'analyse manuelle.</p>
+
+    <p style="text-align:center; font-size:1.2em;"><strong>Flag :</strong> <code>byuctf{pl34s3_p4r4m3t3r1z3_y0ur_1nputs_4nd_h4sh_y0ur_p4ssw0rds}</code></p>
+
+    <img src="result.png" alt="step" class="screenshot"/>
+</div>
+</div>
+<div class="container">
+    <h1>Willy Wonka Web | CVE-2023-25690</h1>
+
+    <div class="img-container">
+      <h2>🔍 Étape 1 : Analyse des fichiers Apache</h2>
+      <p>En inspectant les configurations Apache, on découvre l’utilisation de <code>mod_proxy</code> et <code>mod_rewrite</code> avec un reverse proxy sur <code>/name/</code> :</p>
+      <pre>LoadModule rewrite_module modules/mod_rewrite.so
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+VirtualHost *:80
+    ServerName localhost
+    DocumentRoot /usr/local/apache2/htdocs
+
+    RewriteEngine on
+    RewriteRule "^/name/(.*)" "http://backend:3000/?name=$1" [P]
+    ProxyPassReverse "/name/" "http://backend:3000/"
+
+    RequestHeader unset A
+    RequestHeader unset a
+VirtualHost
+      </pre>
+      <p>Cette configuration mal sécurisée permet potentiellement une injection de requêtes HTTP via <code>CRLF (%0d%0a)</code>.</p>
+    </div>
+
+    <div class="img-container">
+      <h2>Étape 2 : Compréhension et utilisation de la CVE-2023-25690</h2>
+      <p>Cette faille permet d'injecter des en-têtes HTTP en abusant d’une mauvaise réécriture via <code>RewriteRule</code> et un manque de nettoyage des requêtes. Un script PHP caché traite un paramètre <code>secret</code> :</p>
+      <pre>?php
+
+if(isset($_GET['id'])){
+    $id = $_GET['id'];
+    echo 'You category ID is: ' . $id;
+}else{
+    echo "Please insert the ID parameter in the URL";
+}
+
+#Internal secret functionality
+if(isset($_GET['secret'])){
+    $secret = $_GET['secret'];
+
+    shell_exec('nslookup ' . $secret);
+}
+?>
+</pre>
+      <p>Il est possible d'injecter une requête <code>nslookup</code> à travers ce script.</p>
+    </div>
+
+    <div class="img-container">
+      <h2>Étape 3 : Test d’URL vulnérable</h2>
+      <p>Nous testons l’injection via un paramètre mal filtré :</p>
+      <code>/name/test%20HTTP/1.1%0d%0aHost:%20wonka.chal.cyberjousting.com%0d%0a%0d%0aGET%20/name/test</code>
+      <img src="wonkasc.png" alt="Injection URL testée dans le navigateur" />
+      <img src="itswork.png" />
+      <p>Le serveur répond avec <strong>It works!</strong>, preuve que la requête a été traitée par un second backend.</p>
+    </div>
+
+    <div class="img-container">
+      <h2>Étape 4 : Récupération du flag via Burp Suite</h2>
+      <p>En modifiant la requête GET dans Burp Repeater avec la payload ci-dessus, cela permet d’exfiltrer le flag :</p>
+      <img src="wonkaresult.png" alt="Burp Suite - DNS trigger" />
+    </div>
+    <a href="#" style="display: block; text-align: center; margin-top: 20px;">
+    <img src="byuup.png" alt="Haut de page" style="width: 120px; height: 100px;">
+</a>
+  </div>
+  
+</main>
+</body>
+</html>
