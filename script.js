@@ -16,32 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   typeEffect();
 
-  // Simulation de terminal
-  const terminalContent = document.getElementById("terminal-content");
-  const commands = [
-      "root@z3d:~# feroxbuster : A fast, simple, recursive content discovery tool written in Rust.",
-      "root@z3d:~# amass : In-depth attack surface mapping and asset discovery.",
-      "root@z3d:~# chkrootkit : This program locally checks for signs of a rootkit. 'Forked' to fix false-positive for SucKIT rootkit.",
-      "root@z3d:~# XSS-Automation : A shell script to automate XSS vulnerability testing.",
-      "root@z3d:~# loxs : Best tool for finding SQLi, CRLF, XSS, LFi, OpenRedirect.",
-      "root@z3d:~# subfinder : Fast passive subdomain enumeration tool.",
-      "root@z3d:~# assetfinder : Find domains and subdomains related to a given domain.",
-      "root@z3d:~# subscraper : Subdomain and target enumeration tool built for offensive security testing.",
-      "root@z3d:~# LitOcean : The LitOcean Subdomain Enumeration Tool.",
-      "root@z3d:~# acunetix-13-kali-linux : Install Acunetix 13 on Kali Linux.",
-      "root@z3d:~# dalfox : 🌙🦊 Dalfox is a powerful open-source XSS scanner and utility focused on automation.",
-      "root@z3d:~# katana : A next-generation crawling and spidering framework.",
-      "root@z3d:~# ParamSpider : Mining URLs from dark corners of Web Archives for bug hunting/fuzzing/further probing.",
-      "root@z3d:~# sysreptor : A customizable and powerful pentest reporting platform for offensive security pros.",
-      "root@z3d:~# patator : A multi-purpose brute-forcer, with modular design and flexible usage.",
-      "root@z3d:~# ffuf : Fast web fuzzer written in Go.",
-      "root@z3d:~# OneForAll : 强大的子域收集工具 (Powerful subdomain collection tool).",
-      "root@z3d:~# tpotce : 🍯 T-Pot - The All In One Multi Honeypot Platform 🐝.",
-      "root@z3d:~# RustScan : 🤖 The Modern Port Scanner written in Rust.",
-      "root@z3d:~# chisel : A fast TCP/UDP tunnel over HTTP.",
-      "root@z3d:~# proxychains-ng : Preloader that hooks socket calls to redirect traffic via proxies (SOCKS/HTTP).",
-      "root@z3d:~# ",
-  ];
+    // Simulation de terminal
+    const terminalContent = document.getElementById("terminal-content");
+    const commands = [
+        "root@z3d:~# PostQuantum_Hybrid_KEM : hybrid key exchange combining classical RSA-OAEP and simplified Kyber512",
+        "root@z3d:~# simple_kyber512 : This library simulates a key encapsulation mechanism (KEM) inspired by Kyber512.",
+        "root@z3d:~# proxybuster : recursive URL enumerator designed to explore web directories and endpoints",
+        "root@z3d:~# gen_laravel_cookie : valid Laravel encrypted cookies using a known APP_KEY and a custom PHP serialized payload",
+        "root@z3d:~# ModBusSploit : ModBusSploit is a comprehensive framework, written in Python3.",
+        "root@z3d:~# chatgath : describes how to create and integrate a custom module into Metasploit to scan Modbus services..",
+        "root@z3d:~# Modbus_client : modbus_simulator.py is a Python script designed to simulate a Modbus TCP server.",
+    ];
   
 
   let commandIndex = 0;
