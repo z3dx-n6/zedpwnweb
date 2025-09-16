@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon guide OSCP</title>
+  <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Cinzel:wght@600&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Tahoma, Geneva, sans-serif;
+      background: linear-gradient(135deg, #1a0d07 0%, #2c1a12 100%), url('f9d248_1f73cdc77a564c4a9b0dae2d847d8ed0~mv') center/cover no-repeat;
+      color: #e0e0e0;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      transform: translate(-50%, -50%);
+      background: url('dragon.png') center/contain no-repeat;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .intro-container {
+      background: rgba(20, 10, 5, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(255,77,0,0.6);
+      max-width: 1000px;
+    }
+
+    .intro-container h1 {
+      font-family: Tahoma, Geneva, sans-serif;
+      font-size: 3rem;
+      color: #ff4d00;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px #ff4d00;
+    }
+
+    .intro-container h2 {
+      font-family: Tahoma, Geneva, sans-serif;
+      font-size: 1.5rem;
+      color: #ffd700;
+      margin-bottom: 15px;
+    }
+
+    .intro-container p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #e0d3c5;
+    }
+
+    .btn-start {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 25px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(90deg, #ff4d00, #d12f00);
+      border-radius: 30px;
+      text-decoration: none;
+      box-shadow: 0 0 20px rgba(255,77,0,0.8);
+      transition: 0.3s;
+    }
+
+    .btn-start:hover {
+      background: linear-gradient(90deg, #d12f00, #ff4d00);
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(255,77,0,1);
+    }
+
+    main {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section {
+      margin-bottom: 40px;
+      padding: 20px;
+      background: rgba(20, 10, 5, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(255,77,0,0.5);
+      max-width: 1000px;
+    }
+
+    .section h2 {
+      font-family: Tahoma, Geneva, sans-serif;
+      font-size: 2rem;
+      color: #ff4d00;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .section h2::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background: linear-gradient(90deg, #ff4d00, #d12f00);
+    }
+
+    .section ul {
+      list-style-type: disc;
+      margin-left: 20px;
+    }
+
+    .section li {
+      margin-bottom: 10px;
+    }
+
+    .section a {
+      color: #ffd700;
+      text-decoration: underline;
+    }
+
+    .section a:hover {
+      color: #ff4d00;
+    }
+  /* Citation discrète, thème sombre */
+.citation {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(255, 77, 0, 0.06);          /* léger voile orange */
+  border-left: 3px solid #ff4d00;               /* rappel de l’orange titre */
+  border-radius: 8px;
+  color: #e6dcd3;                               /* texte clair, cohérent */
+  font-style: italic;
+  box-shadow: inset 0 0 0 1px rgba(255,77,0,0.12);
+}
+
+.section#guide li {
+  line-height: 1.8;
+}
+.section#guide br {
+  line-height: 2.2;
+}
+  </style>
+</head>
+<body>
+     <a href="index.html" 
+     style="display:inline-block; position:absolute; top:20px; left:20px; z-index:9999; cursor:pointer;">
+    <img src="oscp_return.png" alt="Retour" 
+         style="width:120px; height:100px; display:block;">
+  </a>
+  <header>
+    <div class="intro-container">
+      <img src="OSCP-badge.avif" alt="Badge OSCP+" style="display:block;margin:0 auto 20px auto;max-width:180px;">
+      <h1>Préparation à l’OSCP+</h1>
+      <h2>Mon expérience & mes recommandations</h2>
+      <p>
+        L’OSCP+ est l’une des certifications les plus reconnues en cybersécurité offensive. 
+        Dans cette page, je partage mon expérience personnelle, mes méthodes de préparation, 
+        et un guide complet pour réussir cet examen exigeant.  
+        Mon objectif est d’apporter un retour concret aux futurs candidats, basé sur ma 
+        pratique du pentest, des CTFs et de l’entraînement intensif.
+      </p>
+      <a href="#introduction" class="btn-start">Découvrir</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" id="introduction">
+      <h2>Introduction</h2>
+      <p>Je suis passionné par la cybersécurité depuis maintenant 4 ans, j'ai eu l'occasion de travailler sur de nombreux projets de pentest et de participer à des CTF que ça soit en ligne ou irl. L'OSCP+ représentait pour moi un gros défi et une étape dans mon parcours pro.</p>
+      <ul>
+        <li>Expérience en entreprise et en freelance</li>
+        <li>Participation à des événements de sécurité (CTF, conférences)</li>
+      </ul>
+      <p>J'ai choisi de préparer l'OSCP pour valider mes compétences techniques et renforcer ma crédibilité dans le domaine de la sécurité offensive.</p>
+    </section>
+
+    <section class="section" id="avant-oscp">
+      <h2>Mon expérience avant l’OSCP</h2>
+       <div class="citation">
+        Ce n’est pas en regardant la lumière qu’on devient lumineux, mais en plongeant dans son obscurité
+        <span class="source">— Jung</span>
+      </div>
+      <ul>
+        <li>Certifications obtenues : eJPT, Zephyr et Dante de HTB, parcours pentester THM et plusieurs CTFs/lab (Root-Me, Hack The Box, TryHackMe)</li>
+        <li>Compétences : pentest web, Active Directory, élévation de privilèges Linux/Windows</li>
+        <li>Exemples :
+          <ul>
+            <li>eJPTv2 : reconnaissance & OSINT, pentest réseau/hôte, post-exploitation, pentest web basique , méthodologie d’audit.</li>
+            <li>Zephyr : enumeration, exploitation de failles Active Directory réelles, relay attacks, lateral movement et franchissement de domaines de confiance, pivoting, attaques SQL, password cracking, 
+              élévation de privilèges, attaques d’applications web.</li>
+            <li>Dante : enumeration, exploit development, lateral movement, privilege escalation, web application attacks.</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" id="methodologie">
+      <h2>Méthodologie de préparation</h2>
+      <div class="citation">
+        Les batailles sont gagnées avant d’être livrées.
+      </div>
+
+      <ul>
+        <li>Organisation : 3 à 4 mois de préparation intensive, planification hebdomadaire, à raison de 15-20h/semaines</li>
+        <li>Outils utilisés 90% du temps: nmap, burp suite, sharpHound/bloodHound, chisel/Ligolo-ng, impacket, crackmapexec/netexec, mimikatz/rubeus, </li>
+        <li>Plateformes d’entraînement : Hack The Box, TryHackMe, VulnHub</li>
+        <li>Si les cours offsec ont été entièrement suivis :
+          <ul>
+            <li>Challenge Labs de 0 à 6</li>
+            <li>Sinon machines HTB <a href="https://0xdf.gitlab.io/cheatsheets/offsec" target="_blank">cheatsheet OffSec</a></li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" id="guide">
+      <h2>Recommandations pour réussir l’OSCP</h2>
+       <div class="citation">
+        La discipline est le pont entre les objectifs et leur réalisation
+        <span class="source">— Jim Rohn</span>
+      </div>
+      <ul>
+        <li>Attaques/techniques clés à maîtriser pour l’OSCP
+          <ul>
+            <li>Privesc Linux
+              <ul>
+                <li>SUID/SGID abuse (binary hijacking inclus)</li>
+                <li>PATH hijacking (injection d’un binaire malveillant)</li>
+                <li>Capabilities (binaires avec droits spéciaux)</li>
+                <li>Cron jobs / scripts mal sécurisés</li>
+                <li>NFS root squashing mal configuré</li>
+                <li>Kernel exploits (plus rares, mais utiles à tester)</li>
+                <li>Password reuse / clés SSH trouvées</li>
+              </ul>
+            </li>
+            <li>Privesc Windows
+              <ul>
+                <li>Service misconfigurations (service/binary hijacking)</li>
+                <li>Unquoted service paths</li>
+                <li>DLL hijacking</li>
+                <li>Token impersonation / potato attacks (JuicyPotato, PrintSpoofer…)</li>
+                <li>Stored credentials (registres, fichiers config, tâches planifiées)</li>
+                <li>AlwaysInstallElevated (MSI exécution en SYSTEM)</li>
+              </ul>
+            </li>
+            <li>Attaques Web
+              <ul>
+                <li>File upload bypass (extensions doubles, polyglot)</li>
+                <li>LFI/RFI (inclusion de fichiers)</li>
+                <li>SQLi (error-based, union, blind, time-based)</li>
+                <li>XSS → vol de cookie/panel admin</li>
+                <li>Directory traversal</li>
+                <li>Command injection / RCE</li>
+              </ul>
+            </li>
+            <li>Attaques réseau / pivoting
+              <ul>
+                <li>Port forwarding et tunnels (SSH, chisel, plink, socat)</li>
+                <li>Pivoting vers services internes</li>
+                <li>Password spraying / bruteforce ciblé (hydra, crackmapexec)</li>
+              </ul>
+            </li>
+            <li>Post-exploitation
+              <ul>
+                <li>Looting : récupération de hashs, clés SSH, fichiers sensibles</li>
+                <li>Cracking (hashcat, john)</li>
+                <li>Persistence légère (ajout user, clé SSH, tâche planifiée)</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+       <li><strong>Préparation mentale :</strong><br>
+      Pour éviter le stress ne buvez pas de café, faites des pauses régulièrement sans toucher votre téléphone.<br>
+      Même avant l’examen, aucun écran : aérez-vous l’esprit.<br>
+      Le jour de l’examen, allez courir ou marcher pour vous détendre.<br>
+      Pendant chaque pause de 30 min, sortez marcher dehors et videz votre tête.<br>
+      Si vous êtes fumeur, faites attention à ne pas trop fumer.<br>
+      Hydratez-vous bien et mangez léger.<br>
+      Si vous devez manger, faites-le parcimonieusement et évitez les repas trop lourds.
+      </li>
+      <li><strong>Stratégie d’examen :</strong><br>
+        Commencez à 13h par un scan nmap des 3 standalones : il y en a toujours une facile et une avec une vulnérabilité ou un exploit public connu.<br>
+        Ne passez pas plus de 1h30 sur une machine. Si vous bloquez, souvenez-vous que les footholds de l’OSCP sont simples : au bout de 30 minutes sans avancer, vous êtes sûrement dans un rabbithole. Passez à la suivante.<br>
+        Après la première machine, lancez un scan plus approfondi des autres et prenez une pause de 30 minutes avant d’attaquer la deuxième.<br>
+        L’Active Directory est souvent le plus long mais aussi le plus rentable en points. Le premier accès est rarement complexe, la difficulté se situe dans l’élévation de privilèges et le pivoting.<br><br>
+        A chaque fois que vous trouvé un falg retracer le chemins à l'écrit et avec des screen shot de chaque étape ainsi que du flag avec un ipconfig de la machine et un whoami.
+        
+
+        Mon plan d’attaque :<br>
+        — 13h-15h00 : machine 1 (pause de 15 min au milieu)<br>
+        — 15h-15h30 : pause<br>
+        — 15h30-17h30 : machine 2 (pause de 15 min au milieu)<br>
+        — 17h30-18h : pause<br>
+        — 18h-20h30 : machine 3 (pause de 15 min au milieu)<br>
+        — 20h30-21h : pause<br>
+        — 21h-23h : machines AD 1 et 2 (pause de 15 min au milieu)<br>
+        — 23h-23h30 : pause<br>
+        — 23h30-1h30 : Domain Controller de l’AD (pause de 15 min au milieu)<br>
+        — 1h30-2h : pause<br>
+        — 2h-4h : terminer les machines restantes et vérifier les points<br>
+        — Si vous n’avez pas eu le temps de finir tous les flags locaux et proof, faites une sieste de 4h jusqu’à 8h (repos essentiel pour garder sa lucidité)<br>
+        — 8h30-10h30 : finir les flags locaux et proof<br>
+        — 10h30-11h : pause<br>
+        — 11h-13h : s’assurer que tout est bien documenté et screenshot pour le rapport
+      </li>
+      </ul>
+    </section>
+
+    <section class="section" id="ressources">
+      <h2>Ressources recommandées</h2>
+      <ul>
+        <li>Labs : PWK Labs, HTB Pro Labs</li>
+        <li>Writeups et articles :
+          <ul>
+            <li><a href="https://0xdf.gitlab.io/cheatsheets/404" target="_blank">Image default error 404 to detect framework/language</a></li>
+            <li><a href="https://www.notion.so/OSCP-1f8457253d7280a89052f79f996a7239" target="_blank">Notion cheatsheet OSCP</a></li>
+            <li><a href="https://www.stationx.net/how-to-use-ligolo-ng/" target="_blank">How to Use Ligolo-ng</a></li>
+          </ul>
+        </li>
+        <li>Liens utiles :
+          <ul>
+            <li><a href="https://github.com/jakobfriedl/precompiled-binaries" target="_blank">precompiled-binaries</a></li>
+            <li><a href="https://github.com/swisskyrepo/PayloadsAllTheThings" target="_blank">PayloadAllofThings</a></li>
+            <li><a href="https://github.com/nicocha30/ligolo-ng" target="_blank">Ligolo-ng</a></li>
+            <li><a href="https://github.com/w1j0y/penetration-testing-handbook" target="_blank">penetration-testing-handbook</a></li>
+            <li><a href="https://github.com/peass-ng/PEASS-ng" target="_blank">PEASS-ng</a></li>
+            <li><a href="https://github.com/S1ckB0y1337/Active-Directory-Exploitation-Cheat-Sheet" target="_blank">Active Directory Exploitation Cheat Sheet</a></li>        
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" id="conclusion">
+      <h2>Conclusion / Motivation</h2>
+      <p>L’OSCP+ est une aventure exigeante mais extrêmement enrichissante. Mon conseil : ne jamais sous-estimer la préparation mentale et la rigueur documentaire. Croyez en vous, persévérez et n’hésitez pas à demander de l’aide à la communauté, stay hard !</p>
+      <p>Ce que je retiens, c'est que c'est difficile juste car on le dit et on le mistifie, pas parce que ça l'est</p>
+    </section>
+  </main>
+
+</body>
+</html>
