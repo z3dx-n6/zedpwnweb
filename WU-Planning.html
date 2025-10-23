@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Write-up — Planning.htb</title>
+  <meta name="description" content="Write-up technique du CTF Planning.htb — reconnaissance, fuzzing, exploitation Grafana, escalation.">
+</head>
+<style>
+/* style.css — Blog technique DARK MODE responsive */
+
+/* Variables */
+:root {
+  --max-width: 900px;
+  --bg: #0d1117;
+  --card: #161b22;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --accent-light: rgba(88,166,255,0.15);
+  --mono: "Fira Code", "SFMono-Regular", Menlo, Monaco, "Roboto Mono", monospace;
+  --radius: 10px;
+}
+
+/* Reset */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout wrapper */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 28px;
+}
+
+/* Header */
+.site-header {
+  background: #0d1117;
+  border-bottom: 1px solid #21262d;
+  padding: 18px 0;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.brand h1 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--accent);
+}
+.brand-content {
+  flex: 1;
+}
+.back-button {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 6px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.tagline {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.meta {
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  gap: 12px;
+}
+
+/* Article styling */
+.post {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-top: 22px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.source-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+section {
+  margin-top: 24px;
+}
+section h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+section p {
+  color: var(--text);
+}
+
+/* TOC */
+.toc {
+  margin: 18px 0;
+  padding: 14px;
+  background: #1c2128;
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+}
+.toc h3 {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 15px;
+}
+.toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.toc li {
+  margin-bottom: 4px;
+}
+.toc a {
+  color: var(--text);
+  text-decoration: none;
+}
+.toc a:hover {
+  color: var(--accent);
+}
+
+/* Code & terminal blocks */
+.terminal {
+  background: #0b0f16;
+  color: #c9d1d9;
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  overflow-x: auto;
+  border: 1px solid #21262d;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.4);
+}
+
+.cmd {
+  background: #1c2128;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+  padding: 10px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 13px;
+  overflow-x: auto;
+}
+
+/* Inline code */
+code {
+  background: #1c2128;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: #ffb86c;
+}
+
+/* Pre blocks */
+pre {
+  background: #0b0f16;
+  color: #c9d1d9;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+/* Lists and quotes */
+ul {
+  margin: 8px 0 8px 18px;
+}
+blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-left: 4px solid var(--accent);
+  background: var(--accent-light);
+  color: var(--text);
+  border-radius: 6px;
+}
+
+/* Footer */
+.post-footer {
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px solid #21262d;
+  color: var(--muted);
+}
+
+.site-footer {
+  text-align: center;
+  padding: 20px 0;
+  color: var(--muted);
+  font-size: 13px;
+  border-top: 1px solid #21262d;
+  background: #0d1117;
+}
+
+/* Links */
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+/* Simple single screenshot style (responsive, centered) */
+.single-shot {
+  margin: 18px 0 6px;
+  display: block;
+  text-align: center;
+}
+
+.single-shot img {
+  width: 100%;
+  max-width: 920px;      /* limite la largeur sur grand écran */
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.55);
+  background: #0b0f16;
+  object-fit: cover;
+}
+
+/* Caption styling */
+.single-shot figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+/* Section explicative CVE (How it works) */
+.exploit-explain {
+  margin-top: 28px;
+  padding: 18px;
+  background: linear-gradient(180deg, rgba(88,166,255,0.02), transparent);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  color: var(--text);
+}
+.exploit-explain h1 {
+  color: var(--accent);
+  margin-top: 0;
+}
+.exploit-explain h2 {
+  color: rgba(235, 138, 11, 0.925);
+  margin-top: 0;
+}
+
+.exploit-explain h3 {
+  color: var(--text);
+  margin-bottom: 6px;
+  margin-top: 12px;
+}
+
+.exploit-explain ul {
+  margin-left: 18px;
+  color: var(--text);
+}
+
+.exploit-explain .sources {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Back button and scroll to top */
+.back-button {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 6px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.back-button:hover {
+  opacity: 0.9;
+  text-decoration: none;
+}
+
+.scroll-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;  /* Changed from left: 30px to right: 30px */
+  background: var(--accent);
+  color: var(--bg);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s;
+  text-decoration: none;
+}
+
+.scroll-top.visible {
+  opacity: 1;
+}
+
+.scroll-top:hover {
+  opacity: 0.9;
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .scroll-top {
+    bottom: 20px;
+    right: 20px;  /* Changed from left: 20px to right: 20px */
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Smaller max-width on small screens so it doesn't feel huge */
+@media (max-width: 720px) {
+  .single-shot { margin: 14px 0; }
+  .single-shot img { max-width: 100%; border-radius: 8px; }
+  .single-shot figcaption { font-size: 12px; }
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  :root { --max-width: 680px; }
+  .container { padding: 18px; }
+  .post { padding: 20px; }
+  .header-inner { flex-direction: column; align-items: flex-start; }
+  .brand h1 { font-size: 20px; }
+  .toc { padding: 12px; }
+}
+
+
+</style>
+
+<body>
+    
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <a href="index.html" class="back-button">← Back</a>
+        <div class="brand-content">
+          <h1>Planning.htb — Write-up</h1>
+          <p class="tagline">Recon • Exploitation • Escalation — summary and commands</p>
+        </div>
+      </div>
+      <nav class="meta">
+        <time datetime="2025-10-22">Oct 22, 2025</time>
+        <span class="author">by <strong>Zed</strong></span>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="container">
+    <article class="post">
+      <figure class="single-shot">
+            <img src="1_iKx6KVUmnvdQ2H8tsNucLg.png" alt="shell.sh" loading="lazy">
+        </figure>
+
+      <section class="lead">
+        <h2>Résumé</h2>
+        <p>This write-up covers the discovery of a hidden vhost (grafana.planning.htb), exploitation of a Grafana vulnerability (CVE-2024-9264), obtaining a reverse shell, credential recovery, SSH connection to <code>enzo</code>, and then escalation to <code>root</code> via a vulnerable cron. </p>
+      </section>
+
+      <aside class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#recon">Recon / nmap</a></li>
+          <li><a href="#fuzz">Fuzz DNS / vhost</a></li>
+          <li><a href="#exploit">Exploitation Grafana</a></li>
+          <li><a href="#shell">Reverse shell & creds</a></li>
+          <li><a href="#ssh">SSH → enzo</a></li>
+          <li><a href="#priv">Escalade root via cron</a></li>
+          <li><a href="#Conclusion and Remediation">Conclusion and Remediation</a></li>
+        </ul>
+      </aside>
+
+      <section id="recon">
+        <h2>Recon — nmap</h2>
+        <p>We do an nmap to scan service on 10.10.11.68</p>
+        <div class="terminal">
+<pre><code>PORT STATE SERVICE VERSION
+22/tcp open ssh OpenSSH 9.6p1 Ubuntu 3ubuntu13.11 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+| 256 62:ff:f6:d4:57:88:05:ad:f4:d3:de:5b:9b:f8:50:f1 (ECDSA)
+|_ 256 4c:ce:7d:5c:fb:2d:a0:9e:9f:bd:f5:5c:5e:61:50:8a (ED25519)
+80/tcp open http nginx 1.24.0 (Ubuntu)
+|_http-server-header: nginx/1.24.0 (Ubuntu)
+|_http-title: Did not follow redirect to http://planning.htb/
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+</code></pre>
+        </div>
+        <p>Add the output on /etc/hosts</p>
+        <pre class="cmd"><code>10.10.11.68 planning.htb</code></pre>
+      </section>
+
+      <section id="fuzz">
+        <h2>Discovering a hidden vhost with ffuf</h2>
+        <p>We do a FUZZ to looking for another DNS</p>
+        <div class="terminal">
+<pre><code>┌──(kali㉿kali)-[~]
+└─$ ffuf -w /usr/share/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt -u
+'http://planning.htb' -H "Host:FUZZ.planning.htb" -fs 178
+/'___\ /'___\ /'___\
+/\ \__/ /\ \__/ __ __ /\ \__/
+\ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\
+\ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/
+\ \_\ \ \_\ \ \____/ \ \_\
+\/_/ \/_/ \/___/ \/_/
+v2.1.0-dev
+________________________________________________
+:: Method : GET
+:: URL : http://planning.htb
+:: Wordlist : FUZZ:
+/usr/share/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt
+:: Header : Host: FUZZ.planning.htb
+:: Follow redirects : false
+:: Calibration : false
+:: Timeout : 10
+:: Threads : 40
+:: Matcher : Response status: 200-299,301,302,307,401,403,405,500
+:: Filter : Response size: 178
+________________________________________________
+grafana [Status: 302, Size: 29, Words: 2, Lines: 3, Duration: 68ms]
+</code></pre>
+        </div>
+        <p><strong>Explanation:</strong></p>
+        <p>The -fs 178 option filters responses of size 178 (default page returned for non-existent hosts).</p>
+        <p>The server responds differently for the “grafana” subdomain.</p>
+        <p><strong>Result:</strong></p>
+        <p>An active vhost has been discovered: grafana.planning.htb</p>
+        <p>The HTTP response has a 302 code (redirection), which indicates the presence of an accessible service behind this vhost</p>
+        <p><strong>grafana.planning.htb</strong> (302) — add on /etc/hosts.</p>
+      </section>
+
+      <section id="exploit">
+        <h2>Exploitation — Grafana (CVE-2024-9264)</h2>
+        <p>Check the exposed web page.</p>
+        <p>Identify the version of Grafana and search for any known vulnerabilities (LFI, RCE, default
+credentials).</p>
+        <p>We find a public exploit for CVE-2024-9264 allowing RCE via a crafted payload.</p>
+
+        <figure class="single-shot">
+            <img src="1_planning.png" alt="Contenu du fichier /var/lib/grafana/.env montrant les credentials" loading="lazy">
+        </figure>
+
+        <p>We make a git clone of the git project on our attacker machine kali</p>
+
+        <p>Then we create shell.sh and mount a python http.server 8000</p>
+        <figure class="single-shot">
+            <img src="2_planning.png" alt="shell.sh" loading="lazy">
+        </figure>
+
+        <p>Then we create a listening port on port 4444 and then we launch the exploit</p>
+        <figure class="single-shot">
+            <img src="3_planning.png" alt="nc" loading="lazy">
+        </figure>
+
+      </section>
+
+      <section id="shell">
+        <h2>Rev shell</h2>
+        <figure class="single-shot">
+            <img src="4_planning.png" alt="rev-shell" loading="lazy">
+        </figure>
+
+        <p>Then we try to found creds or sensitive information</p>
+        <p>After a large énumeration i found creds of enzo on /var/lib/grafana env</p>
+        <pre class="cmd"><code># Example location found:
+/var/lib/grafana/.env
+# read
+cat /var/lib/grafana/.env
+</code></pre>
+        <figure class="single-shot">
+            <img src="5_planning.png" alt="creds" loading="lazy">
+        </figure>
+      </section>
+
+      <section id="ssh">
+        <h2>SSH → enzo</h2>
+        <p>Then we connect on ssh enzo</p>
+        <figure class="single-shot">
+            <img src="6_planning.png" alt="creds" loading="lazy">
+        </figure>
+        <p>And found the user flag</p>
+        <figure class="single-shot">
+            <img src="7_planning.png" alt="creds" loading="lazy">
+        </figure>
+      </section>
+      <section id="how-it-works" class="exploit-explain">
+  <h2>? How it’s work — CVE-2024-9264 (Grafana)</h2>
+    <p>Grafana's experimental SQL Expressions feature allows the evaluation of <code>duckdb</code> queries containing user input.</p>
+    <p>These queries are not sufficiently sanitized before being passed to <code>duckdb</code>, resulting in command injection and a local file inclusion vulnerability. Any user with VIEWER privileges or higher is capable of executing this attack.</p>
+    <p>The <code>duckdb</code> binary must be present in Grafana's $PATH for this attack to work; by default, this binary is not installed in Grafana distributions.</p>
+     
+    <p>Le PoC abuse de la source de données « Expression » de Grafana (DuckDB dans le backend) : il envoie une expression SQL (via l'API POST /api/ds/query?ds_type=__expr__&expression=true) que Grafana évalue avec DuckDB.</p>
+            <p>Deux mécanismes sont utilisés :</p> 
+    <ul>
+        <li>read_blob(path) (DuckDB + extension) pour lire un fichier distant et renvoyer son contenu.</li>
+        <li>installation et chargement de l’extension <code>shellfs</code> puis usage de <code>read_csv(“... |”)</code> pour exécuter une commande et rediriger sa sortie vers un fichier temporaire, que le PoC relit ensuite via <code>read_blob</code></li>
+    </ul>
+    <p>So the exploit flow: inject a malicious DuckDB expression → DuckDB (on the server) performs operations on the FS / loads extension → the attacker reads the result via the JSON response.</p>
+ 
+  <p class="sources">Sources: Grafana advisory, NVD, public proof of concept, and analyses</p>
+</section>
+
+      <section id="priv">
+        <h2>Escalation → root via Cron</h2>
+        <p>Now we do a privilege escalation on root user</p>
+        <p>Then After a large énumeration i found password on /otp/crontabs/crontab.db</p>
+        <figure class="single-shot">
+            <img src="8_planning.png" alt="creds" loading="lazy">
+        </figure>
+        <p>I also found a open port on 127.0.0.1:8000</p>
+        <figure class="single-shot">
+            <img src="9_planning.png" alt="creds" loading="lazy">
+        </figure>
+
+        <p>I am doing port forwarding.</p>
+
+        <figure class="single-shot">
+            <img src="10_planning.png" alt="creds" loading="lazy">
+        </figure>
+        <p>Then i connect on it http://127:0.0.1:8000 with creds wich i found before</p>
+        <figure class="single-shot">
+            <img src="11_planning.png" alt="creds" loading="lazy">  
+        </figure>
+        <p>Now I am on the last step, which is to create a new cronjob to escalate to the root user.</p>
+        <figure class="single-shot">
+            <img src="13_planning.png" alt="creds" loading="lazy">  
+        </figure>
+        <p>The job added in the Crontab interface executes the following command:</p>
+        <pre class="cmd"><code> cp /bin/bash /tmp/bash && chmod u+s /tmp/bash</code></pre>
+        <p>This command copies the bash executable to the /tmp directory, then applies the SUID bit to
+this binary. Since the cron job runs with root privileges, the new /tmp/bash file belongs to root
+and is marked SUID</p>
+
+        <p>Consequence: any user can run /tmp/bash -p and obtain a shell with root privileges, allowing
+complete privilege escalation on the system</p>  
+
+        <p>Then i run it</p>
+        <p>And do ./bash -p to get root bash and found root flag</p>
+        <figure class="single-shot">
+            <img src="12_planning.png" alt="creds" loading="lazy">  
+        </figure>
+
+      </section>
+
+      <section id="Conclusion and Remediation">
+        <h2>Conclusion & recommandations</h2>
+        <h4>Update Grafana and apply patches related to CVE-2024-9264.</h4>
+        <p>Affected versions:</p>
+        <ul>
+          <li>Grafana OSS and Enterprise versions 11.0.0 - 11.0.5, 11.1.0 - 11.1.6, and 11.2.0 - 11.2.1.</li>
+        </ul>
+        <p>Corrected versions:</p>
+        <ul>
+          <li>11.0.5+security-01 and higher</li>
+        </ul>
+        <p>Grafana has released special versions to fix this vulnerability. To analyze the patch, the following commands can be used to compare the changes:</p>
+        <pre>
+<code>git checkout v11.0.5+security-01</code> 
+<code>git diff 0421a8911cfc05a46c516fd9d033a51e52e51afe 70316b3e1418c9054017047e63c1c96abb26f495</code></pre>
+        <p>Cela révèle que la fonctionnalité Expressions SQL a simplement été supprimée des versions vulnérables.</p>
+        <pre><code>+++ b/pkg/expr/sql/db.go
+@@ -0,0 +1,26 @@
++package sql
++
++import (
++       "errors"
++
++       "github.com/grafana/grafana-plugin-sdk-go/data"
++)
++
++type DB struct {
++}
++
++func (db *DB) TablesList(rawSQL string) ([]string, error) {
++       return nil, errors.New("not implemented")
++}
++
++func (db *DB) RunCommands(commands []string) (string, error) {
++       return "", errors.New("not implemented")
++}
++
++func (db *DB) QueryFramesInto(name string, query string, frames []*data.Frame, f *data.Frame) error {
++       return errors.New("not implemented")
++}
++
++func NewInMemoryDB() *DB {
++       return &DB{}
++}</code></pre>
+
+        <pre><code>@@ -85,7 +84,7 @@ func (gr *SQLCommand) Execute(ctx context.Context, now time.Time, vars mathexp.V
+ 
+        rsp := mathexp.Results{}
+ 
+-       duckDB := duck.NewInMemoryDB()
++       duckDB := sql.NewInMemoryDB()
+        var frame = &data.Frame{}
+        err := duckDB.QueryFramesInto(gr.refID, gr.query, allFrames, frame);
+        if err != nil {</code></pre>
+        <p>The patch completely removes SQL expressions, preventing any possibility of exploitation.</p>    
+       </ul>
+        <h4>Additional recommendations:</h4> 
+          <li>Avoid storing credentials in plain text in accessible folders. </li>
+          <li>Restrict the local interface and access to 127.0.0.1 via firewall/bound interfaces.</li>
+          <li>Avoid cron jobs written via the web interface without strict validation.</li>
+        </ul>
+      </section>
+    </article>
+  </main>
+
+  <a href="#" class="scroll-top" title="Scroll to top">↑</a>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>write-up — hack the box · planning · zed</p>
+    </div>
+  </footer>
+
+  <script>
+    // Show/hide scroll to top button
+    const scrollTop = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 400) {
+        scrollTop.classList.add('visible');
+      } else {
+        scrollTop.classList.remove('visible');
+      }
+    });
+  </script>
+</body>
+</html>
