@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dragos CTF 2025 — Write-up (by zedxiang)</title>
+<style>
+:root {
+  --bg: #0c1013;
+  --panel: #11181c;
+  --text: #f2f4f5;
+  --muted: #a3acb2;
+  --primary: #00b0a3;
+  --primary-2: #19c3b8;
+  --border: #1a242b;
+  --code-bg: #121a1f;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, "Open Sans", Roboto, "Segoe UI", Arial, sans-serif;
+  line-height: 1.65;
+}
+.wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem 6rem;
+}
+.header {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+.header .logo {
+  display: block;
+  margin: 0 auto 0.5rem;
+  height: 72px;
+}
+.header .banner img {
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin: 0.5rem 0 1rem;
+}
+.header h1 {
+  font-size: 1.6rem;
+  margin: 0.25rem 0 0.25rem;
+}
+.subtitle { color: var(--muted); margin-bottom: 0.75rem; }
+.badge {
+  display: inline-block;
+  padding: .15rem .55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: .8rem;
+  margin-right: .35rem;
+}
+.section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  box-shadow: 0 0 0 1px rgba(0,176,163,0.05), 0 8px 24px rgba(0,176,163,0.08);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.section h3 {
+  margin: 0 0 .25rem 0;
+  color: var(--primary);
+  letter-spacing: .02em;
+}
+.meta { color: var(--muted); margin-bottom: .5rem; }
+.section p { margin: .4rem 0; }
+.section ul { margin: .4rem 0 .4rem 1.2rem; }
+/* Inline code */
+code {
+  background: #1c2128;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--primary);
+}
+
+/* Pre blocks */
+pre {
+  background: #0b0f16;
+  color: #c9d1d9;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+.flag {
+  background: rgba(0,176,163,.10);
+  border-left: 4px solid var(--primary);
+  padding: .5rem .75rem;
+  border-radius: 6px;
+  display: inline-block;
+  margin-top: .25rem;
+  font-weight: 600;
+}
+.footer-fixed {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: rgba(14,20,24,0.95);
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  padding: .6rem .75rem;
+  font-size: .95rem;
+  backdrop-filter: blur(4px);
+}
+/* Simple single screenshot style (responsive, centered) */
+.single-shot {
+  margin: 18px 0 6px;
+  display: block;
+  text-align: center;
+}
+
+.single-shot img {
+  width: 100%;
+  max-width: 920px;      /* limite la largeur sur grand écran */
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.55);
+  background: #0b0f16;
+  object-fit: cover;
+}
+/* Bouton "remonter en haut" */
+.scroll-top {
+  position: fixed;
+  right: 25px;
+  bottom: 85px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 22px;
+  text-decoration: none;
+  width: 46px;
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
+  border-radius: 50%;  /* ⬅️ rend le bouton parfaitement rond */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(10px);
+}
+.scroll-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.scroll-top:hover {
+  background: var(--primary);
+  transform: translateY(-3px);
+}
+/* Bouton "Back" en haut à gauche */
+.back-btn {
+  position: absolute;
+  top: 22px;
+  left: 25px;
+  color: var(--primary);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+.back-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+@media (max-width: 640px) {
+  .back-btn {
+    top: 16px;
+    left: 16px;
+    font-size: 13px;
+    padding: 4px 10px;
+  }
+}
+
+
+/* Caption styling */
+.single-shot figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+@media (max-width: 640px) {
+  .header .logo { height: 60px; }
+  .header h1 { font-size: 1.25rem; }
+  .wrapper { padding: 1.25rem .75rem 6rem; }
+}
+</style>
+</head>
+<body>
+  <div class="wrapper">
+    <header class="header">
+      <a href="index.html" class="back-btn" title="Retour au menu">← Back</a>
+      <div class="banner"><img src="ec9c9ac6-d094-4d33-9828-fe264110aac6.png" alt="Dragos CTF 2025 Banner" /></div>
+      <h1>Dragos OT CTF 2025 — Write-up</h1>
+      <div class="subtitle">Write-up of Dragos OT CTF 2025, written by zexiang.</div>
+      <div class="meta"><span class="badge">Solo vs Team</span><span class="badge">104th/1058th</span><span class="badge">7699 pts</span></div>
+    </header>
+    
+    <section class="section">
+      <h3>Undercover Ops</h3>
+      <div class="meta"><span class="badge">Phishing & Initial Access</span><span class="badge">200 pts</span></div>
+      <p>Reviewing the PCAP will show that multiple files were transferred across the network. What was the first filename transferred onto Sophia’s host?</p>
+
+      <p>I simply applied this filter to Wireshark: <code>http or ftp or smb2 or smtp or imf or pop or tftp</code></p>
+      
+      <figure class="single-shot">
+            <img src="Dragos_20.png" alt="nothing" loading="lazy">
+        </figure>
+
+        <p>We can clearly see that the traffic between: <code>10.10.7.11 ⇄ 10.10.10.254 </code>is SMB2, i.e. Windows sharing</p>
+        <p>And also <code>`Tree Connect Request, Tree: ‘\\10.10.7.11\IPC$’ Tree Connect Request, Tree: ‘\\10.10.7.11\downloads’`</code></p>
+        <p>So Sophia's computer (probably 10.10.10.254) accesses the shared folder <code>`\\10.10.7.11\downloads`</code></p>
+        <figure class="single-shot">
+            <img src="Dragos_21.png" alt="nothing" loading="lazy">
+        </figure>
+        <p>How we can see the first filename transferred onto Sophia’s host is <code>Windows11Upgrade.pdf</code></p>
+    </section>
+    
+    <section class="section">
+      <h3>Where are you going?</h3>
+      <div class="meta"><span class="badge">Phishing & Initial Access</span><span class="badge">200 pts</span></div>
+      <p>During the investigation, the ACME IR team identified that two files were shared with Sophia: the original PDF and an EXE. The EXE was never meant to upgrade the operating system to Windows 11, but rather it hosted a malicious, reverse-shell payload.
+
+What IP Address and Port did this payload call back to?</p>
+
+<p>So I go to Statistics -> Endpoint and look for the largest file transfer with a suspicious IP address.      
+
+      <figure class="single-shot">
+            <img src="Dragos_22.png" alt="nothing" loading="lazy">
+        </figure>
+        <p>Finally, I apply a filter on Wireshark to see the communications with this IP address: <code>ip.addr==15.87.58.2</code></p>
+        <figure class="single-shot">
+            <img src="Dragos_23.png" alt="nothing" loading="lazy">
+        </figure>
+        <figure class="single-shot">
+            <img src="Dragos_24.png" alt="nothing" loading="lazy">
+        </figure>
+        <p>The flag is <code>15.87.58.2:8443</code></p>
+    </section>
+    
+
+
+
+
+
+
+
+
+
+    <section class="section">
+      <h3>δραπετεύω</h3>
+      <div class="meta"><span class="badge">Forensics Analysis</span><span class="badge">600 pts</span></div>
+      <p><strong>Contexte.</strong> We found our HMI for the heating system with an open browser Window, making a lot of noise. Someone or something has opened this. 
+        <code>[http://nyan.cat](http://nyan.cat/)</code>does not seem to be malicious itself, our research at <code>[http://nyan.cat](http://nyan.cat/) </code>also shows nothing weird. 
+        We successfully captured a triage collection from the system.</p>
+
+        <p>Can you investigate what might be off with this browser? Can we identify if someone left a “calling card”?</p>
+        <p>zoom on the url and i see </p>
+        <figure class="single-shot">
+            <img src="Dragos_2.png" alt="nothing" loading="lazy">
+        </figure>
+        <p>Now i gonna try to find it on the unzip file</p>
+        <figure class="single-shot">
+            <img src="Dragos_3.png" alt="nothing" loading="lazy">
+        </figure>
+        <figure class="single-shot">
+            <img src="Dragos_4.png" alt="nothing" loading="lazy">
+        </figure>
+<p>I found <code>jpek{GcfivWuymvvip4Pmji}</code>and now i go to cyberchef and try to do rot13 </p>
+<figure class="single-shot">
+            <img src="Dragos_5.png" alt="nothing" loading="lazy">
+        </figure>
+<p>ROT22 → <code>flag{CyberSquirrel4Life}</code></p>
+    </section>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    <section class="section">
+      <h3>Home Improvement</h3>
+      <div class="meta"><span class="badge">ICS Windows Event Log Analysis</span><span class="badge">400 pts</span></div>
+      <p>A victim organization provided two Windows Event log files that they believe contain crucial logs containing information that shows how the adversaries brought offensive tools into the environment. They have provided you with these files for analysis.
+
+What living-off-the-land tool did the adversary use to help bring a tool into the environment?</p>
+
+<p>I opened PowerShell as an administrator and checked for the presence of the <code>`PowerShellLogs.evtx`</code> file. I exported the readable content via <code>`Get-WinEvent -Path .\PowerShellLogs.evtx | Select-Object ... | Out-File evtx_all_txt.txt`</code> so that I could perform text searches. I then listed the EventIDs present (verification) and filtered the events containing names of potentially misused tools <code>`Get-WinEvent -Path .\PowerShellLogs.evtx | Select-Object ... | Out-File evtx_all_txt.txt`</code> with <code>`Get-WinEvent ... | Where-Object { $_.Message -match ... }`</code>. 
+  Finally, I decoded the <code>Base64/`-EncodedCommand`</code> blobs detected via a PowerShell script to reveal the PowerShell code executed.
+      <figure class="single-shot">
+            <img src="Dragos_15.png" alt="nothing" loading="lazy">
+      </figure>
+      <figure class="single-shot">
+            <img src="Dragos_16.png" alt="nothing" loading="lazy">
+      </figure>
+      <p>Flag → <code>certutil.exe</code></p>
+
+    </section>
+    
+
+
+
+
+
+
+    <section class="section">
+      <h3>Network Capture INT</h3>
+      <div class="meta"><span class="badge">ICS PCAP Analysis</span><span class="badge">400 pts</span></div>
+      <p>Would you kindly identify the full Operating System name, version, and build number of the client machine that this PCAPNG was captured on?</p>
+      <figure class="single-shot">
+            <img src="Dragos_17.png" alt="nothing" loading="lazy">
+        </figure>
+      <p>I first listed the operating systems present in <code>tls.pcapng</code> with <code>capinfos -M | grep “Operating system”</code>, which shows several different hosts/OSs in the capture.</p>
+      <figure class="single-shot">
+            <img src="Dragos_18.png" alt="nothing" loading="lazy">
+        </figure>
+      <p>I then determined which interface contained the most packets: <code>tshark -r tls.pcapng -T fields -e frame.interface_id | sort | uniq -c | sort -nr | head</code> → result 34 26 meaning 34 packets for interface #26.</p>
+      <figure class="single-shot">
+            <img src="Dragos_19.png" alt="nothing" loading="lazy">
+        </figure>
+      <p>Finally, I extracted the metadata for interface #26 with capinfos -M | sed -n '/Interface #26/,/ Interface #/p', which shows that interface #26 corresponds to <code>\Device\NPF_{...} (Ethernet 5), OS = Windows 11 (24H2, build 26100)</code> and Number of packets = 34</p>
+    </section>
+    
+
+
+
+
+
+
+
+
+
+    <section class="section">
+      <h3>First of Many</h3>
+      <div class="meta"><span class="badge">ICS PCAP Analysis</span><span class="badge">400 pts</span></div>
+      <p>The Ember Jackals have corrupted a .txt file that was retrieved over the network by one of our admins. 
+        We need to identify the .txt file and extract out any hidden messages the Ember Jackals have graffitied inside.</p>
+
+        <p>First, I tried to export the FTP DATA to Wireshark</p>
+        <figure class="single-shot">
+            <img src="Dragos_11.png" alt="nothing" loading="lazy">
+        </figure>
+        <p>I searched through all the files and found some interesting ASCII characters</p>
+        <p>So I went directly to the packets in question</p>
+        <figure class="single-shot">
+            <img src="Dragos_12.png" alt="nothing" loading="lazy">
+        </figure>
+        <p>We can deduce the phrase “HEX IS FUN3” in ASCII graffitied on packet 25463</p>
+        <figure class="single-shot">
+            <img src="Dragos_13.png" alt="nothing" loading="lazy">
+        </figure>
+        <p>And here we can clearly read “BUT WIRESHARK IS BETTER” on packet 25475.
+        <p>So then I just had to concatenate the two packets. </p>
+        <figure class="single-shot">
+            <img src="Dragos_14.png" alt="nothing" loading="lazy">
+        </figure>
+        <p>The flag was therefore HEXISFUNBUTWIRESHARKISBETTER. </p>
+
+    </section>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <section class="section">
+      <h3>Corrupted Network Capture</h3>
+      <div class="meta"><span class="badge">ICS PCAP Analysis</span><span class="badge">600 pts</span></div>
+      <p><strong>Question.</strong> *What is the timestamp of the response packet?* (protocole TIME, port 37)</p>
+
+      <h4>Step-by-Step Solution</h4>
+
+<p>Verify the File</p>
+<pre><code>file time.pcapng</code></pre>
+<p>
+The command confirms the file is a <code>pcapng</code> but corrupted — Wireshark can’t open it.
+</p>
+
+<p>Inspect the Header</p>
+<pre><code>xxd -l 64 time.pcapng</code></pre>
+<p>
+You won’t find the signature <code>0A 0D 0D 0A</code> of a valid <strong>Section Header Block</strong>.
+</p>
+
+<p>Create a Valid PCAPNG Header</p>
+<pre><code>echo -ne '\x0A\x0D\x0D\x0A\x1C\x00\x00\x00\x01\x00\x00\x00\x4D\x3C\x2B\x1A\
+  x01\x00\x00\x00\x00\x00\xFF\xFF\x00\x00\x00\x00\x1C\x00\x00\x00' > header.bin
+cat header.bin time.pcapng > fixed.pcapng</code></pre>
+
+<p>The file <code>fixed.pcapng</code> is now readable by Wireshark or tshark.</p>
+
+<p>Filter TIME Protocol Packets</p>
+<pre><code>tshark -r fixed.pcapng -Y "udp.port == 37 or tcp.port == 37"</code></pre>
+<p>
+You should see TIME protocol packets with 4-byte payloads — the server’s time response.
+</p>
+
+<p>Extract the TIME Response Data</p>
+<pre><code>tshark -r fixed.pcapng -Y "udp.port == 37 and udp.len==12" -T fields -e data</code></pre>
+
+<p>Example output:</p>
+<pre><code>E76AA3AC</code></pre>
+
+<p>Convert the Hex Value to Seconds</p>
+<pre><code>echo $((0xE76AA3AC))</code></pre>
+<p>Output:</p>
+<pre><code>3877761868</code></pre>
+
+<p>Adjust for Epoch Difference (1900 → 1970)</p>
+<p>
+The TIME protocol starts counting from 1900.  
+Subtract 70 years (2208988800 seconds) to convert to Unix time:
+</p>
+
+<pre><code>expr 3877761868 - 2208988800</code></pre>
+<p>Result:</p>
+<pre><code>1668773068</code></pre>
+
+<p>Convert to a Human-Readable Timestamp</p>
+<pre><code>date -d @1668773068 -u</code></pre>
+<p>Output:</p>
+<pre><code>Fri Nov 18 12:04:28 UTC 2022</code></pre>
+
+    </section>
+    
+    
+
+
+
+    <section class="section">
+      <h3>Mortimer’s Admin Utility 1</h3>
+      <div class="meta"><span class="badge">Binary Analysis</span><span class="badge">400 pts</span></div>
+      <p>In a strange turn of events, the Ember Jackals hired a young Mortimer Smith as an intern and ACME found a utility he left behind on one of the systems.
+      First, we need to do some static analysis to make sure there’s no flag-nanigans going on here...</p>
+      <p>String extraction & flag discovery</p>
+      <p>I started by checking the binary <code>(md5sum danger.exe, file danger.exe)</code> to identify it <code>(PE32+ x86-64)</code> and keep an MD5 fingerprint. I extracted the ASCII strings <code>(strings -a -n 4 danger.exe > strings_ascii.txt)</code> and then separately the UTF-16LE wide strings <code>(strings -el -n 4 danger.exe > strings_utf16le.txt)</code> as Windows applications often use 16-bit strings. Next, I searched for typical flag/secret patterns <code>(grep -Ei ‘flag|CTF|password|secret|mortimer’ ...)</code>. The ASCII search yielded nothing, but the wide string analysis returned:
+This'll never print. <code>flag{wubba-lubba-dub-dub?}</code> so the flag was encoded in <code>UTF-16LE</code> in the binary.
+
+<figure class="single-shot">
+            <img src="Dragos_10.png" alt="analyse" loading="lazy">
+        </figure>
+
+
+
+
+    </section>
+    
+
+
+
+    <section class="section">
+      <h3>Mortimer’s Admin Utility 2</h3>
+      <div class="meta"><span class="badge">Binary Analysis</span><span class="badge">600 pts</span></div>
+      <p> In a strange turn of events, the Ember Jackals hired a young Mortimer Smith as an intern and ACME found a utility he left behind on one of the systems.</p>
+
+<p>Yeah it’s definitely shady, and you should definitely not run it on your work computer… but you need the flag so… YOLO!</p>
+
+<p>Note: A successful run of the tool will create a new local user (if run in Admin prompt). Creation of a new user, nor Admin privileges are required to solve the flag.</p>
+
+<p>We begin by analyzing the binary file danger.exe to find out how user addition works and the associated risks.
+        <figure class="single-shot">
+            <img src="Dragos_6.png" alt="analyse" loading="lazy">
+        </figure>
+<p>Note that the binary uses the <code>NetUserAdd</code> function to add a local user. </p>
+            <figure class="single-shot">
+            <img src="Dragos_7.png" alt="nothing" loading="lazy">
+        </figure>
+
+        <figure class="single-shot">
+            <img src="Dragos_8.png" alt="nothing" loading="lazy">
+        </figure>
+        <p>The script opens the binary file named danger.exe, moves to a specific location (offset), and then modifies a byte in the file.</p>
+        <p>The patch.py script modifies the danger.exe binary directly.</p>
+        <p>It positions itself at offset <code>0x500 (1280 bytes)</code> and replaces the original byte with <code>0xEB</code> (JMP short instruction in x86 assembly language).</p>
+        <p>This changes the behavior of the program, potentially forcing a jump in the code and bypassing a check.</p>
+        <p>Now all we have to do is run it.
+        <figure class="single-shot">
+            <img src="Dragos_9.png" alt="nothing" loading="lazy">
+        </figure>
+    </section>
+  
+    
+  </div>
+  <a href="#" class="scroll-top" title="Remonter en haut">↑</a>
+
+  <div class="footer-fixed">© 2025 Dragos OT Security – Team freep0nx | zedxiang</div>
+  
+  <script>
+// Fade-in on scroll for sections
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+
+document.querySelectorAll('.section').forEach(sec => observer.observe(sec));
+
+// Smooth scrolling for internal links (if any are used)
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    const href = a.getAttribute('href');
+    if (!href || href === '#') return;
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.pushState(null, '', href);
+    }
+  });
+ 
+});
+// Bouton "scroll to top"
+const scrollTop = document.querySelector('.scroll-top');
+
+window.addEventListener('scroll', () => {
+  if (window.pageYOffset > 400) {
+    scrollTop.classList.add('visible');
+  } else {
+    scrollTop.classList.remove('visible');
+  }
+});
+
+scrollTop.addEventListener('click', (e) => {
+  e.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+ 
+</script>
+</body>
+</html>
