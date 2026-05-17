@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Tracker</title>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --surface: #141414;
+      --border: #222;
+      --text: #e8e8e8;
+      --muted: #666;
+      --faint: #333;
+      --up: #00c98a;
+      --up-bg: #00c98a18;
+      --down: #ff4d4d;
+      --down-bg: #ff4d4d18;
+      --accent: #e8e8e8;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    header .meta {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    header .meta span {
+      display: block;
+    }
+
+    #timestamp {
+      color: var(--text);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      transition: border-color 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--faint);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .card.up::before { background: var(--up); }
+    .card.down::before { background: var(--down); }
+
+    .card .sym {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+
+    .card .name {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.02em;
+    }
+
+    .card .price {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 12px 0 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .card .change {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .card.up .price { color: var(--up); }
+    .card.down .price { color: var(--down); }
+    .card.up .change { color: var(--up); background: var(--up-bg); }
+    .card.down .change { color: var(--down); background: var(--down-bg); }
+
+    .card .vol {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .skeleton {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    .skeleton .line {
+      background: var(--border);
+      border-radius: 3px;
+      margin-bottom: 8px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    footer a:hover { color: var(--text); }
+
+    #refresh-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: all 0.15s;
+    }
+
+    #refresh-btn:hover {
+      border-color: var(--faint);
+      color: var(--text);
+    }
+
+    #refresh-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .error-msg {
+      grid-column: 1 / -1;
+      background: var(--down-bg);
+      border: 1px solid var(--down);
+      border-radius: 6px;
+      padding: 16px;
+      font-size: 12px;
+      color: var(--down);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Market Tracker</h1>
+  </div>
+  <div class="meta">
+    <span id="timestamp">--</span>
+    <span>Données différées · Finnhub</span>
+  </div>
+</header>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  <span>Source : <a href="https://finnhub.io" target="_blank">Finnhub.io</a> — Free tier</span>
+  <button id="refresh-btn" onclick="loadStocks()">↻ Actualiser</button>
+</footer>
+
+<script>
+  // ─── CONFIG ───────────────────────────────────────────────────────────────
+  // Crée un compte gratuit sur https://finnhub.io pour obtenir ta clé API
+  const API_KEY = 'd84p49pr01qutij9o880d84p49pr01qutij9o88g';
+
+  const STOCKS = [
+    { sym: 'AAPL',  name: 'Apple' },
+    { sym: 'MSFT',  name: 'Microsoft' },
+    { sym: 'GOOGL', name: 'Alphabet' },
+    { sym: 'AMZN',  name: 'Amazon' },
+    { sym: 'NVDA',  name: 'Nvidia' },
+    { sym: 'META',  name: 'Meta' },
+    { sym: 'TSLA',  name: 'Tesla' },
+    { sym: 'BRKB',  name: 'Berkshire' },
+    { sym: 'JPM',   name: 'JPMorgan' },
+    { sym: 'V',     name: 'Visa' }
+  ];
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const grid = document.getElementById('grid');
+  const btn  = document.getElementById('refresh-btn');
+  const ts   = document.getElementById('timestamp');
+
+  function renderSkeletons() {
+    grid.innerHTML = STOCKS.map(() => `
+      <div class="skeleton">
+        <div class="line" style="width:60px;height:12px;"></div>
+        <div class="line" style="width:100px;height:10px;margin-top:4px;"></div>
+        <div class="line" style="width:90px;height:24px;margin-top:12px;"></div>
+        <div class="line" style="width:70px;height:18px;"></div>
+      </div>
+    `).join('');
+  }
+
+  async function fetchQuote(sym) {
+    const url = `https://finnhub.io/api/v1/quote?symbol=${sym}&token=${API_KEY}`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r.json();
+  }
+
+  function fmtVol(v) {
+    if (!v) return '—';
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+    return v.toString();
+  }
+
+  function renderCard(stock, q) {
+    const up     = q.d >= 0;
+    const cls    = up ? 'up' : 'down';
+    const sign   = up ? '+' : '';
+    const card   = document.createElement('div');
+    card.className = `card ${cls}`;
+    card.innerHTML = `
+      <div class="sym">${stock.sym}</div>
+      <div class="name">${stock.name}</div>
+      <div class="price">$${q.c.toFixed(2)}</div>
+      <div class="change">${sign}${q.d.toFixed(2)} &nbsp; ${sign}${q.dp.toFixed(2)}%</div>
+      <div class="vol">Vol · ${fmtVol(q.v)}</div>
+    `;
+    return card;
+  }
+
+  async function loadStocks() {
+    if (API_KEY === 'REMPLACE_PAR_TA_CLE_FINNHUB') {
+      grid.innerHTML = `<div class="error-msg">
+        ⚠ Configure ton API key Finnhub dans le fichier index.html (variable API_KEY).<br><br>
+        Compte gratuit : <a href="https://finnhub.io" style="color:inherit">https://finnhub.io</a>
+      </div>`;
+      return;
+    }
+
+    renderSkeletons();
+    btn.disabled = true;
+
+    try {
+      const results = await Promise.allSettled(
+        STOCKS.map(s => fetchQuote(s.sym))
+      );
+
+      grid.innerHTML = '';
+
+      results.forEach((res, i) => {
+        if (res.status === 'fulfilled' && res.value.c) {
+          grid.appendChild(renderCard(STOCKS[i], res.value));
+        } else {
+          const err = document.createElement('div');
+          err.className = 'skeleton';
+          err.style.opacity = '0.4';
+          err.innerHTML = `<div class="line" style="width:60px;height:12px;"></div><div style="font-size:10px;color:#666;margin-top:8px">${STOCKS[i].sym} — erreur</div>`;
+          grid.appendChild(err);
+        }
+      });
+
+      ts.textContent = new Date().toLocaleTimeString('fr-FR');
+
+    } catch (e) {
+      grid.innerHTML = `<div class="error-msg">Erreur réseau : ${e.message}</div>`;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  loadStocks();
+  // Auto-refresh toutes les 60s
+  setInterval(loadStocks, 60_000);
+</script>
+
+</body>
+</html>
