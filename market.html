@@ -204,6 +204,39 @@
       font-size: 12px;
       color: var(--down);
     }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 1.5rem 0 0.5rem;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .market-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .market-dot::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .market-dot.open { color: var(--up); }
+    .market-dot.open::before { background: var(--up); box-shadow: 0 0 4px var(--up); }
+    .market-dot.closed::before { background: var(--muted); }
+
+    .card.etf { border-style: dashed; }
+    .card.etf .sym { color: var(--muted); font-size: 10px; }
   </style>
 </head>
 <body>
@@ -214,41 +247,70 @@
   </div>
   <div class="meta">
     <span id="timestamp">--</span>
-    <span>Données différées · Finnhub</span>
+    <span id="market-status" style="margin-top:4px;display:flex;gap:10px;justify-content:flex-end;"></span>
+    <span>Données différées · Yahoo Finance</span>
   </div>
 </header>
 
 <div class="grid" id="grid"></div>
 
 <footer>
-  <span>Source : <a href="https://finnhub.io" target="_blank">Finnhub.io</a> — Free tier</span>
+  <span>Source : Yahoo Finance · via proxy CORS</span>
   <button id="refresh-btn" onclick="loadStocks()">↻ Actualiser</button>
 </footer>
 
 <script>
   // ─── CONFIG ───────────────────────────────────────────────────────────────
-  // Compte gratuit sur https://alphavantage.co → clé API gratuite
-  const API_KEY = 'W7A6S9ILVR6FWTZ7';
-
+  // Aucune clé API requise — Yahoo Finance via proxy CORS
   const STOCKS = [
-    { sym: 'AIR.PAR',  name: 'Airbus',           cur: '€' },
-    { sym: 'HO.PAR',   name: 'Thales',            cur: '€' },
-    { sym: 'BNP.PAR',  name: 'BNP Paribas',       cur: '€' },
-    { sym: 'AI.PAR',   name: 'Air Liquide',        cur: '€' },
-    { sym: 'DSY.PAR',  name: 'Dassault Systèmes',  cur: '€' },
-    { sym: 'SU.PAR',   name: 'Schneider Electric', cur: '€' },
-    { sym: 'STLAP.PAR',name: 'Stellantis',         cur: '€' },
-    { sym: 'OR.PAR',   name: 'L\'Oréal',           cur: '€' },
-    { sym: 'SAN.PAR',  name: 'Sanofi',             cur: '€' },
-    { sym: 'AM.PAR',   name: 'Dassault Aviation',  cur: '€' },
+    { sym: 'AIR.PA',   name: 'Airbus',           cur: '€' },
+    { sym: 'HO.PA',    name: 'Thales',            cur: '€' },
+    { sym: 'BNP.PA',   name: 'BNP Paribas',       cur: '€' },
+    { sym: 'AI.PA',    name: 'Air Liquide',        cur: '€' },
+    { sym: 'DSY.PA',   name: 'Dassault Systèmes',  cur: '€' },
+    { sym: 'SU.PA',    name: 'Schneider Electric', cur: '€' },
+    { sym: 'STLAP.PA', name: 'Stellantis',         cur: '€' },
+    { sym: 'OR.PA',    name: 'L\'Oréal',           cur: '€' },
+    { sym: 'SAN.PA',   name: 'Sanofi',             cur: '€' },
+    { sym: 'AM.PA',    name: 'Dassault Aviation',  cur: '€' },
     { sym: 'NVDA',     name: 'Nvidia',             cur: '$' },
     { sym: 'TTWO',     name: 'Take-Two',           cur: '$' },
+  ];
+
+  const ETFS = [
+    { sym: 'WPEA.PA',  name: 'MSCI World ESG',    cur: '€', etf: true },
+    { sym: 'CW8.PA',   name: 'MSCI World',         cur: '€', etf: true },
   ];
   // ─────────────────────────────────────────────────────────────────────────
 
   const grid = document.getElementById('grid');
   const btn  = document.getElementById('refresh-btn');
   const ts   = document.getElementById('timestamp');
+
+  // ─── MARKET STATUS ────────────────────────────────────────────────────────
+  function getMarketStatus() {
+    const now = new Date();
+    // Heure Paris (UTC+1 hiver, UTC+2 été)
+    const paris = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+    const ny    = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const pDay  = paris.getDay(); // 0=dim, 6=sam
+    const nDay  = ny.getDay();
+    const pH    = paris.getHours() + paris.getMinutes() / 60;
+    const nH    = ny.getHours() + ny.getMinutes() / 60;
+    const euOpen  = pDay >= 1 && pDay <= 5 && pH >= 9 && pH < 17.5;
+    const usOpen  = nDay >= 1 && nDay <= 5 && nH >= 9.5 && nH < 16;
+    return { euOpen, usOpen };
+  }
+
+  function renderMarketStatus() {
+    const { euOpen, usOpen } = getMarketStatus();
+    const el = document.getElementById('market-status');
+    el.innerHTML = `
+      <span class="market-dot ${euOpen ? 'open' : 'closed'}">Euronext ${euOpen ? 'ouvert' : 'fermé'}</span>
+      <span class="market-dot ${usOpen ? 'open' : 'closed'}">NYSE/NASDAQ ${usOpen ? 'ouvert' : 'fermé'}</span>
+    `;
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   function renderSkeletons() {
     grid.innerHTML = STOCKS.map(() => `
@@ -262,16 +324,18 @@
   }
 
   async function fetchQuote(sym) {
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sym}&apikey=${API_KEY}`;
-    const r = await fetch(url);
+    const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`;
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(yUrl)}`;
+    const r = await fetch(proxy);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const data = await r.json();
-    const q = data['Global Quote'];
-    if (!q || !q['05. price']) throw new Error('No data');
-    const price = parseFloat(q['05. price']);
-    const change = parseFloat(q['09. change']);
-    const changePct = parseFloat(q['10. change percent'].replace('%', ''));
-    const vol = parseInt(q['06. volume'], 10);
+    const wrapper = await r.json();
+    const data = JSON.parse(wrapper.contents);
+    const meta = data.chart.result[0].meta;
+    const price = meta.regularMarketPrice;
+    const prev  = meta.previousClose || meta.chartPreviousClose;
+    const change = price - prev;
+    const changePct = (change / prev) * 100;
+    const vol = meta.regularMarketVolume || 0;
     return { c: price, d: change, dp: changePct, v: vol };
   }
 
@@ -284,13 +348,13 @@
   }
 
   function renderCard(stock, q) {
-    const up  = q.d >= 0;
-    const cls = up ? 'up' : 'down';
+    const up   = q.d >= 0;
+    const cls  = up ? 'up' : 'down';
     const sign = up ? '+' : '';
     const card = document.createElement('div');
-    card.className = `card ${cls}`;
+    card.className = `card ${cls}${stock.etf ? ' etf' : ''}`;
     card.innerHTML = `
-      <div class="sym">${stock.sym.replace('.PAR', '.PA')}</div>
+      <div class="sym">${stock.sym}${stock.etf ? ' <span style="font-size:9px;color:var(--muted);font-weight:400">ETF</span>' : ''}</div>
       <div class="name">${stock.name}</div>
       <div class="price">${stock.cur}${q.c.toFixed(2)}</div>
       <div class="change">${sign}${q.d.toFixed(2)} &nbsp; ${sign}${q.dp.toFixed(2)}%</div>
@@ -299,40 +363,50 @@
     return card;
   }
 
-  async function loadStocks() {
-    if (API_KEY === 'REMPLACE_PAR_TA_CLE_ALPHAVANTAGE') {
-      grid.innerHTML = `<div class="error-msg">
-        ⚠ Configure ton API key Alpha Vantage dans le fichier index.html (variable API_KEY).<br><br>
-        Compte gratuit : <a href="https://alphavantage.co" style="color:inherit">https://alphavantage.co</a>
-      </div>`;
-      return;
-    }
+  function addSectionLabel(text) {
+    const el = document.createElement('div');
+    el.className = 'section-label';
+    el.style.gridColumn = '1 / -1';
+    el.textContent = text;
+    grid.appendChild(el);
+  }
 
+  async function loadStocks() {
     renderSkeletons();
     btn.disabled = true;
+    renderMarketStatus();
 
-    // Alpha Vantage free tier = 25 req/day, 5 req/min → on séquence avec délai
-    const results = [];
-    for (let i = 0; i < STOCKS.length; i++) {
-      try {
-        const q = await fetchQuote(STOCKS[i].sym);
-        results.push({ status: 'fulfilled', value: q });
-      } catch (e) {
-        results.push({ status: 'rejected' });
-      }
-      // 13s entre chaque req pour rester sous 5/min
-      if (i < STOCKS.length - 1) await new Promise(r => setTimeout(r, 13000));
-    }
+    const allSyms = [...STOCKS, ...ETFS];
+    const results = await Promise.allSettled(allSyms.map(s => fetchQuote(s.sym)));
 
     grid.innerHTML = '';
-    results.forEach((res, i) => {
+
+    // Section actions
+    addSectionLabel('Actions');
+    STOCKS.forEach((stock, i) => {
+      const res = results[i];
       if (res.status === 'fulfilled') {
-        grid.appendChild(renderCard(STOCKS[i], res.value));
+        grid.appendChild(renderCard(stock, res.value));
       } else {
         const err = document.createElement('div');
         err.className = 'skeleton';
         err.style.opacity = '0.4';
-        err.innerHTML = `<div class="line" style="width:60px;height:12px;"></div><div style="font-size:10px;color:#666;margin-top:8px">${STOCKS[i].sym.replace('.PAR','.PA')} — erreur</div>`;
+        err.innerHTML = `<div class="line" style="width:60px;height:12px;"></div><div style="font-size:10px;color:#666;margin-top:8px">${stock.sym} — erreur</div>`;
+        grid.appendChild(err);
+      }
+    });
+
+    // Section ETF
+    addSectionLabel('Référence marché');
+    ETFS.forEach((stock, i) => {
+      const res = results[STOCKS.length + i];
+      if (res.status === 'fulfilled') {
+        grid.appendChild(renderCard(stock, res.value));
+      } else {
+        const err = document.createElement('div');
+        err.className = 'skeleton';
+        err.style.opacity = '0.4';
+        err.innerHTML = `<div class="line" style="width:60px;height:12px;"></div><div style="font-size:10px;color:#666;margin-top:8px">${stock.sym} — erreur</div>`;
         grid.appendChild(err);
       }
     });
@@ -342,8 +416,8 @@
   }
 
   loadStocks();
-  // Auto-refresh toutes les 15min (limite quota journalier)
-  setInterval(loadStocks, 15 * 60 * 1000);
+  setInterval(loadStocks, 60_000);
+  setInterval(renderMarketStatus, 30_000);
 </script>
 
 </body>
