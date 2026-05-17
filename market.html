@@ -231,16 +231,18 @@
   const API_KEY = 'd84p49pr01qutij9o880d84p49pr01qutij9o88g';
 
   const STOCKS = [
-    { sym: 'AAPL',  name: 'Apple' },
-    { sym: 'MSFT',  name: 'Microsoft' },
-    { sym: 'GOOGL', name: 'Alphabet' },
-    { sym: 'AMZN',  name: 'Amazon' },
-    { sym: 'NVDA',  name: 'Nvidia' },
-    { sym: 'META',  name: 'Meta' },
-    { sym: 'TSLA',  name: 'Tesla' },
-    { sym: 'BRKB',  name: 'Berkshire' },
-    { sym: 'JPM',   name: 'JPMorgan' },
-    { sym: 'V',     name: 'Visa' }
+    { sym: 'AIR.PA',  name: 'Airbus',           cur: '€' },
+    { sym: 'HO.PA',   name: 'Thales',            cur: '€' },
+    { sym: 'BNP.PA',  name: 'BNP Paribas',       cur: '€' },
+    { sym: 'AI.PA',   name: 'Air Liquide',        cur: '€' },
+    { sym: 'DSY.PA',  name: 'Dassault Systèmes',  cur: '€' },
+    { sym: 'SU.PA',   name: 'Schneider Electric', cur: '€' },
+    { sym: 'STLAM',   name: 'Stellantis',         cur: '€' },
+    { sym: 'OR.PA',   name: 'L\'Oréal',           cur: '€' },
+    { sym: 'SAN.PA',  name: 'Sanofi',             cur: '€' },
+    { sym: 'AM.PA',   name: 'Dassault Aviation',  cur: '€' },
+    { sym: 'NVDA',    name: 'Nvidia',             cur: '$' },
+    { sym: 'TTWO',    name: 'Take-Two',           cur: '$' },
   ];
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -283,7 +285,7 @@
     card.innerHTML = `
       <div class="sym">${stock.sym}</div>
       <div class="name">${stock.name}</div>
-      <div class="price">$${q.c.toFixed(2)}</div>
+      <div class="price">${stock.cur}${q.c.toFixed(2)}</div>
       <div class="change">${sign}${q.d.toFixed(2)} &nbsp; ${sign}${q.dp.toFixed(2)}%</div>
       <div class="vol">Vol · ${fmtVol(q.v)}</div>
     `;
