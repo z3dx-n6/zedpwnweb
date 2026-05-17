@@ -7,7 +7,7 @@
   <style>
     :root {
       --bg: #0d0d0d; --surface: #141414; --border: #222; --text: #e8e8e8;
-      --muted: #666; --faint: #333;
+      --muted: #666; --faint: #2a2a2a;
       --up: #00c98a; --up-bg: #00c98a18;
       --down: #ff4d4d; --down-bg: #ff4d4d18;
       --warn: #f0a500; --warn-bg: #f0a50018;
@@ -16,80 +16,84 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: var(--mono); min-height: 100vh; padding: 1.5rem; }
 
-    header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
-    header h1 { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
-    header .meta { font-size: 11px; color: var(--muted); text-align: right; }
-    header .meta span { display: block; }
-    #timestamp { color: var(--text); }
+    header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
+    header h1 { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); font-weight:400; }
+    header .meta { font-size:11px; color:var(--muted); text-align:right; }
+    header .meta span { display:block; }
+    #timestamp { color:var(--text); }
 
-    .layout { display: grid; grid-template-columns: 1fr 270px; gap: 16px; align-items: start; }
-    @media (max-width: 880px) { .layout { grid-template-columns: 1fr; } }
+    .layout { display:grid; grid-template-columns:1fr 275px; gap:16px; align-items:start; }
+    @media(max-width:880px){ .layout{ grid-template-columns:1fr; } }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(195px,1fr)); gap:8px; }
 
     .section-label {
-      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--muted); margin: 1rem 0 0.4rem; padding-bottom: 5px;
-      border-bottom: 1px solid var(--border); grid-column: 1 / -1;
+      font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+      color:var(--muted); margin:1rem 0 0.4rem; padding-bottom:5px;
+      border-bottom:1px solid var(--border); grid-column:1/-1;
     }
 
     .card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
-      padding: 13px; position: relative; overflow: hidden; transition: border-color 0.15s;
+      background:var(--surface); border:1px solid var(--border); border-radius:6px;
+      padding:12px; position:relative; overflow:hidden; transition:border-color 0.15s;
     }
-    .card:hover { border-color: var(--faint); }
+    .card:hover { border-color:var(--faint); }
     .card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
-    .card.up::before  { background: var(--up); }
-    .card.down::before { background: var(--down); }
-    .card.etf { border-style: dashed; }
-    .card .sym  { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; }
-    .card .name { font-size: 10px; color: var(--muted); margin-top: 2px; }
-    .card .price { font-size: 20px; font-weight: 700; margin: 10px 0 5px; letter-spacing: -0.02em; }
-    .card.up   .price  { color: var(--up); }
-    .card.down .price  { color: var(--down); }
-    .card .change { display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:600; padding:2px 7px; border-radius:4px; }
-    .card.up   .change { color: var(--up);   background: var(--up-bg); }
-    .card.down .change { color: var(--down); background: var(--down-bg); }
-    .card .meta-row { font-size: 10px; color: var(--muted); margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-    .rsi-badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 600; }
-    .rsi-low { color: var(--up);   background: var(--up-bg); }
-    .rsi-mid { color: var(--muted); background: var(--faint); }
-    .rsi-high { color: var(--down); background: var(--down-bg); }
+    .card.up::before   { background:var(--up); }
+    .card.down::before { background:var(--down); }
+    .card.etf { border-style:dashed; }
+    .card .sym  { font-size:12px; font-weight:700; letter-spacing:0.05em; }
+    .card .name { font-size:10px; color:var(--muted); margin-top:1px; }
+    .card .price { font-size:19px; font-weight:700; margin:8px 0 4px; letter-spacing:-0.02em; }
+    .card.up   .price { color:var(--up); }
+    .card.down .price { color:var(--down); }
+    .card .change { display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px; }
+    .card.up   .change { color:var(--up);   background:var(--up-bg); }
+    .card.down .change { color:var(--down); background:var(--down-bg); }
+    .card .meta-row { font-size:10px; color:var(--muted); margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    .rsi-badge { font-size:9px; padding:1px 5px; border-radius:3px; font-weight:600; }
+    .rsi-low  { color:var(--up);   background:var(--up-bg); }
+    .rsi-mid  { color:var(--muted); background:var(--faint); }
+    .rsi-high { color:var(--down); background:var(--down-bg); }
+
+    /* Candlestick canvas */
+    .candle-wrap { margin-top:8px; border-top:1px solid var(--border); padding-top:6px; }
+    canvas.candles { display:block; width:100%; height:55px; }
 
     /* Opportunity panel */
-    .opp-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px; position: sticky; top: 1.5rem; }
-    .opp-panel h2 { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); font-weight: 400; }
-    .opp-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .opp-item:last-of-type { border-bottom: none; padding-bottom: 0; }
-    .opp-sym  { font-size: 12px; font-weight: 700; }
-    .opp-name { font-size: 10px; color: var(--muted); margin-top: 1px; }
-    .opp-score { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
-    .score-bar-wrap { flex:1; height:3px; background: var(--border); border-radius:2px; }
-    .score-bar { height:100%; border-radius:2px; background: var(--warn); transition: width 0.5s; }
-    .score-bar.hot { background: var(--up); }
-    .score-val { font-size:10px; color: var(--warn); font-weight:600; min-width:30px; text-align:right; }
-    .score-val.hot { color: var(--up); }
+    .opp-panel { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:14px; position:sticky; top:1.5rem; }
+    .opp-panel h2 { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); font-weight:400; }
+    .opp-item { padding:10px 0; border-bottom:1px solid var(--border); }
+    .opp-item:last-of-type { border-bottom:none; padding-bottom:0; }
+    .opp-sym  { font-size:12px; font-weight:700; }
+    .opp-name { font-size:10px; color:var(--muted); margin-top:1px; }
+    .opp-score { display:flex; align-items:center; gap:6px; margin-top:6px; }
+    .score-bar-wrap { flex:1; height:3px; background:var(--border); border-radius:2px; }
+    .score-bar { height:100%; border-radius:2px; background:var(--warn); transition:width 0.5s; }
+    .score-bar.hot { background:var(--up); }
+    .score-val { font-size:10px; color:var(--warn); font-weight:600; min-width:30px; text-align:right; }
+    .score-val.hot { color:var(--up); }
     .opp-signals { margin-top:5px; display:flex; flex-wrap:wrap; gap:4px; }
-    .sig { font-size:9px; padding:2px 5px; border-radius:3px; background: var(--faint); color: var(--muted); }
-    .sig.active { background: var(--warn-bg); color: var(--warn); }
-    .sig.strong { background: var(--up-bg);   color: var(--up); }
-    .opp-empty { font-size:11px; color: var(--muted); padding:16px 0; text-align:center; }
-    .opp-disclaimer { font-size:9px; color: var(--muted); margin-top:12px; line-height:1.6; }
+    .sig { font-size:9px; padding:2px 5px; border-radius:3px; background:var(--faint); color:var(--muted); }
+    .sig.active { background:var(--warn-bg); color:var(--warn); }
+    .sig.strong { background:var(--up-bg);   color:var(--up); }
+    .opp-empty { font-size:11px; color:var(--muted); padding:16px 0; text-align:center; }
+    .opp-disclaimer { font-size:9px; color:var(--muted); margin-top:12px; line-height:1.6; }
 
-    .skeleton { background: var(--surface); border:1px solid var(--border); border-radius:6px; padding:13px; animation: pulse 1.4s ease-in-out infinite; }
-    .skeleton .line { background: var(--border); border-radius:3px; margin-bottom:8px; }
+    .skeleton { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:12px; animation:pulse 1.4s ease-in-out infinite; }
+    .skeleton .line { background:var(--border); border-radius:3px; margin-bottom:8px; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
     footer { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-size:10px; color:var(--muted); }
-    #refresh-btn { background:none; border:1px solid var(--border); color:var(--muted); font-family:var(--mono); font-size:10px; padding:5px 12px; border-radius:4px; cursor:pointer; letter-spacing:0.05em; transition:all 0.15s; }
+    #refresh-btn { background:none; border:1px solid var(--border); color:var(--muted); font-family:var(--mono); font-size:10px; padding:5px 12px; border-radius:4px; cursor:pointer; transition:all 0.15s; }
     #refresh-btn:hover { border-color:var(--faint); color:var(--text); }
     #refresh-btn:disabled { opacity:0.4; cursor:not-allowed; }
 
     .market-dot { display:inline-flex; align-items:center; gap:5px; font-size:10px; color:var(--muted); }
     .market-dot::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; }
-    .market-dot.open { color: var(--up); }
-    .market-dot.open::before { background: var(--up); box-shadow: 0 0 4px var(--up); }
-    .market-dot.closed::before { background: var(--muted); }
+    .market-dot.open { color:var(--up); }
+    .market-dot.open::before { background:var(--up); box-shadow:0 0 4px var(--up); }
+    .market-dot.closed::before { background:var(--muted); }
   </style>
 </head>
 <body>
@@ -162,15 +166,15 @@
       <span class="market-dot ${usOpen?'open':'closed'}">NYSE/NASDAQ ${usOpen?'ouvert':'fermé'}</span>`;
   }
 
-  // ── FETCH — 3 months history for RSI + 1m change ──────────────────────────
+  // ── FETCH ─────────────────────────────────────────────────────────────────
   async function fetchFull(sym) {
-    // range=3mo gives ~63 daily candles, enough for RSI14 + 1m
     const url = `${WORKER}/?sym=${encodeURIComponent(sym)}&range=3mo&interval=1d`;
     const r = await fetch(url);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
     const result = data.chart.result[0];
     const meta   = result.meta;
+    const quote  = result.indicators.quote[0];
 
     const price  = meta.regularMarketPrice;
     const prev   = meta.previousClose || meta.chartPreviousClose;
@@ -180,22 +184,29 @@
     const w52hi  = meta.fiftyTwoWeekHigh || null;
     const w52lo  = meta.fiftyTwoWeekLow  || null;
 
-    const rawCloses = result.indicators?.quote?.[0]?.close || [];
-    const closes    = rawCloses.filter(c => c != null);
+    // OHLC candles — last 30 valid days
+    const timestamps = result.timestamp || [];
+    const candles = [];
+    for (let i = 0; i < timestamps.length; i++) {
+      const o = quote.open[i], h = quote.high[i], l = quote.low[i], c = quote.close[i];
+      if (o != null && h != null && l != null && c != null) {
+        candles.push({ o, h, l, c });
+      }
+    }
+    const last30 = candles.slice(-30);
 
-    // 1-month change (~21 trading days)
+    // closes for RSI + 1m
+    const closes = candles.map(c => c.c);
     const slice  = closes.slice(-22);
     const m1change = slice.length >= 2
-      ? ((slice[slice.length-1] - slice[0]) / slice[0]) * 100
-      : null;
-
+      ? ((slice[slice.length-1] - slice[0]) / slice[0]) * 100 : null;
     const rsi = calcRSI(closes, 14);
 
     let pos52w = null;
     if (w52hi && w52lo && w52hi !== w52lo)
       pos52w = ((price - w52lo) / (w52hi - w52lo)) * 100;
 
-    return { c: price, d: change, dp, v: vol, w52hi, w52lo, m1change, rsi, pos52w };
+    return { c: price, d: change, dp, v: vol, w52hi, w52lo, m1change, rsi, pos52w, candles: last30 };
   }
 
   // ── RSI ───────────────────────────────────────────────────────────────────
@@ -206,8 +217,63 @@
       const d = closes[i] - closes[i-1];
       if (d > 0) gains += d; else losses -= d;
     }
-    const rs = (gains / period) / (losses / period || 0.0001);
+    const rs = (gains / period) / ((losses / period) || 0.0001);
     return Math.round(100 - 100 / (1 + rs));
+  }
+
+  // ── CANDLESTICK DRAW ──────────────────────────────────────────────────────
+  function drawCandles(canvas, candles) {
+    const dpr = window.devicePixelRatio || 1;
+    const W   = canvas.offsetWidth  || 195;
+    const H   = 55;
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    if (!candles.length) return;
+
+    const highs  = candles.map(c => c.h);
+    const lows   = candles.map(c => c.l);
+    const minP   = Math.min(...lows);
+    const maxP   = Math.max(...highs);
+    const range  = maxP - minP || 1;
+    const pad    = 4;
+    const hRange = H - pad * 2;
+
+    const toY = v => pad + hRange - ((v - minP) / range) * hRange;
+
+    const n       = candles.length;
+    const gap     = 1;
+    const cw      = Math.max(1, Math.floor((W - gap * (n - 1)) / n));
+    const wickW   = 1;
+
+    candles.forEach((c, i) => {
+      const x    = i * (cw + gap);
+      const bull = c.c >= c.o;
+      const col  = bull ? '#00c98a' : '#ff4d4d';
+
+      // wick
+      ctx.fillStyle = col;
+      const wickX = x + Math.floor(cw / 2) - Math.floor(wickW / 2);
+      ctx.fillRect(wickX, toY(c.h), wickW, toY(c.l) - toY(c.h));
+
+      // body
+      const bodyTop = toY(Math.max(c.o, c.c));
+      const bodyBot = toY(Math.min(c.o, c.c));
+      const bodyH   = Math.max(1, bodyBot - bodyTop);
+      ctx.fillRect(x, bodyTop, cw, bodyH);
+    });
+
+    // draw RSI 30 line as dashed reference — map RSI level to price would need more data
+    // Instead draw a subtle baseline at 20% from bottom (visual guide)
+    ctx.strokeStyle = '#333';
+    ctx.setLineDash([2, 3]);
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, H * 0.75);
+    ctx.lineTo(W, H * 0.75);
+    ctx.stroke();
   }
 
   // ── SCORING /100 ──────────────────────────────────────────────────────────
@@ -216,29 +282,25 @@
     const signals = [];
 
     if (q.rsi !== null) {
-      if (q.rsi < 30)      { score += 35; signals.push({ l: `RSI ${q.rsi} — survente`, s: 'strong' }); }
+      if      (q.rsi < 30) { score += 35; signals.push({ l: `RSI ${q.rsi} — survente`, s: 'strong' }); }
       else if (q.rsi < 40) { score += 15; signals.push({ l: `RSI ${q.rsi} — bas`,      s: 'active' }); }
       else                  {              signals.push({ l: `RSI ${q.rsi}`,             s: 'none'   }); }
     }
-
     if (q.m1change !== null) {
       if      (q.m1change < -20) { score += 30; signals.push({ l: `${q.m1change.toFixed(1)}% 1m — fort dip`, s: 'strong' }); }
       else if (q.m1change < -10) { score += 20; signals.push({ l: `${q.m1change.toFixed(1)}% 1m`,            s: 'active' }); }
       else if (q.m1change <  -5) { score += 10; signals.push({ l: `${q.m1change.toFixed(1)}% 1m`,            s: 'active' }); }
-      else if (q.m1change >  10) { score -= 10; signals.push({ l: `+${q.m1change.toFixed(1)}% 1m — haussier`, s: 'none' }); }
+      else if (q.m1change >  10) { score -= 10; signals.push({ l: `+${q.m1change.toFixed(1)}% 1m`,           s: 'none'   }); }
     }
-
     if (q.pos52w !== null) {
-      if      (q.pos52w < 15) { score += 25; signals.push({ l: `${q.pos52w.toFixed(0)}% du 52w range — bas annuel`, s: 'strong' }); }
-      else if (q.pos52w < 30) { score += 15; signals.push({ l: `${q.pos52w.toFixed(0)}% du 52w range`,              s: 'active' }); }
-      else if (q.pos52w > 85) { score -= 10; signals.push({ l: `${q.pos52w.toFixed(0)}% — proche 52w high`,         s: 'none'   }); }
+      if      (q.pos52w < 15) { score += 25; signals.push({ l: `${q.pos52w.toFixed(0)}% 52w — bas annuel`, s: 'strong' }); }
+      else if (q.pos52w < 30) { score += 15; signals.push({ l: `${q.pos52w.toFixed(0)}% 52w range`,        s: 'active' }); }
+      else if (q.pos52w > 85) { score -= 10; signals.push({ l: `${q.pos52w.toFixed(0)}% — proche 52w high`, s: 'none' }); }
     }
-
     if (q.dp < -2 && q.dp > -6) {
       score += 10;
       signals.push({ l: `Repli jour ${q.dp.toFixed(1)}%`, s: 'active' });
     }
-
     return { score: Math.max(0, Math.min(100, score)), signals };
   }
 
@@ -263,21 +325,31 @@
     const sign = up ? '+' : '';
     const card = document.createElement('div');
     card.className = `card ${up?'up':'down'}${stock.etf?' etf':''}`;
+
     const rsiHtml = q.rsi !== null ? `<span class="rsi-badge ${rsiCls(q.rsi)}">RSI ${q.rsi}</span>` : '';
     const m1Html  = q.m1change !== null ? `<span>${q.m1change>=0?'+':''}${q.m1change.toFixed(1)}% 1m</span>` : '';
+
     card.innerHTML = `
       <div class="sym">${stock.sym}${stock.etf?' <span style="font-size:9px;color:var(--muted);font-weight:400">ETF</span>':''}</div>
       <div class="name">${stock.name}</div>
       <div class="price">${stock.cur}${q.c.toFixed(2)}</div>
       <div class="change">${sign}${q.d.toFixed(2)} &nbsp; ${sign}${q.dp.toFixed(2)}%</div>
-      <div class="meta-row">${rsiHtml}${m1Html}<span>Vol · ${fmtVol(q.v)}</span></div>`;
+      <div class="meta-row">${rsiHtml}${m1Html}<span>Vol · ${fmtVol(q.v)}</span></div>
+      <div class="candle-wrap"><canvas class="candles"></canvas></div>`;
+
+    // draw after insert so offsetWidth is correct
+    requestAnimationFrame(() => {
+      const canvas = card.querySelector('canvas.candles');
+      if (canvas && q.candles.length) drawCandles(canvas, q.candles);
+    });
+
     return card;
   }
 
   function addLabel(text) {
     const el = document.createElement('div');
     el.className = 'section-label';
-    el.style.gridColumn = '1 / -1';
+    el.style.gridColumn = '1/-1';
     el.textContent = text;
     grid.appendChild(el);
   }
@@ -297,7 +369,7 @@
     }
 
     const items = scored.map(({ stock, q, score, signals }) => {
-      const hot    = score >= 50;
+      const hot     = score >= 50;
       const sigHtml = signals.map(s =>
         `<span class="sig ${s.s==='strong'?'strong':s.s==='active'?'active':''}">${s.l}</span>`
       ).join('');
@@ -313,7 +385,7 @@
     }).join('');
 
     oppPanel.innerHTML = `<h2>⚡ Opportunités</h2>${items}
-      <p class="opp-disclaimer">Score : RSI14 + variation 1m + position 52w range.<br>⚠ Pas un conseil financier.</p>`;
+      <p class="opp-disclaimer">Score : RSI14 + variation 1m + position 52w.<br>⚠ Pas un conseil financier.</p>`;
   }
 
   // ── SKELETONS ─────────────────────────────────────────────────────────────
@@ -322,8 +394,9 @@
       <div class="skeleton">
         <div class="line" style="width:60px;height:11px;"></div>
         <div class="line" style="width:90px;height:9px;"></div>
-        <div class="line" style="width:80px;height:22px;"></div>
-        <div class="line" style="width:65px;height:14px;"></div>
+        <div class="line" style="width:80px;height:20px;"></div>
+        <div class="line" style="width:65px;height:13px;"></div>
+        <div class="line" style="width:100%;height:55px;margin-top:8px;"></div>
       </div>`).join('');
   }
 
