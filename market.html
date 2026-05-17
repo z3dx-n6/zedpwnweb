@@ -227,22 +227,22 @@
 
 <script>
   // ─── CONFIG ───────────────────────────────────────────────────────────────
-  // Crée un compte gratuit sur https://finnhub.io pour obtenir ta clé API
-  const API_KEY = 'd84p49pr01qutij9o880d84p49pr01qutij9o88g';
+  // Compte gratuit sur https://alphavantage.co → clé API gratuite
+  const API_KEY = 'W7A6S9ILVR6FWTZ7';
 
   const STOCKS = [
-    { sym: 'AIR.PA',  name: 'Airbus',           cur: '€' },
-    { sym: 'HO.PA',   name: 'Thales',            cur: '€' },
-    { sym: 'BNP.PA',  name: 'BNP Paribas',       cur: '€' },
-    { sym: 'AI.PA',   name: 'Air Liquide',        cur: '€' },
-    { sym: 'DSY.PA',  name: 'Dassault Systèmes',  cur: '€' },
-    { sym: 'SU.PA',   name: 'Schneider Electric', cur: '€' },
-    { sym: 'STLAM',   name: 'Stellantis',         cur: '€' },
-    { sym: 'OR.PA',   name: 'L\'Oréal',           cur: '€' },
-    { sym: 'SAN.PA',  name: 'Sanofi',             cur: '€' },
-    { sym: 'AM.PA',   name: 'Dassault Aviation',  cur: '€' },
-    { sym: 'NVDA',    name: 'Nvidia',             cur: '$' },
-    { sym: 'TTWO',    name: 'Take-Two',           cur: '$' },
+    { sym: 'AIR.PAR',  name: 'Airbus',           cur: '€' },
+    { sym: 'HO.PAR',   name: 'Thales',            cur: '€' },
+    { sym: 'BNP.PAR',  name: 'BNP Paribas',       cur: '€' },
+    { sym: 'AI.PAR',   name: 'Air Liquide',        cur: '€' },
+    { sym: 'DSY.PAR',  name: 'Dassault Systèmes',  cur: '€' },
+    { sym: 'SU.PAR',   name: 'Schneider Electric', cur: '€' },
+    { sym: 'STLAP.PAR',name: 'Stellantis',         cur: '€' },
+    { sym: 'OR.PAR',   name: 'L\'Oréal',           cur: '€' },
+    { sym: 'SAN.PAR',  name: 'Sanofi',             cur: '€' },
+    { sym: 'AM.PAR',   name: 'Dassault Aviation',  cur: '€' },
+    { sym: 'NVDA',     name: 'Nvidia',             cur: '$' },
+    { sym: 'TTWO',     name: 'Take-Two',           cur: '$' },
   ];
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -262,10 +262,17 @@
   }
 
   async function fetchQuote(sym) {
-    const url = `https://finnhub.io/api/v1/quote?symbol=${sym}&token=${API_KEY}`;
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${sym}&apikey=${API_KEY}`;
     const r = await fetch(url);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
+    const data = await r.json();
+    const q = data['Global Quote'];
+    if (!q || !q['05. price']) throw new Error('No data');
+    const price = parseFloat(q['05. price']);
+    const change = parseFloat(q['09. change']);
+    const changePct = parseFloat(q['10. change percent'].replace('%', ''));
+    const vol = parseInt(q['06. volume'], 10);
+    return { c: price, d: change, dp: changePct, v: vol };
   }
 
   function fmtVol(v) {
@@ -277,13 +284,13 @@
   }
 
   function renderCard(stock, q) {
-    const up     = q.d >= 0;
-    const cls    = up ? 'up' : 'down';
-    const sign   = up ? '+' : '';
-    const card   = document.createElement('div');
+    const up  = q.d >= 0;
+    const cls = up ? 'up' : 'down';
+    const sign = up ? '+' : '';
+    const card = document.createElement('div');
     card.className = `card ${cls}`;
     card.innerHTML = `
-      <div class="sym">${stock.sym}</div>
+      <div class="sym">${stock.sym.replace('.PAR', '.PA')}</div>
       <div class="name">${stock.name}</div>
       <div class="price">${stock.cur}${q.c.toFixed(2)}</div>
       <div class="change">${sign}${q.d.toFixed(2)} &nbsp; ${sign}${q.dp.toFixed(2)}%</div>
@@ -293,10 +300,10 @@
   }
 
   async function loadStocks() {
-    if (API_KEY === 'REMPLACE_PAR_TA_CLE_FINNHUB') {
+    if (API_KEY === 'REMPLACE_PAR_TA_CLE_ALPHAVANTAGE') {
       grid.innerHTML = `<div class="error-msg">
-        ⚠ Configure ton API key Finnhub dans le fichier index.html (variable API_KEY).<br><br>
-        Compte gratuit : <a href="https://finnhub.io" style="color:inherit">https://finnhub.io</a>
+        ⚠ Configure ton API key Alpha Vantage dans le fichier index.html (variable API_KEY).<br><br>
+        Compte gratuit : <a href="https://alphavantage.co" style="color:inherit">https://alphavantage.co</a>
       </div>`;
       return;
     }
@@ -304,37 +311,39 @@
     renderSkeletons();
     btn.disabled = true;
 
-    try {
-      const results = await Promise.allSettled(
-        STOCKS.map(s => fetchQuote(s.sym))
-      );
-
-      grid.innerHTML = '';
-
-      results.forEach((res, i) => {
-        if (res.status === 'fulfilled' && res.value.c) {
-          grid.appendChild(renderCard(STOCKS[i], res.value));
-        } else {
-          const err = document.createElement('div');
-          err.className = 'skeleton';
-          err.style.opacity = '0.4';
-          err.innerHTML = `<div class="line" style="width:60px;height:12px;"></div><div style="font-size:10px;color:#666;margin-top:8px">${STOCKS[i].sym} — erreur</div>`;
-          grid.appendChild(err);
-        }
-      });
-
-      ts.textContent = new Date().toLocaleTimeString('fr-FR');
-
-    } catch (e) {
-      grid.innerHTML = `<div class="error-msg">Erreur réseau : ${e.message}</div>`;
-    } finally {
-      btn.disabled = false;
+    // Alpha Vantage free tier = 25 req/day, 5 req/min → on séquence avec délai
+    const results = [];
+    for (let i = 0; i < STOCKS.length; i++) {
+      try {
+        const q = await fetchQuote(STOCKS[i].sym);
+        results.push({ status: 'fulfilled', value: q });
+      } catch (e) {
+        results.push({ status: 'rejected' });
+      }
+      // 13s entre chaque req pour rester sous 5/min
+      if (i < STOCKS.length - 1) await new Promise(r => setTimeout(r, 13000));
     }
+
+    grid.innerHTML = '';
+    results.forEach((res, i) => {
+      if (res.status === 'fulfilled') {
+        grid.appendChild(renderCard(STOCKS[i], res.value));
+      } else {
+        const err = document.createElement('div');
+        err.className = 'skeleton';
+        err.style.opacity = '0.4';
+        err.innerHTML = `<div class="line" style="width:60px;height:12px;"></div><div style="font-size:10px;color:#666;margin-top:8px">${STOCKS[i].sym.replace('.PAR','.PA')} — erreur</div>`;
+        grid.appendChild(err);
+      }
+    });
+
+    ts.textContent = new Date().toLocaleTimeString('fr-FR');
+    btn.disabled = false;
   }
 
   loadStocks();
-  // Auto-refresh toutes les 60s
-  setInterval(loadStocks, 60_000);
+  // Auto-refresh toutes les 15min (limite quota journalier)
+  setInterval(loadStocks, 15 * 60 * 1000);
 </script>
 
 </body>
